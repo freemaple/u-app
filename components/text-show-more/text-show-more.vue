@@ -203,10 +203,10 @@
     }
     .search-item {
         box-sizing: border-box;
-        padding: 0 23.08rpx;
+        padding: 0 15.39rpx;
         height: 54rpx;
         line-height: 54rpx;
-        margin: 0 15.38rpx 15.38rpx 0;
+        margin: 0 23.08rpx 19.24rpx 0;
         font-size: 26.92rpx;
         color: #666666;
         background-color: #F5F5F5;

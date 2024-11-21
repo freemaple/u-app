@@ -24,16 +24,9 @@ function handleNavTo(url) {
 // 静态块跳转
 function staticBlockJump(data) {
 	if(data && data.route) {
-		let route = data.route;
-		if(route){
-			if(data.module && route.indexOf('module=') == -1){
-				let q_flag = route.indexOf('?') == -1 ? "?" : "&";
-				route += q_flag + "module=" + data.module;
-			}
-		}
 		const type = data.routeType || 'navigateTo'
 		uni[type]({
-			url: route
+			url:data.route
 		})
 	}
 }
@@ -152,11 +145,27 @@ function observeH5ElementVisibility(targetElement, callback, options = { thresho
 	}
 }
 
+/* 
+  将价格区分为整数加小数
+*/
+function transformPrice(value, key) {
+	if (value == null || value == undefined) {
+		value = 0.00
+	}
+	const intLabel = `${key}_int`, decimalLabel =  `${key}_decimal`
+	const valueArr = value.toString().split('.');
+	return {
+		[intLabel]: valueArr[0],
+		[decimalLabel]: valueArr[1] ? `.${valueArr[1]}` : '.00'
+	}
+}
+
 module.exports = {
 	handleGoBack,
 	handleNavTo,
 	staticBlockJump,
 	isPullDown,
 	createIntersectionObserver,
-	observeVisibility
+	observeVisibility,
+	transformPrice
 }

@@ -212,6 +212,14 @@
 </script>
 
 <style lang="scss" scoped>
+/deep/.gradient_text{
+    background: linear-gradient(to right, #780EFF, #DA49D6, #FF6EA7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+#rule-get-now{
+	margin-top: 34.62rpx;
+}
 .detail-rules-box {
 	.tip-box {
 		padding: 47.19rpx 39.74rpx 89.4rpx 39.74rpx;
@@ -280,14 +288,16 @@
 					}
 				}
 				.rule-btn {
-					height: 104rpx;
+					height: 81rpx;
 					background: #000000;
 					font-weight: bold;
 					font-size: 32rpx;
-					line-height: 104rpx;
+					line-height: 81rpx;
 					color: #ffffff;
 					text-align: center;
 					margin-bottom: 64.57rpx;
+					border-radius: 40rpx;
+
 				}
 				.mt-15 {
 					margin-top: 15rpx;

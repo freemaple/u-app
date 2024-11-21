@@ -21,67 +21,12 @@
             </view>
             <view class="card_list" v-show="history_lists.length">
                 <view v-for="item in history_lists" :key="item.id" :class="'single_card ' + (item.amount2 ? 'unselected' : '') ">
-                    <view class="top_box flex justify-content-center align-items-center">
+                    <view class="top_box flex justify-content-between align-items-center">
                         <view class="email ">{{ item.email }}</view>
-                        <view v-if="item.type=='1'" class="select_box flex justify-content-center align-items-center">
-                            <view v-if="item.amount2" :class="'single_select flex justify-content-center align-items-center ' + (item.checkedType == '2' ? 'checked': '')">
-                                <view @tap="handleSelect(item,2)" v-if="pageType">
-                                    <view class="img_box disabled_img">
-                                        <image
-                                            src="@/static/images/distribute/history/disabled_check@2x.png"
-                                            class="img"
-                                        />
-                                    </view>
-                                    <view class="img_box checked_img">
-                                        <image
-                                            src="/static/images/distribute/history/checked@2x.png"
-                                            class="img"
-                                        />
-                                    </view>
-                                    <view class="img_box unchecked_img">
-                                        <image
-                                            src="@/static/images/distribute/history/unchecked@2x.png"
-                                            class="img"
-                                        />
-                                    </view>
-                                </view>
-                                <view class="text">{{base_symbol}}{{ item.amount2 }} + <text class="underline" @tap="showToast((item.show_type&&item.show_type2) ? item.show_type2 : item.show_type)">{{ item.amount2_text2 }}</text></view>
-                            </view>
-
-                            <view v-if="item.amount" :class="'single_select flex justify-content-center align-items-center ' + (item.checkedType == '1' ? 'checked ' : '') + (item.status=='10'? 'disabled ':'')">
-                                <view @tap="handleSelect(item,1)" v-if="pageType">
-                                    <view class="img_box disabled_img">
-                                        <image
-                                            src="@/static/images/distribute/history/disabled_check@2x.png"
-                                            class="img"
-                                        />
-                                    </view>
-                                    <view class="img_box checked_img">
-                                        <image
-                                            src="/static/images/distribute/history/checked@2x.png"
-                                            class="img"
-                                        />
-                                    </view>
-                                    <view class="img_box unchecked_img">
-                                        <image
-                                            src="@/static/images/distribute/history/unchecked@2x.png"
-                                            class="img"
-                                        />
-                                    </view>
-                                </view>
-                                <view class="text">{{base_symbol}}{{ item.amount }} + <text class="underline" @tap="showToast(item.show_type)">{{ item.amount_text2 }}</text></view>
-                            </view>
-
-
-                            
-                        </view>
-                        <view v-else-if="item.type=='2'" class="select_box flex justify-content-center align-items-center">{{ $t('distribute_history.item_rewards') }} {{base_symbol}}{{ item.amount }}</view>
-                        <view v-else class="select_box flex justify-content-center align-items-center"></view>
+                        <view>{{ item.withdraw_type==1? ($t('distribute_history.reward')+  ' '+item.amount_text):(item.amount_text) }}</view>
                         <view class="status flex justify-content-end align-items-center">{{ item.status_text }}</view>
                     </view>
-                    <view class="bottom_box flex justify-content-end align-items-center">
-                        <view v-if="item.amount_text_bottom" class="not_show_text">{{ item.amount_text_bottom }}</view>
-                        <view @tap="handleConfirm(item)" v-show="item.type =='1' && !item.selected&&item.amount2" class="confirm_btn flex justify-content-center align-items-center">{{ $t('distribute_history.confirm') }}</view>
+                    <view class="bottom_box flex justify-content-center align-items-center">
                         <view class="view_details flex justify-content-center align-items-center" v-show="!item.expand" @tap="()=>{item.expand=true}">
                             <view class="text">{{ $t('distribute_history.view_details') }}</view>
                             <view class="img_box">
@@ -99,19 +44,19 @@
                                 <view class="title">{{ $t('distribute_history.date') }}</view>
                                 <view class="content">{{ item.created_at_text }}</view>
                             </view>
-                            <view class="date flex justify-content-between align-items-center" v-if="item.type != '3'">
+                            <view class="date flex justify-content-between align-items-center" v-if="item.show_status_reward">
                                 <view class="title">{{ $t('distribute_history.channel') }}</view>
                                 <view class="content">{{ item.platform }}</view>
                             </view>
-                            <view class="date flex justify-content-between align-items-center" v-if="item.type != '3'">
+                            <view class="date flex justify-content-between align-items-center" v-if="item.show_status_reward">
                                 <view class="title">{{ $t('distribute_history.reward') }}</view>
-                                <view class="content">{{base_symbol}}{{ item.bottom_amount }}</view>
+                                <view class="content" v-if="item.amount">{{ item.amount_text }}</view>
                             </view>
                             <view class="date flex justify-content-between align-items-center">
                                 <view class="title">{{ $t('distribute_history.status') }}</view>
                                 <view class="content">{{ item.status_text }}</view>
                             </view>
-                            <view class="close_expand view_details flex justify-content-end align-items-center" @tap="()=>{item.expand = false}">
+                            <view class="close_expand view_details flex justify-content-center align-items-center" @tap="()=>{item.expand = false}">
                                 <view class="text">{{ $t('distribute_history.view_details') }}</view>
                                 <view class="img_box">
                                     <image
@@ -145,7 +90,7 @@
         <view @touchmove.stop.prevent="()=>{}">
             <uni-popup ref='popup_status' type="center" @change="(e)=>{pageMetaShow = e.show;}">
                 <view class="pop-wrapper" >
-                    <view class="title font-bold flex justify-content-center">{{ $t('distribute_history.status_guide') }}</view>
+                    <view class="title font-bold flex justify-content-center">{{ $t('choose_rewards.unicoeye_tips',{site_name: $store.state.site_name}) }}</view>
                     <view class="img_box" @tap="handleClosePop">
                         <image
                             src="/static/images/distribute/close.png"
@@ -415,26 +360,8 @@
 					this.$refs.popupTip.open('center');
 				}
 			},
-            handleSelect(item,type){
-                const that = this
-                if(item.selected)return
-                item.checkedType = type
-                let total = oriTotal
-                item.bottom_amount = item.amount2
-                that.currentType = '2'
-                if(type == '1'){
-                    total = (Number(total) + Number(item.amount) - Number(item.amount2)).toFixed(2)
-                    item.bottom_amount = item.amount
-                    that.currentType = '1'
-                }
-                that.totalAmount = total
-
-
-            },
-            handleConfirm(item){
-                item.selected = true
-                this.canSubmit = true
-            },
+            
+           
         }
     }
 </script>
@@ -627,12 +554,13 @@
         height: 73rpx;
         .bars{
             height: 100%;
-            border-radius: 90.38rpx;
-            background: #F3EFEA;
             font-size: 27rpx;
             color: #333;
             padding: 7.69rpx 9.62rpx;
             flex-wrap: nowrap;
+            height: 73rpx;
+            background: #F5F1F9;
+            border-radius: 90rpx 90rpx 90rpx 90rpx;
             .bar{
                 padding: 7.69rpx 15.38rpx;  
                 line-height: 42rpx;   
@@ -645,6 +573,10 @@
                     background: #FF753A;
                     background:linear-gradient(-90deg,#FF753A,#FFD058);
                     color: #fff;
+                    height: 58rpx;
+                    background: linear-gradient( 90deg, #780EFF 0%, #DA49D6 54%, #FF6EA7 100%);
+                    box-shadow: 0rpx 2rpx 4rpx 0rpx rgba(141,68,0,0.3);
+                    border-radius: 48rpx 48rpx 48rpx 48rpx;
                 }
             }
         }
@@ -673,16 +605,19 @@
 		}
         .title{
             margin-bottom: 30.77rpx;
+            font-weight: 600;
+            font-size: 31rpx;
+            color: #222222;
         }
         .img_box{
             position: absolute;
             right: 23rpx;
             top: 23rpx;
-            width: 36rpx;
-            height: 36rpx;
+            width: 34.62rpx;
+            height: 34.62rpx;
             .img{
-                width: 36rpx;
-                height: 36rpx;
+                width: 34.62rpx;
+                height: 34.62rpx;
             }
         }
         .btn_box{
@@ -690,10 +625,12 @@
             height: 80.77rpx;
             margin-top: 44rpx;
             .btn{
-                height: 100%;
                 width: 100%;
                 color: #fff;
-                background: #000;
+                height: 80.77rpx;
+                background: #222222;
+                border-radius: 40rpx 40rpx 40rpx 40rpx;
+                font-size: 27rpx;
             }
         }
     }

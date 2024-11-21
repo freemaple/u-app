@@ -527,7 +527,7 @@
 		}
 
 		&__error {
-			color: #f56c6c;
+			color: #ff0000;
 			font-size: 12px;
 			line-height: 1;
 			padding-top: 4px;
@@ -546,7 +546,7 @@
 
 			.error-text {
 				// 只有 nvue 下这个样式才生效
-				color: #f56c6c;
+				color: #ff0000;
 				font-size: 12px;
 			}
 

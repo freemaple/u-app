@@ -49,6 +49,3 @@ export default {
 <style>
 /* general/start/first.wxss */
 </style>
-
-
-

@@ -15,7 +15,7 @@
 								<text v-if="item.is_default == '1'" class="default-address">[{{$t('address.default_text')}}]</text> <span v-if="!item.street2 || item.street2.trim() === ''">{{item.street1}}, {{item.city}}, {{item.stateName}}, {{item.countryName}}, {{item.zip}}</span> <span v-if="item.street2">{{item.street1}}, {{item.street2}}, {{item.city}}, {{item.stateName}}, {{item.countryName}}, {{item.zip}}</span>
 							</view>
 						</view>
-						<view @click="$public.handleNavTo('/pages/address/add?id=' + item.address_id)" class="iconfont icon-edit"></view>
+						<view @click="$public.handleNavTo('/pages/address/add?actionType=edit&id=' + item.address_id)" class="iconfont icon-edit"></view>
 					</view>
 				</block>
 			</block>
@@ -24,7 +24,7 @@
 		</view>
 		<!-- 添加地址 -->
 		<view class="add-address-box page-max-width">
-			<view @click="$public.handleNavTo('/pages/address/add')" class="add-new-address-btn dui-primary-btn">+ {{$t("address.add_new_address")}}</view>
+			<view @click="$public.handleNavTo('/pages/address/add?actionType=add')" class="add-new-address-btn dui-primary-btn">+ {{$t("address.add_new_address")}}</view>
 		</view>
 	</view>
 </template>

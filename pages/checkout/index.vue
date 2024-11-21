@@ -39,17 +39,13 @@
 						<scroll-view :show-scrollbar="false" :scroll-x="true" style="white-space: nowrap;">
 							<view class="product_imgs_box">
 								<view class="product_imgs_in" v-for="(item, index) in goodsList">
-									<image v-if="item.imgUrl" class="product-img" mode="widthFix" :src="item.imgUrl" :lazy-load="true"  :key="index"></image>
-									<specialOfferDiscountTab v-if="item.special_type>0" :discount="item.discount_off"  fontSize="18rpx"></specialOfferDiscountTab>
+									<image v-if="item.imgUrl" class="product-img"  :src="item.imgUrl" :lazy-load="true"  :key="index"></image>
+									<specialOfferDiscountTab v-if="(item.line_price&&item.special_type<=0) || item.special_type>0" :is-special="item.special_type>0" :discount="item.discount_off"  fontSize="18rpx"></specialOfferDiscountTab>
 									<view v-if="showVip && item.member_product == 1" class="vip-member-discount_off">-{{item.discount_off}}%</view>
-									<view v-else-if="item.line_price&&item.special_type<=0 " class="special-price-discount_off">-{{item.discount_off}}%</view>
 									<view class="only_offos" v-if="item.member_product == 1 || item.line_price ">
-										<view class="only_offos_in" v-if="item.special_data.is_show==1&&item.special_data.is_special==1&&item.special_data.spu_stock_type==0">
-											<image mode="widthFix" src="../../static/images/payment_confirmation/elebg.png"  />
-											<text >{{ item.special_data.spu_stock_text }}</text>
-										</view>
-										</view>
-								    </view>
+										<specialOfferStockTextBox v-if="item.special_data.is_show==1&&item.special_data.is_special==1&&item.special_data.spu_stock_type==0" :text="item.special_data.spu_stock_text"></specialOfferStockTextBox>
+									</view>
+								</view>	
 							</view>
 						</scroll-view>
 					</view>
@@ -59,19 +55,19 @@
 				<view class="shipping-method-box">
 					<view class="little-title font-bold">{{$t("pay_order.shipping_methods")}}</view>
 					<view class="shipping-method-list">
-						<view class="method-item-box" @click="chooseShippingMethod(item)" v-for="(item,index) in shippingMethodList" :key="index">
+						<view class="method-item-box" @click="choose_shipping_method(item)" v-for="(item,index) in shippingMethodList" :key="index">
 							<view class="method-radio-box">
 								<image v-if="item.disabled" class="radio" src="@/static/images/cart/radio_disabled@2x.png" mode="widthFix"></image>
 								<block v-else>
-									<image v-if="item.checked" class="radio" src="@/static/images/checkout_icon/radio_checked@2x.png" mode="widthFix"></image>
+									<image v-if="item.checked" class="radio" src="@/static/images/checkout_icon/shop-methods-check@2x.png" mode="widthFix"></image>
 									<image v-else class="radio" src="@/static/images/checkout_icon/radio@2x.png" mode="widthFix"></image>
 								</block>
 							</view>
 							<view class="method-detail-box">
 								<view style="display: flex;">
 									<view style="flex: 1;">
-										<view class="method-name font-bold">{{item.label}}</view>
-										<view class="method-tip">{{item.label_title}}</view>									
+										<view class="method-name">{{item.label}}</view>
+										<!-- <view class="method-tip">{{item.label_title}}</view>									 -->
 									</view>
 									<view>
 										<view style="position: relative;height: 52rpx;" v-if="item.is_free_shipping == 1">
@@ -84,12 +80,13 @@
 										</view>
 									</view>
 								</view>
-								<view class="method-ageing">{{item.ageing}}</view>
+								<!-- <view class="method-ageing">{{item.ageing}}</view> -->
 							</view>
 						</view>
 					</view>
+					<!-- 是否需要分包  -->
 					<view class="split-package-box" v-if="package_status&&current_shipping_method">
-						<view class="split-checkbox" @click="package_status==3?'':initCartInfo({package_status:package_status==1?2:1});package_status==3?'': chooseShippingMethodPackage({package_status:package_status==1?2:1})">
+						<view class="split-checkbox" @click="package_status==3?'':initCartInfo({package_status:package_status==1?2:1})">
 							<!-- package_status 0:不勾选不展示  1:未勾选  2:已勾选  3:已勾选置灰 -->
 							<image v-if="package_status == 1" mode="widthFix" class="checkbox" src="@/static/images/checkout_icon/checkbox@2x.png"></image>
 							<image v-if="package_status == 2" mode="widthFix" class="checkbox" src="@/static/images/checkout_icon/checkbox_checked@2x.png"></image>
@@ -103,7 +100,8 @@
 							<view class="split-tip-text" v-html="package_status_text"></view>
 						</view>
 					</view>
-					<view class="order-timely-insurance-box">
+					<!-- 去掉运费险 -->
+					<!-- <view class="order-timely-insurance-box">
 						<view class="timely-checkbox" @click="changeTimelyInsurance()">
 							<image class="checkbox" v-if="cartInfo.is_shipping_insurance" src="@/static/images/checkout_icon/checkbox_checked@2x.png" mode="widthFix"></image>
 							<image class="checkbox" v-else src="@/static/images/checkout_icon/checkbox@2x.png" mode="widthFix"></image>
@@ -115,7 +113,7 @@
 							</text>
 							<image @click="popupTipType = 1;$refs.popupTip.open('center')" class="tip-icon" mode="widthFix" src="@/static/images/checkout_icon/question@2x.png"></image>
 						</view>
-					</view>
+					</view> -->
 				</view>
 				<view class="split-line"></view>
 				<!-- more savings -->
@@ -207,7 +205,7 @@
 										</view>
 										<view class="pay-label">
 											<view class="label">{{pay.label}}</view>
-											<image @click="$refs.popupTip.open();tipContent = pay.label_description;popupTipType=0" mode="widthFix" class="question-icon" v-if="pay.label_description" src="@/static/images/checkout_icon/question@2x.png"></image>
+											<image @click.stop="$refs.popupTip.open();tipContent = pay.label_description;popupTipType=0" mode="widthFix" class="question-icon" v-if="pay.label_description" src="@/static/images/checkout_icon/question@2x.png"></image>
 										</view>
 									</view>
 									<view class="pay-support-images" v-if="pay.supportImageUrl && pay.supportImageUrl.length">
@@ -223,7 +221,7 @@
 				<view class="checkout-vip-card checkout-shipping-method-wrap mb-2" v-if="isCheckoutOutInfo.buy_vip">
 					<view class="vip-card-header">
 						<image class="vip-icon" mode="widthFix" src="../../static/images/vip/vip_icon.png"></image>
-						<text style="line-height: 1rem;">{{$t("pay_order.plus", {site_name: $store.state.site_name_upper})}}</text>
+						<text style="line-height: 1rem;">{{$t("pay_order.plus", {site_name: $store.state.site_name})}}</text>
 					</view>
 					<view class="vip-card-body flex align-items-center" @click="selectBuyVip">
 						<view class="vip-card-body-left">
@@ -248,7 +246,7 @@
 					<view class="vip-card-footer">
 						{{$t('pay_order.buy_plus_tips1')}} 
 						<text @click="$public.handleNavTo('/pages/cms/article/article?url_key=app-dressin-plus-terms-conditions')" class="text-underline">
-							{{$t('pay_order.buy_plus_tips2', {site_name: $store.state.site_name_upper})}}
+							{{$t('pay_order.buy_plus_tips2', {site_name: $store.state.site_name})}}
 						</text>
 					</view>
 				</view> -->
@@ -269,7 +267,7 @@
 							<view class="info-price font-bold" v-else>{{currency_info.symbol}}{{cartInfo.shipping_cost}}</view>
 						</view>
 						<view v-if="isCheckoutOutInfo.purchase_vip" class="info-box flex align-items-center justify-content-between">
-							<view class="info-label">{{$t("pay_order.order_summary.buy_vip", {site_name: $store.state.site_name_upper})}}</view>
+							<view class="info-label">{{$t("pay_order.order_summary.buy_vip", {site_name: $store.state.site_name})}}</view>
 							<view class="info-price font-bold">{{currency_info.symbol}}{{cartInfo.cost_buy_vip}}</view>
 						</view>
 						<view v-if="cartInfo.is_shipping_insurance" class="info-box flex align-items-center justify-content-between">
@@ -286,7 +284,7 @@
 							<view class="save-price font-bold" v-else>-{{currency_info.symbol}}{{ coupon_save}}</view>
 						</view>
 						<view v-if="pointsSwitch.is_point" class="info-box flex align-items-center justify-content-between">
-							<view class="info-label">{{$t("pay_order.order_summary.dressin_point", {site_name: $store.state.site_name_upper})}}</view>
+							<view class="info-label">{{$t("pay_order.order_summary.dressin_point", {site_name: $store.state.site_name})}}</view>
 							<view class="show-switch-box" v-if="pointsSwitch.switch_point">
 								<view class="save-price font-bold">-{{currency_info.symbol}}{{cartInfo.point_cost}}</view>
 								<switch color="#34C759" :checked="pointsSwitch.is_point==2?true:false" @change="changeSwitch('is_point',pointsSwitch.is_point)" />
@@ -306,8 +304,8 @@
 							<view class="info-price font-bold">{{currency_info.symbol}}{{cartInfo.tax_total}}</view>
 						</view>
 						<view class="info-box reward-points flex align-items-center justify-content-end">
-							<view v-html="$t('pay_order.order_summary.reward_points',{points:last_get_points,site_name: $store.state.site_name_upper})"></view>
-							<image class="question-icon" @click="popupTipType=0;tipContent=$t('pay_order.point_tip', {site_name: $store.state.site_name_upper});$refs.popupTip.open('center')" mode="widthFix" src="@/static/images/checkout_icon/question@2x.png"></image>
+							<view v-html="$t('pay_order.order_summary.reward_points',{points:last_get_points,site_name: $store.state.site_name})"></view>
+							<image class="question-icon" @click="popupTipType=0;tipContent=$t('pay_order.point_tip', {site_name: $store.state.site_name});$refs.popupTip.open('center')" mode="widthFix" src="@/static/images/checkout_icon/question@2x.png"></image>
 						</view>
 						<view class="split-line"></view>
 						<view class="payment-security">
@@ -315,7 +313,7 @@
 								<image mode="widthFix" src="@/static/images/icon/anquan-icon-green.png"></image>
 								<text>{{$t('pay_order.payment_security')}}</text>
 							</view>
-							<view class="content">{{$t('pay_order.payment_security_content', {site_name: $store.state.site_name_upper})}}</view>
+							<view class="content">{{$t('pay_order.payment_security_content', {site_name: $store.state.site_name})}}</view>
 							<view class="flex pay-logo-box">
 								<image mode="heightFix" src="@/static/images/checkout_icon/security_visa_secure@2x.png"></image>
 								<image mode="heightFix" src="@/static/images/checkout_icon/security_visa_verified@2x.png"></image>
@@ -328,11 +326,11 @@
 								<image style="width: 30rpx;" mode="widthFix" src="@/static/images/icon/password-icon-green.png"></image>
 								<text>{{$t('pay_order.security_privacy')}}</text>
 							</view>
-							<view class="content">{{$t('pay_order.security_privacy_content', {site_name: $store.state.site_name_upper})}}</view>
+							<view class="content">{{$t('pay_order.security_privacy_content', {site_name: $store.state.site_name})}}</view>
 							
 						</view>
 						<view class="terms-privacy-box">
-							{{$t('pay_order.terms_1', {site_name: $store.state.site_name_upper})}}
+							{{$t('pay_order.terms_1', {site_name: $store.state.site_name})}}
 							<text @click="$public.handleNavTo('/pages/cms/article/article?url_key=app-terms-and-conditions');security_privacy_button_event('terms_and_conditions')" class="a-link">{{$t('pay_order.terms_2')}}</text>
 							{{$t('pay_order.terms_3')}}
 							<text @click="$public.handleNavTo('/pages/cms/article/article?url_key=app-privacy-policy');security_privacy_button_event('privacy_policy')" class="a-link">{{$t('pay_order.terms_4')}}</text>
@@ -343,7 +341,7 @@
 				<view class="footer page-max-width">
 					<view class="footer-box border-top-1px">
 						<view class="top-price-box flex justify-content-end align-items-center">
-							<image @click="$refs.popupOrderDetail.open('bottom');" mode="widthFix" src="@/static/images/checkout_icon/up@2x.png" class="up-icon"></image>
+							<image @click="$refs.popupOrderDetail.open('bottom');" mode="widthFix" src="@/static/images/checkout_icon/down@2x.png" class="up-icon"></image>
 							<view class="total-label font-bold">{{$t("pay_order.all")}}:</view>
 							<view class="price font-bold">{{ currency_info.symbol }}{{ cartInfo.grand_total }}</view>
 						</view>
@@ -373,7 +371,7 @@
 						<view class="info-price" v-else>{{currency_info.symbol}}{{cartInfo.shipping_cost}}</view>
 					</view>
 					<view v-if="isCheckoutOutInfo.purchase_vip" class="info-box flex align-items-center justify-content-between">
-						<view class="info-label">{{$t("pay_order.order_summary.buy_vip", {site_name: $store.state.site_name_upper})}}</view>
+						<view class="info-label">{{$t("pay_order.order_summary.buy_vip", {site_name: $store.state.site_name})}}</view>
 						<view class="info-price">{{currency_info.symbol}}{{cartInfo.cost_buy_vip}}</view>
 					</view>
 					<view v-if="cartInfo.is_shipping_insurance" class="info-box flex align-items-center justify-content-between">
@@ -386,7 +384,7 @@
 						<view class="info-price is-save-price">-{{currency_info.symbol}}{{ coupon_save}}</view>
 					</view>
 					<view v-if="Number(cartInfo.point_cost)" class="info-box flex align-items-center justify-content-between">
-						<view class="info-label">{{$t("pay_order.order_summary.dressin_point", {site_name: $store.state.site_name_upper})}}</view>
+						<view class="info-label">{{$t("pay_order.order_summary.dressin_point", {site_name: $store.state.site_name})}}</view>
 						<view class="info-price is-save-price">-{{currency_info.symbol}}{{cartInfo.point_cost}}</view>
 					</view>
 					<view v-if="Number(cartInfo.wallet_total)" class="info-box flex align-items-center justify-content-between">
@@ -448,15 +446,15 @@
 							<view class="b-l-box">
 								{{item.is_default == 1?$t('pay_order.default_address'):''}}
 							</view>
-							<view class="b-r-box" @click="$public.handleNavTo('/pages/address/add?id='+item.address_info.address_id+'&addressType=address&fromWhichPage=checkout')">
+							<view class="b-r-box" @click="$public.handleNavTo('/pages/address/add?id='+item.address_info.address_id+'&addressType=address&fromWhichPage=checkout&actionType=edit')">
 								{{$t('pay_order.edit')}}
 							</view>
 						</view>
 					</view>
 				</view>
 				<view class="address-list-footer">
-					<view class="dui-primary-btn font-bold" @click="changeAddressSelect()">{{$t('pay_order.apply')}}</view>
-					<view class="add-new-address font-bold" @click="$public.handleNavTo('/pages/address/add?addressType=address&fromWhichPage=checkout')">{{$t('pay_order.add_new_address')}}</view>
+					<view class="dui-primary-btn" @click="changeAddressSelect()">{{$t('pay_order.apply')}}</view>
+					<view class="add-new-address" @click="$public.handleNavTo('/pages/address/add?addressType=address&fromWhichPage=checkout&actionType=add&isShowShoppingTip=0')">{{$t('pay_order.add_new_address')}}</view>
 				</view>
 			</view>
 		</uni-popup>
@@ -471,26 +469,24 @@
 					<block v-for="(item, index) in goodsList">
 						<view v-if="item.active == 1" class="a-goods" :key="index">
 							<view class="img-box">
-								<image mode="widthFix" :src="item.imgUrl" class="img" />
-								<specialOfferDiscountTab v-if="item.special_type>0" :discount="item.discount_off"  fontSize="18rpx"></specialOfferDiscountTab>
+								<view style="position: relative;">
+									<image :src="item.imgUrl" class="img" />
+									<specialOfferDiscountTab v-if="(item.line_price&&item.special_type<=0) || item.special_type>0" :is-special="item.special_type>0" :discount="item.discount_off"  fontSize="18rpx"></specialOfferDiscountTab>
 									<view v-if="showVip && item.member_product == 1" class="vip-member-discount_off">-{{item.discount_off}}%</view>
-									<view v-else-if="item.line_price&&item.special_type<=0 " class="special-price-discount_off">-{{item.discount_off}}%</view>
-								<view class="only_offos" v-if="item.member_product == 1 || item.line_price ">
-									<view class="only_offos_in" v-if="item.special_data.is_show==1&&item.special_data.is_special==1&&item.special_data.spu_stock_type==0">
-								      <image mode="widthFix" src="../../static/images/payment_confirmation/elebg.png"  />
-									  <text >{{ item.special_data.spu_stock_text }}</text>
+									<view class="only_offos" v-if="item.member_product == 1 || item.line_price ">
+										<specialOfferStockTextBox v-if="item.special_data.is_show==1&&item.special_data.is_special==1&&item.special_data.spu_stock_type==0" :text="item.special_data.spu_stock_text"></specialOfferStockTextBox>
 									</view>
 								</view>
 							</view>
 					
 							<view class="product-item-detail-box">
 								<view class="top">
-									<view class="goods-name">{{ item.name }}</view>
-									<view class="goods-label">
-										<block v-for="(item,key) of item.spu_options">
+									<view class="goods-name text-line-2">{{ item.name }}</view>
+									<view class="goods-label flex-column-reverse">
+										<view v-for="(item,key) of item.spu_options" class="flex">
 											<view class="option_label">{{key}}:</view>
-											<view class="option_value font-bold">{{item}}</view>
-										</block>
+											<view class="option_value">{{item}}</view>
+										</view>
 									</view>
 								</view>
 								<view class="bottom">
@@ -499,7 +495,10 @@
 											<text class="vip-member-price">{{currency_info.symbol}}{{item.product_price}}</text>
 										</view>
 										<block v-else>
-									<view :class="item.line_price ? 'org_price_pop' : ''">{{currency_info.symbol}}{{ item.product_price }}</view>
+											<view :class="item.line_price ? 'org_price_pop' : ''">
+												<text>{{currency_info.symbol}}{{item.product_price_int}}</text>
+												<text style="font-size: 20rpx">{{item.product_price_decimal}}</text>
+											</view>
 											<view v-if="item.line_price" class="line-price">{{currency_info.symbol}}{{ item.line_price }}</view>
 										</block>
 									</view>
@@ -522,7 +521,8 @@
 					<view @click="couponCurrentTab = 1" class="tab-item font-bold" :class="couponCurrentTab == 1?'on':''">{{$t('checkout_coupon.available')}}({{cartInfo.coupon_available.length}})</view>
 					<view @click="couponCurrentTab= 2" class="tab-item font-bold" :class="couponCurrentTab == 2?'on':''">{{$t('checkout_coupon.unavailable')}}({{cartInfo.coupon_unavailable.length}})</view>
 				</view>
-				<view class="time-filter-box">
+				<!-- 美瞳暂时隐藏筛选 -->
+				<view class="time-filter-box" style="display: none">
 					<view class="filter">
 						<view @click="couponTimeFilterType=1" class="time-filter-item left" :class="couponTimeFilterType==1?'on':''">{{$t('pay_order.coupons_block.laste_to_arliest')}}</view>
 						<view @click="couponTimeFilterType=2" class="time-filter-item right" :class="couponTimeFilterType==2?'on':''">{{$t('pay_order.coupons_block.arliest_to_laste')}}</view>
@@ -532,10 +532,10 @@
 					<view class="coupon-lists">
 						<block v-if="couponCurrentTab == 1">
 							<block v-if="couponTimeFilterType == 1">
-								<couponItem v-for="(item,index) in cartInfo.coupon_available" :isOld="false" :showDiscountCost="true" :showCircleEdge="true" :key="index" @handleSelect="changeCoupon" :couponItemData="{...item,assign_begin_at:item.active_begin_at,assign_end_at:item.active_end_at,selectId:cartInfo.coupon_selected.id,symbol:currency_info.symbol}" :couponSelect="true"></couponItem>
+								<couponItem v-for="(item,index) in cartInfo.coupon_available"  :isOld="false" :showDiscountCost="true"  :key="index" @handleSelect="changeCoupon" :couponItemData="{...item,assign_begin_at:item.active_begin_at,assign_end_at:item.active_end_at,selectId:cartInfo.coupon_selected.id,symbol:currency_info.symbol}" :couponSelect="true"></couponItem>
 							</block>
 							<block v-if="couponTimeFilterType == 2" >
-								<couponItem v-for="(item,index) in cartInfo.coupon_available_asc" :isOld="false" :showDiscountCost="true" :showCircleEdge="true" :key="index" @handleSelect="changeCoupon" :couponItemData="{...item,assign_begin_at:item.active_begin_at,assign_end_at:item.active_end_at,selectId:cartInfo.coupon_selected.id,symbol:currency_info.symbol}" :couponSelect="true"></couponItem>
+								<couponItem v-for="(item,index) in cartInfo.coupon_available_asc" :isOld="false" :showDiscountCost="true"  :key="index" @handleSelect="changeCoupon" :couponItemData="{...item,assign_begin_at:item.active_begin_at,assign_end_at:item.active_end_at,selectId:cartInfo.coupon_selected.id,symbol:currency_info.symbol}" :couponSelect="true"></couponItem>
 							</block>
 							<view class="coupon-empty-box" v-if="!cartInfo.coupon_available.length">
 								<image class="empty-img" mode="widthFix" src="@/static/images/checkout_icon/coupon_empty@2x.png"></image>
@@ -544,10 +544,10 @@
 						</block>
 						<block v-if="couponCurrentTab == 2">
 							<block v-if="couponTimeFilterType == 1">
-								<couponItem v-for="(item,index) in cartInfo.coupon_unavailable" :isOld="false" :showCircleEdge="true" :key="index" :couponItemData="{...item,assign_begin_at:item.active_begin_at,assign_end_at:item.active_end_at}" opacity="0.5" :couponSelect="true"></couponItem>
+								<couponItem v-for="(item,index) in cartInfo.coupon_unavailable" :isOld="false" :key="index" :couponItemData="{...item,assign_begin_at:item.active_begin_at,assign_end_at:item.active_end_at}" opacity="0.5" :couponSelect="true"></couponItem>
 							</block>
 							<block v-if="couponTimeFilterType == 2">
-								<couponItem v-for="(item,index) in cartInfo.coupon_unavailable_asc" :isOld="false" :showCircleEdge="true" :key="index" :couponItemData="{...item,assign_begin_at:item.active_begin_at,assign_end_at:item.active_end_at}" opacity="0.5" :couponSelect="true"></couponItem>
+								<couponItem v-for="(item,index) in cartInfo.coupon_unavailable_asc" :isOld="false"  :key="index" :couponItemData="{...item,assign_begin_at:item.active_begin_at,assign_end_at:item.active_end_at}" opacity="0.5" :couponSelect="true"></couponItem>
 							</block>
 							<view class="coupon-empty-box" v-if="!cartInfo.coupon_unavailable.length">
 								<image class="empty-img" mode="widthFix" src="@/static/images/checkout_icon/coupon_empty@2x.png"></image>
@@ -564,7 +564,7 @@
 							<view class="save-price font-bold">{{currency_info.symbol}}{{coupon_save}}</view>
 						</view>
 					</view>
-					<view @click="$refs.popupCoupon.close();" class="dui-primary-btn font-bold">{{$t('pay_order.coupons_block.continue')}}</view>
+					<view @click="$refs.popupCoupon.close();" class="dui-primary-btn">{{$t('pay_order.coupons_block.continue')}}</view>
 				</view>
 			</view>
 		</uni-popup>
@@ -572,7 +572,7 @@
 		<uni-popup ref="popupMatchesBilling" class="matches-billing" @change="(e)=>{changePopupMathchesBilling(e)}">
 			<view class="checkout-popup-center-content">
 				<view class="checkout-popup-center-header">
-					<view class="title font-bold">{{$t('pay_order.billing_address_block.tip_title',{site_name:$store.state.site_name_upper})}}</view>
+					<view class="title font-bold">{{$t('pay_order.billing_address_block.tip_title',{site_name:$store.state.site_name})}}</view>
 					<view class="close-box">
 						<image @click="$refs.popupMatchesBilling.close();" class="close" mode="widthFix" src="@/static/images/checkout_icon/close@2x.png"></image>
 					</view>
@@ -592,16 +592,9 @@
 					<image @click="$refs.popupPointUse.close();" class="close" mode="widthFix" src="../../static/images/checkout_icon/close@2x.png"></image>
 				</view>
 				<view class="popup-content">
-					<view class="total">
-						<view class="label font-bold">{{$t('pay_order.total')}}:</view>
-					    <view class="value">{{point_total}} {{Number(point_total)?$t('pay_order.points_block.points_1'):$t('pay_order.points_block.point')}}</view>
-					</view>
 					<view class="max-available">
-						<view class="flex">
-							<view class="label font-bold">{{$t('pay_order.max_available')}}:</view>
-							<view class="value">{{`${useMaxPoint}.00`}} {{Number(useMaxPoint)?$t('pay_order.points_block.points_1'):$t('pay_order.points_block.point')}}</view>
-						</view>
-						<text class="available-tips" v-if="Number(useMaxPoint)">{{only_to_non_sale}}</text>
+						<view class="label font-bold">{{$t('pay_order.max_available')}}:</view>
+						<view class="value">{{useMaxPoint}} {{Number(useMaxPoint)?$t('pay_order.points_block.points_1'):$t('pay_order.points_block.point')}}</view>
 					</view>
 					<block v-if="Number(useMaxPoint)">
 						<view class="use-points-options">
@@ -617,7 +610,7 @@
 									<image v-if="usePointType == 2" class="radio" mode="widthFix" src="@/static/images/checkout_icon/radio_checked@2x.png"></image>
 									<image v-else class="radio" mode="widthFix" src="@/static/images/checkout_icon/radio@2x.png"></image>
 								</view>
-								<view class="point-value">{{$t('pay_order.points_block.option_give_use_point', {site_name: $store.state.site_name_upper})}}</view>
+								<view class="point-value">{{$t('pay_order.points_block.option_give_use_point', {site_name: $store.state.site_name})}}</view>
 							</view>
 							<view class="point-item-box" @click="usePointType=3" :class="usePointType == 3?'border-bottom-none':''">
 								<view class="point-radio">
@@ -629,18 +622,14 @@
 						</view>
 						
 						<view class="apply-input-box" v-if="usePointType == 3">
-							<input placeholder-style="color:#ccccd0;font-size:28rpx;" type="number" @input="judgePoint" v-model="currentUsedPoint" :placeholder="$t('pay_order.use_point_placeholder')" />
+							<input placeholder-style="color:#cccccc;font-size:31rpx;" type="number" @input="judgePoint" v-model="currentUsedPoint" :placeholder="$t('pay_order.use_point_placeholder')" />
 						</view>
 						<view v-if="usePointType" class="points-exchange-ratio" v-html="$t('pay_order.points_block.points_exchange_ratio',{num:currency_info.symbol+useOnePointToMoney})"></view>
-						<view @click="usePoints()" class="apply font-bold" :class="usePointType?'':'_disabled'">{{$t('pay_order.apply_btn')}}</view>
+						<view @click="usePoints()" class="apply dui-primary-btn" :class="usePointType?'':'_disabled'">{{$t('pay_order.apply_btn')}}</view>
 					</block>
 					<view v-else class="points-empty-box">
 						<image class="empty-img" mode="widthFix" src="@/static/images/checkout_icon/point_empty@2x.png"></image>
-						<view class="empty-text" v-if="Number
-						(point_total) <=0 ">{{$t('common.empty_text')}}</view>
-						<view class="empty-text" v-else>
-							{{only_to_non_sale_empty}}
-						</view>
+						<view class="empty-text">{{$t('common.empty_text')}}</view>
 					</view>
 				</view>
 			</view>
@@ -654,18 +643,16 @@
 				</view>
 				<view class="popup-content flex flex-column">
 					<view class="apply-common-main">
-						<view class="max-available font-bold">{{$t('pay_order.max_available')}}:{{'&nbsp;'}}<text>{{currency_info.symbol}}{{useMaxWallet}}</text></view>
+						<view class="max-available font-bold">{{$t('pay_order.max_available')}}:{{'&nbsp;'}}<text style="font-weight: normal;">{{currency_info.symbol}}{{useMaxWallet}}</text></view>
 						<block v-if="Number(useMaxWallet)">
 							<view class="apply-input-box">
 								<text class="money">{{currency_info.symbol}}</text>
 								<input :placeholder="$t('pay_order.wallet_block.input_placeholder')" :disabled="realUseWallet?true:false" placeholder-style="color:#ccccd0;font-size:28rpx;" step="0.01" type="number" @input="judgeWallet" v-model.number="currentUsedWallet"/>
 								<text @click="currentUsedWallet = useMaxWallet;showWalletIcon='clear'" v-if="showWalletIcon == 'all'&&!realUseWallet && useMaxWallet && useMaxWallet!='0.00'" class="apply-all">{{$t('pay_order.wallet_block.apply_all')}}</text>
-								<view @click="currentUsedWallet = '';showWalletIcon = 'all'" v-if="showWalletIcon == 'clear'&&!realUseWallet" class="apply-clear-box">
-									<text class="apply-clear">x</text>
-								</view>
+								<uni-icons class="apply-clear-box" color="rgb(102, 102, 102)" type="clear" size="30" @click="currentUsedWallet = '';showWalletIcon = 'all'" v-if="showWalletIcon == 'clear'&&!realUseWallet"></uni-icons>
 							</view>
-							<view @click="useWallet('remove')" v-if="realUseWallet" class="apply font-bold">{{$t('pay_order.remove_btn')}}</view>
-							<view @click="useWallet()" v-else class="apply font-bold" :class="currentUsedWallet?'':'_disabled'">{{$t('pay_order.wallet_block.apply_btn')}}</view>
+							<view @click="useWallet('remove')" v-if="realUseWallet" class="apply dui-primary-btn">{{$t('pay_order.remove_btn')}}</view>
+							<view @click="useWallet()" v-else class="apply dui-primary-btn" :class="currentUsedWallet?'':'_disabled'">{{$t('pay_order.wallet_block.apply_btn')}}</view>
 						</block>
 						<view v-else class="wallet-empty-box">
 							<image class="empty-img" mode="widthFix" src="@/static/images/checkout_icon/wallet_empty@2x.png"></image>
@@ -677,9 +664,9 @@
 		</uni-popup>
 		<!-- 统一提示框 -->
 		<uni-popup ref="popupTip" class="popup-common-center-tip" @change="(e)=>{popupShowChange(e.show,'popupTip')}">
-			<view class="popup-content" style="width:72vw">
+			<view class="popup-content" style="width:73vw">
 				<view class="header">
-					<view class="title font-bold">{{$t('pay_order.tip_block.title',{site_name:$store.state.site_name_upper})}}</view>
+					<view class="title font-bold">{{$t('pay_order.tip_block.title',{site_name:$store.state.site_name})}}</view>
 					<image @click="$refs.popupTip.close();" mode="widthFix" class="close" src="@/static/images/checkout_icon/close@2x.png"></image>
 				</view>
 				<view class="content">
@@ -695,9 +682,9 @@
 		</uni-popup>
 		<!-- free Shipping提示框 -->
 		<uni-popup ref="popupTip2" class="popup-common-center-tip" @change="(e)=>{popupShowChange(e.show,'popupTip2')}">
-			<view class="popup-content" style="width:72vw">
+			<view class="popup-content" style="width:73vw">
 				<view class="header">
-					<view class="title font-bold">{{$t('pay_order.tip_block.title',{site_name:$store.state.site_name_upper})}}</view>
+					<view class="title font-bold">{{$t('pay_order.tip_block.title',{site_name:$store.state.site_name})}}</view>
 					<image @click="$refs.popupTip2.close();" mode="widthFix" class="free-ship-close" src="@/static/images/icon/close_icon_white@2x.png"></image>
 				</view>
 				<view class="content">
@@ -745,67 +732,15 @@
 		<!-- 库存为空提示弹窗 -->
 		<uni-popup class="ConfirmationPromptBan" ref="payConfirmationPrompt" :is-mask-click="false">
 			<view class="payConfirmationboxIn">
-			<view class="ConfirmationPromptBox">
-				<view class="ConfirmationTxt font-bold">{{$t('checkout_coupon.stock_tips')}}</view>
-				<view class="ConfirmationTxtContent">
-					{{$t('checkout_coupon.continue_checkout')}}
-				</view>
-				<view class="ConfirmateTViewList" >
-					<swiper
-						class="swiper-box"
-						:indicator-dots="indicatorDots"
-						:autoplay="autoplay"
-						:interval="interval"
-						:duration="duration"
-						:circular="false"
-						@change="handlerSwiperChange"
-						next-margin="30rpx"
-						>
-						<swiper-item v-for="(item, index) in empty_inventory_data" :key="index" style="width: 480rpx;height: 231rpx;" >
-							<view class="item_scoops" >
-								<view class="imgUrl_swiper">
-									<image mode="widthFix" :src="item.imgUrl"/>
-								</view>
-								<view class="item_rig">
-									<view class="top_item">
-										<view class="item_title">{{ item.name }}</view>
-										<view class="goods_label">
-												<block v-for="(item,key) of item.spu_options">
-													<view >{{key}}:</view>
-													<view class="option_label_pos font-bold">{{item}}</view>
-												</block>
-										</view>
-									</view>
-									<view class="item_bottom">
-										<text class="vip-member-price">{{empty_currency_info.symbol}}{{item.product_price}}</text>
-									    <view class="goods-num">x{{ item.move_qty }}</view>
-									</view>
-								</view>
-							</view>
-							</swiper-item>
-						</swiper>
-				</view>
-				<view class="current_page" >
-					<view class="current_page_in">
-						{{ currentFindIndex + 1 }}/{{ empty_inventory_data.length }}
-					</view>
-				</view>
-				<view class="recode_btn">
-				<view class="confirm_btn" @click="handleStockConfirmTips">{{$t('checkout_coupon.Confirm')}}</view>
-				<view class="cancel_btn" @click="handleStockCancelTips">{{$t('checkout_coupon.Reconsider')}}</view>
-				</view>
-			</view>
-			</view>
-        </uni-popup>
-		<!-- 营销库存为空提示弹窗 -->
-		<uni-popup class="ConfirmationPromptBan" ref="marketingPayConfirmationPrompt" :is-mask-click="false">
-			<view class="payConfirmationboxIn">
+				<image @click="$refs.payConfirmationPrompt.close(); openStatus = 0;" mode="widthFix" class="close" src="@/static/images/checkout_icon/close@2x.png"></image>
 				<view class="ConfirmationPromptBox">
-					<view class="ConfirmationTxt font-bold">{{$t('checkout_coupon.out_off_market_stock_tips')}}</view>
-					<view class="ConfirmationTxtContentMarket">
-						{{$t('checkout_coupon.marketing_continue_checkout')}}
+					<view class="ConfirmationTxt font-bold">{{$t('checkout_coupon.stock_tips')}}</view>
+					<view class="ConfirmationTxtContent">
+						{{$t('checkout_coupon.continue_checkout')}}
 					</view>
-					<view class="ConfirmateTViewListMarket" >
+					<view class="ConfirmateTViewList" :style="{
+						margin: judgeLengthOne(empty_inventory_data) ? '46rpx 30rpx 0' : '46rpx auto 0'
+					}">
 						<swiper
 							class="swiper-box"
 							:indicator-dots="indicatorDots"
@@ -814,25 +749,22 @@
 							:duration="duration"
 							:circular="false"
 							@change="handlerSwiperChange"
-							next-margin="30rpx"
+							:next-margin="judgeLengthOne(empty_inventory_data) || (currentFindIndex + 1  === empty_inventory_data.length) ? 0 : '30rpx'"
 							>
-							<swiper-item v-for="(item, index) in marketing_empty_inventory_data" :key="index" style="width: 480rpx;height: 231rpx;" >
-								<view class="item_scoops" >
+							<swiper-item v-for="(item, index) in empty_inventory_data" :key="index" class="swiper-item" >
+								<view class="item_scoops" :style="{'margin-right': judgeLengthOne(empty_inventory_data) || (currentFindIndex + 1  === empty_inventory_data.length) ? 0 : '15rpx'}">
 									<view class="imgUrl_swiper">
-										<image mode="widthFix" :src="item.imgUrl"/>
+										<image class="image" :src="item.imgUrl"/>
 									</view>
 									<view class="item_rig">
-										<view class="top_item">
-											<view class="item_title">{{ item.name }}</view>
-											<view class="goods_label">
-													<block v-for="(item,key) of item.spu_options">
-														<view >{{key}}:</view>
-														<view class="option_label_pos font-bold">{{item}}</view>
-													</block>
-											</view>
+										<view class="item_title text-line-2">{{ item.name }}</view>
+										<view class="goods_label">
+											<block v-for="(item,key) of item.spu_options">
+												<view class="option_label_pos font-bold">{{item}}</view>
+											</block>
 										</view>
 										<view class="item_bottom">
-											<text class="vip-member-price">{{empty_currency_info.symbol}}{{item.product_price}}</text>
+											<text class="vip-member-price">{{empty_currency_info.symbol}}{{item.product_price_int}}<text class="price-decimal">{{item.product_price_decimal}}</text></text>
 											<view class="goods-num">x{{ item.move_qty }}</view>
 										</view>
 									</view>
@@ -840,7 +772,62 @@
 								</swiper-item>
 							</swiper>
 					</view>
-					<view class="current_page_mark" >
+					<view class="current_page" v-if="!judgeLengthOne(empty_inventory_data)">
+						<view class="current_page_in">
+							{{ currentFindIndex + 1 }}/{{ empty_inventory_data.length }}
+						</view>
+					</view>
+					<view class="recode_btn">
+					<view class="confirm_btn" @click="handleStockConfirmTips">{{$t('checkout_coupon.Confirm')}}</view>
+					<view class="cancel_btn" @click="handleStockCancelTips">{{$t('checkout_coupon.Reconsider')}}</view>
+					</view>
+				</view>
+			</view>
+        </uni-popup>
+		<!-- 营销库存为空提示弹窗 -->
+		<uni-popup class="ConfirmationPromptBan" ref="marketingPayConfirmationPrompt" :is-mask-click="false">
+			<view class="payConfirmationboxIn">
+				<image @click="$refs.marketingPayConfirmationPrompt.close();" mode="widthFix" class="close" src="@/static/images/checkout_icon/close@2x.png"></image>
+				<view class="ConfirmationPromptBox">
+					<view class="ConfirmationTxt font-bold">{{$t('checkout_coupon.out_off_market_stock_tips')}}</view>
+					<view class="ConfirmationTxtContent">
+						{{$t('checkout_coupon.marketing_continue_checkout')}}
+					</view>
+					<view class="ConfirmateTViewList" :style="{
+						margin: judgeLengthOne(marketing_empty_inventory_data) ? '46rpx 30rpx 0' : '46rpx auto 0'
+					}">
+						<swiper
+							class="swiper-box"
+							:indicator-dots="indicatorDots"
+							:autoplay="autoplay"
+							:interval="interval"
+							:duration="duration"
+							:circular="false"
+							@change="handlerSwiperChange"
+							:next-margin="judgeLengthOne(marketing_empty_inventory_data) || (currentFindIndex + 1  === marketing_empty_inventory_data.length) ? 0 : '30rpx'"
+							>
+							<swiper-item v-for="(item, index) in marketing_empty_inventory_data" :key="index" class="swiper-item">
+								<view class="item_scoops" :style="{'margin-right': judgeLengthOne(marketing_empty_inventory_data) || (currentFindIndex + 1  === marketing_empty_inventory_data.length) ? 0 : '15rpx'}">
+									<view class="imgUrl_swiper">
+										<image class="image" :src="item.imgUrl"/>
+									</view>
+									<view class="item_rig">
+										<view class="item_title text-line-2">{{ item.name }}</view>
+										<view class="goods_label">
+												<block v-for="(item,key) of item.spu_options">
+													<view class="option_label_pos font-bold">{{item}}</view>
+												</block>
+										</view>
+										<view class="item_bottom">
+											<text class="vip-member-price">{{empty_currency_info.symbol}}{{item.product_price_int}}<text class="price-decimal">{{item.product_price_decimal}}</text></text>
+											<view class="goods-num">x{{ item.move_qty }}</view>
+										</view>
+									</view>
+								</view>
+								</swiper-item>
+							</swiper>
+					</view>
+					<view class="current_page" v-if="!judgeLengthOne(marketing_empty_inventory_data)">
 						<view class="current_page_in">
 							{{ currentFindIndex + 1 }}/{{ marketing_empty_inventory_data.length }}
 						</view>
@@ -862,13 +849,15 @@
 
 <script>
 import specialOfferDiscountTab from '@/components/special-offer-discount-tag/special-offer-discount-tag.vue'
+import specialOfferStockTextBox from '@/components/special-offer-stock-text/special-offer-stock-text.vue';
 import { mapState } from 'vuex'
 import CodeView from '@/components/CFCodeView/CodeView.vue';
 
 	export default {
 		components: {
 			specialOfferDiscountTab,
-			CodeView
+			CodeView,
+			specialOfferStockTextBox
 		},
 		data() {
 			return {
@@ -986,8 +975,6 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				addressSort:false,
 				sortType: '',
 				deduction_order_text: '',
-				only_to_non_sale_empty: '', //低价促销积分限制空文案
-				only_to_non_sale: '', //低价促销积分提醒文案
 				coupon_text: '',
 				freeShippingText: '',
 				isJumpNumber:0
@@ -1014,7 +1001,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 		},
 		onLoad: function(e) {
 			this.initCartInfo();
-			this.$maEvent.view_checkout_page();
+			this.$maEvent.view_checkout_page();;
 			// this.getBestCoupon();					
 		},
 		onBackPress() {
@@ -1036,12 +1023,16 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				...mapState(['showVip'])
 			},
 		methods: {
+			// 判断库存为1
+			judgeLengthOne(data) {
+				if(!Array.isArray(data)) return 
+				return data.length === 1
+			},
 			// 营销库存为空弹窗确认按钮
 			marketHandleStockConfirmTips(){
 				this.$refs.marketingPayConfirmationPrompt.close();
 				// 刷新当前页
 				this.initCartInfo();
-				this.no_marketing_stock_window_button_event('continue');
 			},
 			// 营销库存为空弹窗REMOVE按钮
 			marketHandleStockCancelTips(){
@@ -1067,7 +1058,6 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				}).catch((err)=>{
 					console.log('err+++++',err);
 				})
-				this.no_marketing_stock_window_button_event('remove');
 			},
 			// cf turnstile 回传流程
 			handleIsFlag(actionData) {
@@ -1088,7 +1078,6 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 					this.createOrder()
 					this.$refs.payConfirmationPrompt.close();
 				}
-				this.no_stock_window_button_event('confirm');
 			},
 			handleStockCancelTips(){
 				if(this.openStatus == 1){
@@ -1098,7 +1087,6 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 					this.$refs.payConfirmationPrompt.close();
 					this.initCartInfo();
 				}
-				this.no_stock_window_button_event('reconsider');
 			},
 			handlerSwiperChange(e) {
 				this.currentFindIndex = e.detail.current;
@@ -1122,9 +1110,9 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 					           regex.test(e.address_info.telephone);
 					}).map(e => {
 					    // 高亮显示匹配的部分
-					    e.address_info.first_name = e.address_info.first_name.replace(new RegExp(`(${val})`, 'gi'), '<text style="color: #FF004D">$1</text>');
-					    e.address_info.last_name = e.address_info.last_name.replace(new RegExp(`(${val})`, 'gi'), '<text style="color: #FF004D">$1</text>');
-					    e.address_info.telephone = e.address_info.telephone.replace(new RegExp(`(${val})`, 'gi'), '<text style="color: #FF004D">$1</text>');
+					    e.address_info.first_name = e.address_info.first_name.replace(new RegExp(`(${val})`, 'gi'), '<text style="color: #FF348C">$1</text>');
+					    e.address_info.last_name = e.address_info.last_name.replace(new RegExp(`(${val})`, 'gi'), '<text style="color: #FF348C">$1</text>');
+					    e.address_info.telephone = e.address_info.telephone.replace(new RegExp(`(${val})`, 'gi'), '<text style="color: #FF348C">$1</text>');
 					    return e;
 					});
 					
@@ -1165,11 +1153,11 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 			changePopupMathchesBilling(e) {
 				this.pageMetaShow = e.show;
 				if(!e.show && this.has_shipping_address == 0) {
-					if(this.isJumpNumber==0) {
+					if(this.isJumpNumber == 0) {
 						this.isJumpNumber++;
 						this.$refs.popupMatchesBilling.close();
 						setTimeout(()=>{
-							this.$public.handleNavTo('/pages/address/add?addressType=address&fromWhichPage=checkout')
+							this.$public.handleNavTo('/pages/address/add?addressType=address&fromWhichPage=checkout&actionType=add&isShowShoppingTip=1')
 						},1)
 						
 					}
@@ -1262,8 +1250,8 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 			getBestCoupon() {
 				this.$apis.getBestCoupon().then(res => {
 					this.bestCouponData = res.data;
-					// bestCouponData.type=1：当前check out页已选中优惠券（系统自匹配或用户自行切换其他券），弹窗提示内容为提示当前已选中的券；
-					// bestCouponData.type=0:当前check out页未选中优惠券（用户自行取消勾选优惠券），弹窗提示内容为提示账户内当前适用的最优券；
+					// bestCouponData.type=1：当前checkout页已选中优惠券（系统自匹配或用户自行切换其他券），弹窗提示内容为提示当前已选中的券；
+					// bestCouponData.type=0:当前checkout页未选中优惠券（用户自行取消勾选优惠券），弹窗提示内容为提示账户内当前适用的最优券；
 					// if(this.bestCouponData.type == 1) {
 					// 	this.showCouponApplied = true;
 					// }
@@ -1415,7 +1403,11 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 						this.searchFilter();
 						this.curAddressData = curAddressData;
 						this.curBillingAddressData = curBillingAddressData;
-						this.goodsList = cart_info.products;
+						
+						this.goodsList = cart_info.products.map(item=>({
+							...item,
+							...this.$public.transformPrice(item.product_price, 'product_price')
+						}))
 						this.paymentMethodData= paymentArr;
 						this.shippingMethodList = res.data.shippings;
 						this.cartInfo= {
@@ -1445,9 +1437,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 						this.has_shipping_address = res.data.has_shipping_address;
 						this.current_shipping_method = res.data.current_shipping_method;
 						this.deduction_order_text = res.data.deduction_order_text;
-						this.only_to_non_sale = res.data.only_to_non_sale;
-						this.only_to_non_sale_empty = res.data.only_to_non_sale_empty;
-						this.coupon_text = res.data.coupon_text;
+						this.coupon_text = res.data.coupon_text.replace(this.$store.state.site_name.toUpperCase(), this.$store.state.site_name);;
 						if(Number(this.currentUsedPoint)) {
 							if(this.currentUsedPoint == this.useMaxPoint) {
 								this.usePointType = 1;
@@ -1473,14 +1463,13 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 						if(this.has_shipping_address == 0) {
 							this.$refs.popupMatchesBilling.open('center');
 						}
-						if(params.callback){
-							typeof params.callback === 'function' && params.callback();
-						}
 					} else {
 						uni.redirectTo({
 							url:'/pages/address/add?backType=cartNoAddress&addressType=billing&fromWhichPage=checkout'
 						})
 					}
+				}).catch((e) => {
+					console.log(e)
 					this.isLoad = true;
 				})
 			},
@@ -1491,62 +1480,72 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 					if(res.code == 200){
 						// 判断当前订单是否库存为空
 						if(res.data.our_off_stock){
-							this.empty_inventory_data = res.data.out_off_stock_item;
+							this.empty_inventory_data = res.data.out_off_stock_item.map(item=>({
+								...item,
+								...this.$public.transformPrice(item.product_price,'product_price')
+							}));
 							this.empty_currency_info = res.data.currency_info;
 							this.$refs.payConfirmationPrompt.open();
 							this.openStatus = 1;
-							this.no_stock_window_page_event();
-						} else {
-							if(res.data.out_off_stock_item&&res.data.out_off_stock_item.length){
-								this.empty_inventory_data = res.data.out_off_stock_item;
-								this.empty_currency_info = res.data.currency_info;
-								this.$refs.payConfirmationPrompt.open();
-								this.no_stock_window_page_event();
-							} else {
-								var orderData = res.data;
-								this.orderId = orderData.order_id;
-								//抵扣无需付款情况
-								if(orderData.paid && orderData.paid == 1){
-									uni.redirectTo({
-										url: '/pages/pay/success?orderId=' + orderData.order_id
-									});
-									uni.hideLoading();
-								} else {
-									//付款
-									this.handelPay(orderData);
-								}
-								this.updateCart();
-								this.trackEvent();
-							}
-						}
-					} else {
-						uni.hideLoading();
-						this.payLoading = false;
-					}
-				}).catch((res) => {
-					if(res.data.our_off_stock){
-						this.empty_inventory_data = res.data.out_off_stock_item;
-						this.empty_currency_info = res.data.currency_info;
-						this.$refs.payConfirmationPrompt.open();
-						this.openStatus = 1;
-						this.no_stock_window_page_event();
-					}else{
+						}else{
 						if(res.data.out_off_stock_item&&res.data.out_off_stock_item.length){
-							this.empty_inventory_data = res.data.out_off_stock_item;
+							this.empty_inventory_data = res.data.out_off_stock_item.map(item=>({
+								...item,
+								...this.$public.transformPrice(item.product_price,'product_price')
+							}));
 							this.empty_currency_info = res.data.currency_info;
 							this.$refs.payConfirmationPrompt.open();
-							this.no_stock_window_page_event();
-						}else if(res.data.out_off_market_stock&& res.data.out_off_market_stock.length){
-							// 营销库存为空时
-							this.marketing_empty_inventory_data = res.data.out_off_market_stock;
-							this.marketing_empty_currency_info = res.data.currency_info;
-							this.$refs.marketingPayConfirmationPrompt.open();
-							this.no_marketing_stock_window_page_event();
+						}else{
+							var orderData = res.data;
+							this.orderId = orderData.order_id;
+							//抵扣无需付款情况
+							if(orderData.paid && orderData.paid == 1){
+								uni.redirectTo({
+									url: '/pages/pay/success?orderId=' + orderData.order_id
+								});
+								uni.hideLoading();
+							} else {
+								//付款
+								this.handelPay(orderData);
+							}
+							this.updateCart();
+							this.trackEvent();
+								}
+							}
+						} else {
+							uni.hideLoading();
+							this.payLoading = false;
 						}
-					}
-					uni.hideLoading();
-					this.payLoading = false;
-				});
+					}).catch((res) => {
+						if(res.data.our_off_stock){
+							this.empty_inventory_data = res.data.out_off_stock_item.map(item=>({
+								...item,
+								...this.$public.transformPrice(item.product_price,'product_price')
+							}));
+							this.empty_currency_info = res.data.currency_info;
+							this.$refs.payConfirmationPrompt.open();
+							this.openStatus = 1;
+						}else{
+							if(res.data.out_off_stock_item&&res.data.out_off_stock_item.length){
+								this.empty_inventory_data = res.data.out_off_stock_item.map(item=>({
+									...item,
+									...this.$public.transformPrice(item.product_price,'product_price')
+								}));
+								this.empty_currency_info = res.data.currency_info;
+								this.$refs.payConfirmationPrompt.open();
+							}else if(res.data.out_off_market_stock&& res.data.out_off_market_stock.length){
+								// 营销库存为空时
+								this.marketing_empty_inventory_data = res.data.out_off_market_stock.map(item=>({
+									...item,
+									...this.$public.transformPrice(item.product_price,'product_price')
+								}));
+								this.marketing_empty_currency_info = res.data.currency_info;
+								this.$refs.marketingPayConfirmationPrompt.open();
+							}
+						}
+						uni.hideLoading();
+						this.payLoading = false;
+					});
 			},
 			createOrder(e) {
 				// 是否勾选运输方式
@@ -1672,6 +1671,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				let checkout = {
 				  currency: this.currency_info.code,
 				  value: this.cartInfo.grand_total, // Total Revenue
+				  //coupon: 'SUMMER_FUN',
 				  payment_type: this.currentPay,
 				  items: items
 				}
@@ -1890,6 +1890,12 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 	};
 </script>
 <style lang="scss" scoped>
+	.vip-member-discount_off,.special-offer-discount-tag-box {
+		right: 12rpx;
+		bottom: 16rpx;
+		left: auto;
+		top: auto;
+	}
 	.order-detail-popup {
 		.checkout-popup-content {
 			padding-bottom: 0;
@@ -1908,7 +1914,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 					color: #333333;
 				}
 				.info-price.is-save-price {
-					color: #FF004D;
+					color: #8A61E7;
 				}
 			}
 		}
@@ -1929,9 +1935,8 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				background-color: #000;
 				font-size: 36rpx;
 				color: #fff;
-				border-radius: 0;
+				border-radius: 41rpx;
 				margin: 0;
-				font-weight: bold;
 			}
 			.top-price-box {
 				font-size: 28rpx;
@@ -1943,7 +1948,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				}
 				.price {
 					font-size: 48rpx;
-					color: #FF004D;
+					color: #8A61E7;
 				}
 			}
 		}
@@ -1960,10 +1965,14 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				color: #000;
 				position: relative;
 				margin-bottom: 24rpx;
+				.title {
+					margin-top: 40rpx;
+					color: #393939;
+				}
 				.close {
 					position: absolute;
 					width: 36rpx;
-					top: -4rpx;
+					top: -100%;
 					right: -16rpx;
 				}
 			}
@@ -1976,12 +1985,13 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 			}
 			.ok-btn {
 				border-radius: 8rpx;
-				background: #000;
+				background: #222;
 				text-align: center;
 				color: #fff;
 				height: 84rpx;
 				line-height: 84rpx;
 				font-size: 32rpx;
+				border-radius: 40rpx;
 			}
 		}
 	}
@@ -1998,20 +2008,21 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 	}
 	.matches-billing {
 		.dui-primary-btn {
-			height: 84rpx;
-			line-height: 84rpx;
+			height: 80rpx;
+			line-height: 80rpx;
 			font-weight: normal;
-			border-radius: 8rpx;
+			border-radius: 40rpx;
 			margin-bottom: 16rpx;
-			font-size: 32rpx;
+			font-size: 27rpx;
 		}
 		.add-new-address-btn {
-			border-radius: 8rpx;
-			height: 84rpx;
-			line-height: 84rpx;
-			font-size: 32rpx;
-			text-align: center;
+			height: 80rpx;
+			line-height: 80rpx;
+			font-weight: normal;
+			border-radius: 40rpx;
+			font-size: 27rpx;
 			color: #000;
+			text-align: center;
 			border: 1px solid #000000;
 		}
 	}
@@ -2028,7 +2039,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 	}
 	.checkout-popup-center-content {
 		background: #ffffff;
-		width: 72vw;
+		width: 73vw;
 		padding: 40rpx;
 		border-radius: 16rpx;
 		.checkout-popup-center-header {
@@ -2037,9 +2048,12 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 			font-size: 32rpx;
 			color: #000;
 			margin-bottom: 24rpx;
+			.title {
+				margin-top: 20rpx;
+			}
 			.close-box {
 				position: absolute;
-				top: -16rpx;
+				top: -100%;
 				right: -16rpx;
 				.close {
 					width: 36rpx;
@@ -2144,7 +2158,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 			margin-bottom: 24rpx;
 			padding-right: 32rpx;
 			font-size: 28rpx;
-			color: #333333;
+			color: #222;
 			.left-box {
 				display: flex;
 				align-items: center;
@@ -2153,6 +2167,9 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 					margin-right: 16rpx;
 			        text-transform: uppercase;
 				}
+				.num {
+					color: #333;
+				}
 			}
 			.action {
 				text-decoration: underline;
@@ -2160,7 +2177,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 		}
 		.product-items-list {
 			.product_imgs_box{
-				width: 116rpx;
+				// width: 116rpx;
 				display: flex;
 			}
 		}
@@ -2225,7 +2242,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				font-size: 28rpx;
 				margin-bottom: 20rpx;
 				.action {
-					color: #333;
+					color: #000;
 					text-decoration: underline;
 				}
 			}
@@ -2233,14 +2250,12 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				background: #F2F7FF;
 				padding: 12rpx 28rpx;
 				font-size: 24rpx;
-				color: #666;
 				.name-tel-box {
 					display: flex;
 					align-items: center;
 					font-size: 28rpx;
 					margin-bottom: 14rpx;
 					.name {
-						color: #000;
 						margin-right: 32rpx;
 					}
 				}
@@ -2312,7 +2327,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 	}
 	.little-title {
 		font-size: 32rpx;
-		color: #000;
+		color: #222;
 		padding-bottom: 24rpx;
 		position: relative;
 	}
@@ -2349,8 +2364,8 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 					flex: 1;
 					width: 0;
 					.method-name {
-						font-size: 30rpx;
-						color: #333333;
+						font-size: 27rpx;
+						color: #393939;
 						height: 52rpx;
 						line-height: 52rpx;
 					}
@@ -2454,7 +2469,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 					color: #333333;
 				}
 				.save-price {
-					color: #FF004D;
+					color: #8A61E7;
 				}
 				.show-switch-box {
 					display: flex;
@@ -2488,71 +2503,59 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 	}
 
 	.goods-list {
+		background: #F5F5F5;
+		padding: 15rpx 23rpx;
 		.a-goods:last-child {
+		    margin-bottom: 15rpx;
 			.product-item-detail-box {
 				border-bottom: 0;
 			}
 		}
 		.a-goods {
 			display: flex;
-			padding-top: 12rpx;
+			padding: 30rpx 30rpx 23rpx;
+			margin-top: 15rpx;
+			background-color: #fff;
+			border-radius: 23rpx;
 			.img-box {
-				width: 174rpx;
 				margin-right: 32rpx;
 				padding-bottom: 12rpx;
 				position: relative;
 				.only_offos{
-					position: absolute;
-					bottom: 20rpx;
-					left: 0;
-					width: 100%;
 					display: flex;
 					justify-content: center;
-					.only_offos_in{
-						width: 170rpx;
-						height: 31rpx;
-						background: #FFF9EF;
-						border-radius: 4rpx ;
-						display: flex;
-						align-items: center;
-						image{
-							width: 30.77rpx;
-						}
-						text{
-							width: 106rpx;
-                            height: 30.77rpx;
-							font-size: 16rpx;
-							color: #FF5C00;
-							margin-left: 5rpx;
-							display: flex;
-							align-items: center;
-							font-weight: bold;
-						}
+					.special-offer-stock-text-box {
+						top: 8rpx;
+						bottom: auto;
+						border-radius: 4rpx 4rpx 4rpx 4rpx;
 					}
 				}
 				.img {
-					width: 100%;
+					width: 185rpx;
+					height: 185rpx;
+					border-radius: 8rpx;
 					display: block;
+					position: relative;
 				}
 			}
 			.product-item-detail-box {
 				flex: 1;
 				width: 0;
-				padding-bottom: 12rpx;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
-				border-bottom: 1px solid #F5F5F5;
 				font-size: 24rpx;
 				color: #333333;
 				.goods-name {
-					line-height: 44rpx;
+					line-height: 31rpx;
+					color: #666666;
 				}
 				.goods-label {
 					display: flex;
-					line-height: 48rpx;
+					line-height: 42rpx;
+					margin-top: 8rpx;
 					.option_label {
-						color: #666666;
+						color: #000;
 					}
 					.option_value {
 						margin-left: 14rpx;
@@ -2564,14 +2567,16 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 					display: flex;
 					justify-content: space-between;
 					align-items: center;
+					margin-top: 36rpx;
 					.goods-price {
 						display: flex;
-						align-items: center;
+						align-items: end;
 						.line-price {
-							font-size: 24rpx;
+							font-size: 20rpx;
 							color: #999999;
 							text-decoration: line-through;
 							margin-left: 8rpx;
+							margin-bottom: 3rpx;
 						}
 					}
 				}
@@ -2599,12 +2604,11 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				text-align: center;
 				height: 82rpx;
 				line-height: 82rpx;
-				background-color: #000;
+				background-color: #222;
 				font-size: 36rpx;
 				color: #fff;
-				border-radius: 0;
+				border-radius: 40rpx 40rpx 40rpx 40rpx;
 				margin: 0;
-				font-weight: bold;
 			}
 			.top-price-box {
 				font-size: 28rpx;
@@ -2616,7 +2620,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				}
 				.price {
 					font-size: 48rpx;
-					color: #FF004D;
+					color: #8A61E7;
 				}
 			}
 			
@@ -2743,7 +2747,9 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				height: 84rpx;
 				line-height: 84rpx;
 				margin-bottom: 16rpx;
-				font-size: 36rpx;
+				font-weight: normal;
+				background-color: #222;
+				border-radius: 40rpx 40rpx 40rpx 40rpx;
 			}
 			.add-new-address {
 				height: 84rpx;
@@ -2751,6 +2757,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				border: 1px solid #333;
 				font-size: 36rpx;
 				color: #333;
+				border-radius: 40rpx;;
 				text-align: center;
 			}
 		}
@@ -2868,7 +2875,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 						margin-right: 16rpx;
 					}
 					.save-price {
-						color: #FF004D;
+						color: #8A61E7;
 					}
 				}
 			}
@@ -2876,6 +2883,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				height: 84rpx;
 				line-height: 84rpx;
 				font-size: 36rpx;
+				font-weight: normal;
 			}
 		}
 	}
@@ -3000,27 +3008,18 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 		}
 		.popup-content {
 			padding: 32rpx;
-			.total,.max-available {
+			.max-available {
 				display: flex;
 				align-items: center;
 				font-size: 32rpx;
 				padding-bottom: 32rpx;
+				color: #393939;
 				.label {
-					color: #333333;
-					margin-right: 8rpx;
+					// color: #333333;
+					margin-right: 15rpx;
 				}
 				.value {
-					color: #666666;
-				}
-			}
-			.max-available {
-				flex-direction: column;
-				align-items: start;
-				.available-tips {
-					margin-top: 10rpx;
-					font-size: 23rpx;
-					color: #999999;
-					line-height: 46rpx;
+					// color: #666666;
 				}
 			}
 			.use-points-options {
@@ -3033,10 +3032,10 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				.point-item-box {
 					display: flex;
 					align-items: center;
-					padding: 28rpx 0;
-					border-top: 1px dashed #EEEEEE;
-					color: #333333;
-					font-size: 32rpx;
+					padding: 15rpx 0;
+					// border-top: 1px dashed #EEEEEE;
+					color: #393939;
+					font-size: 27rpx;
 					.point-radio {
 						margin-right: 32rpx;
 						.radio {
@@ -3053,10 +3052,11 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 					height: 96rpx;
 					padding: 0 60rpx 0 32rpx;
 					border: 1px solid #DDDDDD;
+					border-radius: 48rpx;
 				}
 			}
 			.apply {
-				margin-top: 232rpx;
+				margin-top: 153rpx;
 				background: #000;
 				color: #fff;
 				text-align: center;
@@ -3086,6 +3086,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				margin-top: 24rpx;
 				padding: 0 164rpx 0 70rpx;
 				border: 1px solid #DDDDDD;
+				border-radius: 48rpx;
 			}
 			.money {
 				position: absolute;
@@ -3102,7 +3103,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				top: 0;
 				height: 96rpx;
 				line-height: 96rpx;
-				color: #0071E3;
+				color: #8A61E7;
 				font-size: 28rpx;
 			}
 			.apply-clear-box {
@@ -3111,17 +3112,6 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				top: 0;
 				height: 96rpx;
 				line-height: 96rpx;
-				.apply-clear {
-					height: 30rpx;
-					width: 30rpx;
-					border-radius: 50%;
-					line-height: 30rpx;
-					text-align: center;
-					display: inline-block;
-					font-size: 28rpx;
-					background-color: #cccccc;
-					color: #ffffff;
-				}
 			}
 		}
 		.apply {
@@ -3145,6 +3135,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 	.payment-security {
 		font-size: 24rpx;
 		padding: 40rpx 32rpx;
+		padding-bottom: 0rpx;
 		.title {
 			color: #198055;
 			margin-bottom: 20rpx;
@@ -3177,7 +3168,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 		font-size: 24rpx;
 		line-height: 36rpx;
 		.a-link {
-			color: #2d68a8;
+			color: #0071E3;
 		}
 	}
 	.has-coupon-applied-tip {
@@ -3224,7 +3215,6 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 		}
 		.timely-detail {
 			font-size: 28rpx;
-			color: #333;
 			display: flex;
 			align-items: center;
 			.shipping_insurance_total {
@@ -3384,7 +3374,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 			width: 488rpx;
 			height: 84rpx;
 			line-height: 84rpx;
-			border-radius: 8rpx;
+			border-radius: 42rpx;
 			margin: 76rpx auto 0;
 		}
 		.leave-toast-close-btn {
@@ -3430,6 +3420,8 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 		text-align: right;
 		height: 52rpx;
 		line-height: 52rpx;
+		font-size: 27rpx;
+		color: #222;
 	}
 	.method-price-free {
 		color: #999999 !important;
@@ -3437,65 +3429,54 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 	}
 	.org_price_pop{
 		font-size: 32rpx;
-        color: #FF5C00;
+        color: #8A61E7;
 		font-weight: 550;
 	}
 	.ConfirmationPromptBan {
     .payConfirmationboxIn {
-        width: 646rpx;
-        height: 754rpx;
+        width: 615rpx;
+        // height: 854rpx;
         background: #FFFFFF;
-        border-radius: 8rpx;
+        border-radius: 23rpx;
+		position: relative;
+		.close {
+			position: absolute;
+			width: 35rpx;
+			height: 35rpx;
+			top: 16rpx;
+			right: 16rpx;
+		}
     }
 
     .ConfirmationPromptBox {
-        padding: 32.69rpx 0;
+        padding: 61rpx 36rpx 46rpx 36rpx;
 
         .ConfirmationTxt {
             width: 100%;
-            height: 46rpx;
             line-height: 46rpx;
             font-family: Jost, Jost;
             font-size: 31rpx;
             color: #000000;
             text-align: center;
-            margin-bottom: 23.08rpx;
+            margin-bottom: 23rpx;
         }
 
-        .ConfirmationTxtContent {
-            margin-top: 10rpx;
-            width: 100%;
-            height: 85rpx;
+		.ConfirmationTxtContent {
+			margin: 0 auto;
             font-family: Jost, Jost;
             font-weight: 400;
             font-size: 27rpx;
             color: #333333;
             line-height: 42rpx;
             text-align: center;
-        }
-		.ConfirmationTxtContentMarket{
-			margin: 0 auto;
-			width: 95%;
-            height: 85rpx;
-            font-family: Jost, Jost;
-            font-weight: 400;
-            font-size: 27rpx;
-            color: #333333;
-            line-height: 32rpx;
-            text-align: center;
 		}
 
-        .ConfirmateTViewList {
-            width: 569rpx;
-            height: 250rpx;
-            margin: 30rpx auto 0;
+		.ConfirmateTViewList{
+            margin: 46rpx auto 0;
             overflow-x: scroll;
-        }
-		.ConfirmateTViewListMarket{
-			width: 569rpx;
-            height: 250rpx;
-            margin: 50rpx auto 0;
-            overflow-x: scroll;
+			.swiper-box {
+				height: 185rpx;
+			}
 		}
 
         .current_page {
@@ -3517,80 +3498,59 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				color: #FFFFFF;
 			}
         }
-		.current_page_mark{
-			width: 108rpx;
-            height: 38rpx;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 29rpx;
-            margin: 15rpx auto 15rpx;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			.current_page_in{
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				width: 54rpx;
-				font-family: Jost, Jost;
-				font-size: 27rpx;
-				color: #FFFFFF;
-			}
-		}
 
         .recode_btn {
             display: flex;
             flex-flow: column;
             align-items: center;
 			text-transform: uppercase;
-
-
+			margin-top: 46rpx;
+			font-size: 27rpx;
+			font-weight: 600;
             .confirm_btn {
-                width: 569rpx;
+				width: 100%;
                 height: 81rpx;
-                background: #000000;
+                background: #222222;
                 border-radius: 4rpx;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                font-family: Jost, Jost;
-                font-size: 31rpx;
                 color: #FFFFFF;
+				border-radius: 40rpx;
             }
 
             .cancel_btn {
-                width: 569rpx;
+                width: 100%;
                 height: 81rpx;
                 border-radius: 4rpx;
-                border: 2rpx solid #000000;
+                border: 2rpx solid #222;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                font-family: Jost, Jost;
-                font-size: 31rpx;
-                font-size: #000000;
+                color: #222;
                 margin-top: 24rpx;
+				border-radius: 40rpx;
             }
 
         }
     }
 }
 .item_scoops{
-	width: 480rpx;
-	height: 231rpx;
 	background: #F5F5F5;
-	border-radius: 8rpx;
+	border-radius: 15rpx;
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
-	margin-top: 10rpx;
+	padding: 15rpx;
+	height: 100%;
 	.imgUrl_swiper{
-		width: 156rpx;
-        height: 208rpx;
-		margin-left: 15rpx
+		width: 154rpx;
+        height: 154rpx;
+		margin-right: 15rpx;
 	}
-	image{
-		width: 156rpx;
-        height: 208rpx;
+	.image{
+		width: 154rpx;
+        height: 154rpx;
+		border-radius: 10rpx;
 	}
 	.item_rig{
 		flex: 1;
@@ -3598,57 +3558,45 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 		flex-flow: column;
 		justify-content: space-between;
 		height: 100%;
-		.top_item{
-			display: flex;
-			flex-flow: column;
-			align-items: flex-start;
-			margin-left: 15rpx;
-			margin-top: 10rpx;
-			.item_title{
-				width: 260rpx;
-				height: 42rpx;
+		.item_title{
 				font-family: Jost, Jost;
 				font-size: 27rpx;
-				color: #000000;
-				line-height: 42rpx;
-				overflow: hidden; 
-				white-space: nowrap;      
-				overflow: hidden;   
-				text-overflow: ellipsis; 
+				color: #393939;
+				line-height: 30rpx;
 			}
-			.goods_label{
-				height: 42rpx;
-				font-family: Jost, Jost;
-				font-size: 24rpx;
-				color: #666666;
-				line-height: 42rpx;
-				display: flex;
-				block{
-				font-size: 24rpx;
-				display: flex;
-				align-items: center;
-				}
+		.goods_label{
+			height: 42rpx;
+			font-family: Jost, Jost;
+			font-size: 24rpx;
+			color: #666666;
+			line-height: 42rpx;
+			display: flex;
+			block{
+			font-size: 24rpx;
+			display: flex;
+			align-items: center;
 			}
 		}
+		
 		.item_bottom{
 			display: flex;
 			justify-content: space-between;
-			margin-left: 15rpx;
-			margin-bottom: 10rpx;
+			color: #393939;
 			.vip-member-price{
 				height: 42rpx;
 				font-family: Jost, Jost;
 				font-size: 31rpx;
 				font-weight: bold;
-				color: #000000;
 				line-height: 42rpx;
+				.price-decimal {
+					font-size: 20rpx;
+				}
 			}
 			.goods-num{
 				width: 33rpx;
 				height: 42rpx;
 				font-family: Jost, Jost;
 				font-size: 31rpx;
-				color: #000000;
 				line-height: 42rpx;
 				margin-right: 15rpx;
 				font-weight: bold;
@@ -3657,25 +3605,30 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 	}
 }
 .option_label_pos{
-	margin-right: 10rpx
+	margin-right: 10rpx;
+	&:not(:last-child)::after {
+		content: ';';
+	}
 }
 .product_imgs_in{
 	position: relative;
-	width: 156rpx;
+	width: 185rpx;
 	margin-right: 16rpx;
 	.only_offos{
-				position: absolute;
-				bottom: 0;
-				left: 0;
-				width: 100%;
 				display: flex;
 				justify-content: center;
+				.special-offer-stock-text-box {
+					top: 8rpx;
+					bottom: auto;
+					border-radius: 4rpx 4rpx 4rpx 4rpx;
+				}
 				.only_offos_in{
 					width: 156rpx;
                     height: 31rpx;
-					background: #FFF9EF;
+					background: #EDE5FF;
 					display: flex;
 					align-items: center;
+					border-radius: 4rpx;
 					image{
 						width: 30.77rpx;
 					}
@@ -3683,7 +3636,7 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 						width: 106rpx;
 						height: 30.77rpx;
 						font-size: 16rpx;
-						color: #FF5C00;
+						color: #814EFF;
 						margin-left: 5rpx;
 						display: flex;
 						align-items: center;
@@ -3692,7 +3645,9 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 				}
 				}
 	.product-img {
-		width: 156rpx;
+		width: 185rpx;
+		height: 185rpx;
+		border-radius: 15rpx;
 		display: inline-block;
 	}
 	.special-price-offos{
@@ -3710,9 +3665,14 @@ import CodeView from '@/components/CFCodeView/CodeView.vue';
 		display: flex;
 		align-items: center;
 	}
+}
 
+.dui-primary-btn {
+	background: #222 !important;
+	border-radius: 40rpx !important;
 }
-.swiper-box{
-	height: 245rpx;
+.save-money {
+	color: #8A61E7;
 }
+
 </style>

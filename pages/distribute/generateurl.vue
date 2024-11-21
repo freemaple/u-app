@@ -1,8 +1,9 @@
 <template>
-	<view class="generateUrl-box dui-padding-top-header">
+	<view class="generateUrl-box dui-padding-top-header" style="padding-bottom: 98rpx;">
 		<page-meta :page-style="'overflow:'+(pageMetaShow?'hidden':'visible')"></page-meta>
 		<pageHeader :isTitleUppercase="true" :showShadow="false" :styleType="2" :title="$t('distribute.generateurl.header')"></pageHeader>
 		<shareStep
+			stepTyle="2"
 			:textParam="text_param"
 			@showRules="handleShowRules" 
 			@showSharePopup="showSharePopup"
@@ -14,7 +15,7 @@
 				<view class="reward-data-box">
 					<view class="bottom-circle"></view>
 					<view class="top-circle"></view>
-					<view class="dividing-line"></view>
+					<!-- <view class="dividing-line"></view> -->
 					<view class="item-box">
 						<view class="value">{{reward_nums}}</view>
 						<view class="label">{{$t('distribute.generateurl.invited_friends')}}</view>
@@ -22,11 +23,19 @@
 					<view class="item-box">
 						<view class="value">{{symbol}}{{balance_wallet_total}}</view>
 						<view class="label">{{$t('distribute.generateurl.reward')}}</view>
-						<image class="item-bg" mode="widthFix" src="@/static/images/distribute/generateurl/bg@2x.png"></image>
+						<image class="item-bg" mode="widthFix" :src="distribute_share_and_win_step.my_rewards_bg.uni_img"></image>
 					</view>
 				</view>
 				<view @click="claimRewardToWallet" class="dui-primary-btn" id="claim_reward_to_wallet_btn">{{$t('distribute.generateurl.claim_reward_to_wallet')}}</view>
 				<view @click="shareHistoryHandel" class="share-history-btn" id="share-history-btn">{{$t('distribute.generateurl.share_history_btn')}}</view>
+			</view>
+		</view>
+		<view class="step-footer-box">
+			<image class="step-footer-box-bg" mode="widthFix" src="@/static/images/new-cashgrab-rewards/cashgrab_off_bg@2x.png"></image>
+			<view class="step-footer-money step-footer-money1">{{text_param.symbol}}{{text_param.inviter_money}}</view>
+			<view class="step-footer-money step-footer-money2">{{text_param.nextorder_rate}}</view>
+			<view class="step-footer-money3">
+				{{text_param.get}}{{text_param.symbol}}{{text_param.inviter_money}}
 			</view>
 		</view>
 		<custom-tabbar currentTab="Account" realPageName="Generateurl"></custom-tabbar>
@@ -36,7 +45,7 @@
 		<!-- 提现弹窗 -->
 		<uni-popup ref="popupWithdraw" @change="(e)=>{pageMetaShow = e.show;}">
 			<view class="popup-content withdraw-content">
-				<view class="title">{{$t('distribute.generateurl.save_to_my_wallet')}}</view>
+				<view class="title">{{$t('distribute.generateurl.claim_to_my_wallet')}}</view>
 				<image @click="$refs.popupWithdraw.close()" class="close-img" mode="widthFix" src="@/static/images/distribute/close.png"></image>
 				<view class="item dashed">
 					<view class="label">{{$t('distribute.generateurl.account_balance')}}</view>
@@ -50,7 +59,7 @@
 					<view class="label">{{$t('distribute.generateurl.previously_withdrawal')}}</view>
 					<view class="value">{{symbol}}{{withdraw_wallet_total}}</view>
 				</view>
-				<view class="pending-box dashed">
+				<view class="pending-box">
 					<view class="item">
 						<view class="label">{{$t('distribute.generateurl.pending_to_withdrawal')}}</view>
 						<view class="value pending">{{symbol}}{{pending_wallet_total}}</view>
@@ -83,7 +92,7 @@
 		<customTooltip ref="tooltip" :title="$t('fission_sharing.share_success_text')"></customTooltip>
 		<!-- 冻结列表弹窗 -->
 		<uni-popup ref="popupPendingMoney" @change="(e)=>{pageMetaShow = e.show;}">
-			<view class="popup-content pending-money-content" style="width:680rpx">
+			<view class="popup-content pending-money-content" style="width:100%">
 				<view class="title font-bold">{{$t('distribute.generateurl.rewards_holding_amount')}}</view>
 				<image @click="$refs.popupPendingMoney.close()" class="close-img" mode="widthFix" src="@/static/images/distribute/close.png" />
 				<view class="text1" v-html="pending_data_text"></view>
@@ -180,7 +189,12 @@
 					event_action: 'sharing_history_page',
 					event_name: 'sharing_history_page',
 					module: 'rewards_claim'
-				}]
+				}],
+				distribute_share_and_win_step: {
+					my_rewards_bg: {
+						uni_img: ''
+					}
+				}
 			}
 		},
 		onLoad(e){
@@ -297,21 +311,22 @@
 				},1)
 			},
 			handleSave() {
+				this.$public.handleNavTo('/pages/choose-rewards/choose-rewards')
 				// 当前用户已经满足双倍积分，直接提现，否则跳提现页面
-				if(this.is_double_point) {
-					uni.showLoading();
-					this.$apis.withdrawToWallet().then(res=>{
-						uni.hideLoading();
-						this.$refs.popupWithdrawSuccess.open('center');
-						this.$refs.popupWithdraw.close();
-						this.getInfo();
-					}).catch(e=>{
-						uni.hideLoading();
-					})
-				} else {
-					this.$public.handleNavTo('/pages/distribute/history?type=1');
-					this.$refs.popupWithdraw.close();
-				}
+				// if(this.is_double_point) {
+				// 	uni.showLoading();
+				// 	this.$apis.withdrawToWallet().then(res=>{
+				// 		uni.hideLoading();
+				// 		this.$refs.popupWithdrawSuccess.open('center');
+				// 		this.$refs.popupWithdraw.close();
+				// 		this.getInfo();
+				// 	}).catch(e=>{
+				// 		uni.hideLoading();
+				// 	})
+				// } else {
+				// 	this.$public.handleNavTo('/pages/distribute/history?type=1');
+				// 	this.$refs.popupWithdraw.close();
+				// }
 				this.$maEvent.custom_event({
 					event_category: 'my_rewards',
 					event_action: 'claim_rewards_save_wallet',
@@ -377,6 +392,7 @@
 						this.ruleOpenObj = obj;
 					}
 					this.distribute_tips = result.distribute_tips;
+					this.distribute_share_and_win_step = result.distribute_share_and_win_step;
 					this.share_list = result.share_list;
 					this.text_param = res.data.text_param;
 					this.text_param.fraudulent_title = res.data.fraudulent_title;
@@ -408,7 +424,7 @@
 					this.is_double_point = result.is_double_point // 当前用户是否获得双倍积分
 					this.symbol = result.symbol
 					if(params.openPopup) {
-						this.$refs[params.openPopup].open('center');
+						this.$refs[params.openPopup].open('bottom');
 					}
 					this.$nextTick(() => {
 						this.pageScrollObserver();
@@ -476,11 +492,10 @@
 	}
 }
 .generateUrl-box {
-	background: #FFE9C2;
 	padding-bottom: 115.38rpx;
-	background-image: url('@/static/images/fission_sharing/fission_bg_2.png');
-	background-size: cover;
-	background-size: 100vw calc(100vh - 96rpx);
+	background-image: url('@/static/images/new-cashgrab-rewards/cashgrab_rewards_bg@2x.png');
+	// background-size: cover;
+	background-size: 100% 100%;
 	background-repeat: no-repeat;
 	::v-deep {
 		.share-and-win-main {
@@ -493,8 +508,9 @@
 		padding: 0 32rpx 100rpx 32rpx;
 		.my-rewards-box {
 			background: #fff;
-			padding: 32rpx 46rpx 32rpx 32rpx;
-			box-shadow: 0px 8rpx 16rpx 0px rgba(194,123,27,0.25);
+			padding: 38rpx 32rpx 40rpx;
+			box-shadow: 0px 1px 16px 0px rgba(0,0,0,0.05);
+			border-radius: 8rpx;
 			.title {
 				color: #333;
 				font-size: 32rpx;
@@ -503,7 +519,7 @@
 				font-weight: bold;
 			}
 			.reward-data-box {
-				background-color: #FFF9F1;
+				background-color: #F0F3FF;
 				display: flex;
 				border-radius: 16rpx;
 				position: relative;
@@ -543,35 +559,42 @@
 					width: 0;
 					flex: 1;
 					text-align: center;
-					padding: 74rpx 0 48rpx 0;
+					display: flex;
+					justify-content: center;
+					align-items: center;
 					position: relative;
 					word-break: break-word;
+					flex-direction: column;
+					height: 192rpx;
 					.value {
 						font-size: 64rpx;
 						color: #000;
-						margin-bottom: 46rpx;
-						font-weight: bold;
+						margin-bottom: 18rpx;
 					}
 					.label {
 						color: #999;
 						font-size: 24rpx;
+						font-family: 'Montserrat-Regular';
 					}
 					.item-bg {
 						position: absolute;
 						right: 0;
 						bottom: 0;
-						width: 288rpx;
+						width: 96rpx;
 					}
 				}
 			}
 			.dui-primary-btn {
 				font-size: 28rpx;
 				margin-bottom: 28rpx;
+				border-radius: 42rpx;
 			}
 			.share-history-btn {
 				font-size: 28rpx;
 				color: #0071E3;
 				text-align: center;
+				text-decoration: underline;
+				font-family: 'Montserrat-Regular';
 			}
 		}
 		.invitation-process-box {
@@ -775,7 +798,8 @@
 		}
 		.pending-day {
 			color: #999999;
-			font-size: 28rpx;
+			font-size: 27rpx;
+			font-weight: 500;
 		}
 	}
 	.dashed {
@@ -786,14 +810,17 @@
 		color: #FFFFFF;
 		background: #000000;
 		border: 1px solid #000;
-		border-radius: 8rpx;
-		font-size: 32rpx;
 		text-align: center;
 		width: 100%;
-		line-height: 84rpx;
+		line-height: 92rpx;
+		border-radius: 73rpx 73rpx 73rpx 73rpx;
+		height: 92rpx;
+		background: #222222;
+		font-size: 31rpx;
+		font-weight: 600;
 	}
 	.save-btn {
-		margin: 124rpx 0 24rpx 0;
+		margin: 69.23rpx 0 24rpx 0;
 	}
 	.save-btn.disabled {
 		background: #666;
@@ -856,7 +883,7 @@
 }
 .pending-money-content {
 	background: #fff;
-	border-radius: 16rpx;
+	border-radius: 16rpx 16rpx 0 0;
 	padding: 37rpx 24rpx;
 	position: relative;
 	.title {
@@ -942,6 +969,44 @@
 		.list-item-box:nth-child(odd) {
 			background: #E5F3FFFF;
 		}
+	}
+}
+.step-footer-box {
+	position: relative;
+	height: 208rpx;
+	.step-footer-box-bg {
+		width: 100%;
+		position: absolute;
+		left: 0;
+		height: 208rpx;
+		bottom: 0;
+	}
+	.step-footer-money {
+		position: absolute;
+		color: #fff;
+		font-size: 40rpx;
+		transform: rotate(24deg);
+	}
+	.step-footer-money1 {
+		left: 66rpx;
+		top: 50rpx;
+	}
+	.step-footer-money2 {
+		width: 84rpx;
+		font-size: 32rpx;
+		line-height: 1;
+		left: 220rpx;
+		top: 90rpx;
+		text-align: center;
+		word-break: break-word;
+	}
+	.step-footer-money3 {
+		position: absolute;
+		color: #41176D;
+		font-family: 'Montserrat-Regular';
+		right: 60rpx;
+		top: 84rpx;
+		transform: rotate(-13deg) scale(0.35);
 	}
 }
 </style>

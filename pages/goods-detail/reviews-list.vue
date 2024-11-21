@@ -1,52 +1,62 @@
 <template>
 	<view class="reviews-list-box dui-padding-top-header">
 		<page-meta :page-style="'overflow:'+(pageMetaShow?'hidden':'visible')"></page-meta>
-		<pageHeader :styleType="2" :showShadow="false" :isTitleUppercase="true" :title="$t('goods_detail.customer_reviews')"></pageHeader>
+		<pageHeader :styleType="2" :showShadow="false" :isTitleUppercase="true" :title="$t('goods_detail.produce_reviews')"></pageHeader>
 		<view class="reviews-box">
-			<reviewsBar :reviewsData="reviewsData"></reviewsBar>
+			<reviewsBar :reviewsData="reviewsData" :paddingLeft="'83rpx'"></reviewsBar>
 		</view>
+		<!-- 遮罩层 -->
 		<view class="menu_mask" @tap="open_popmenu = false" v-show="open_popmenu"></view>
-		<view class="my-filter-box flex">
-			<view @tap="open_popmenu = !open_popmenu" class="filter-menu flex align-items-center justify-content-center">
-				<view class="choosed font-bold">
+		<!-- Recommend Filter -->
+		<view class="recommend-filter">
+			<!-- Recommend -->
+			<view @tap="open_popmenu = !open_popmenu" class="recommend-box">
+				<view class="recommend">
 					{{ $t(sortData[currentSortIndex].language) }}
+					<image :class="open_popmenu ? 'icon icon-rotate': 'icon'"
+						src="@/static/images/icon/filter@2x.png" 
+						mode="widthFix" :lazy-load="true" />
 				</view>
-				<view class="open-pop">
-					<image src="@/static/images/icon/filter@2x.png" mode="widthFix" :lazy-load="true" class="down_arrow_img" :class="open_popmenu?'open':''"/>
-		
-				</view>
-				<view :class="'pop_menu ' + (open_popmenu ? 'open' : '')" >
-					<view @tap="handleSort(index,item)" v-for="(item, index) in sortData" :key="index" :class="'menu_item flex justify-content-between align-items-center ' + (index == currentSortIndex ? 'selected' : '')">
-						<view class="text">{{ $t(item.language) }}</view>
+				<view :class="open_popmenu ? 'pop-menu pop-menu-open' : 'pop-menu'"
+					:style="{'padding-bottom': open_popmenu ? '30.77rpx' : '0'}">
+					<view v-for="(item, index) in sortData" :key="index" 
+						@tap="handleSort(index,item)" 
+						:class="index == currentSortIndex ? 'menu-item-selected' : 'menu-item'">
+						{{ $t(item.language) }}
 					</view>	
 				</view>
 			</view>
-			<view class="filter-dialog  flex align-items-center justify-content-center" @tap="$refs.popupMoreFilter.open('right');open_popmenu = false">
-				<view class="font-bold">{{ $t('search.filter') }}</view>
-				<image src="@/static/images/icon/down_arrow@2x.png" mode="widthFix" :lazy-load="true" class="filter_img"/>
+			<view class="line"></view>
+			<!-- Filter -->
+			<view class="filter-dialog" @tap="$refs.popupMoreFilter.open('right');open_popmenu = false">
+				<view class="">{{ $t('search.filter') }}</view>
+				<image src="@/static/images/icon/icon-filters@2x.png" 
+					class="icon" mode="widthFix" :lazy-load="true" />
 			</view>
 		</view>
 		<!-- 筛选 -->
 		<view class="filter-box flex align-items-center" style="display: none;">
 			<view @click="$refs.sortSelect.open('bottom')" class="filter-item">
-				<view class="label font-bold">{{$t("goods_detail.sort")}}</view>
+				<view class="label">{{$t("goods_detail.sort")}}</view>
 				<view class="iconfont icon-down"></view>
 			</view>
 			<view @click="$refs.starSelect.open('bottom')" class="filter-item">
-				<view class="label font-bold">{{$t("goods_detail.rating")}}</view>
+				<view class="label">{{$t("goods_detail.rating")}}</view>
 				<view class="iconfont icon-down"></view>
 			</view>
 		</view>
 		<!-- 图片 -->
 		<view class="all-reviews-images-box" v-if="imgList.length">
 			<view class="title-box flex align-items-center justify-content-between">
+				<!-- Reviews With Images -->
 				<view class="title">{{$t('goods_detail.reviews_with_images')}}</view>
-				<view class="see-all-photos" @click="$refs.popupAllPhotoDialog.open('right')">{{$t('goods_detail.see_all_phptos')}}</view>
+				<view class="see-all-photos" @click="$refs.popupAllPhotoDialog.open('right')">{{$t('goods_detail.see_all_photos')}}</view>
 			</view>
 			<view class="images-wrapper">
 				<scroll-view :show-scrollbar="false" :scroll-x="true" @scroll="handleXScrollbar" @scrolltolower="handleXScrollbarRight" class="all-imgs-x-scroll-view">
 					<view class="images-box">
-						<view class="img-item" @click="partLoadingName=='allPhotos'+index?'':handleReviewsItem(item,'allPhotos'+index)" v-for="(item,index) in imgList" :key="index">
+						<view class="img-item" v-for="(item,index) in imgList" :key="index"
+							@click="partLoadingName == 'allPhotos'+ index ? '': handleReviewsItem(item,'allPhotos'+index)">
 							<image :src="item.image" mode="aspectFill" />
 							<partLoading :show="partLoadingName=='allPhotos'+index"></partLoading>
 						</view>
@@ -60,7 +70,12 @@
 		<view class="list-content-box">
 			<!-- 评论列表 -->
 			<block v-for="(item,index) in reviewsList" :key="index">
-				<reviewListItem @handleUpdateShareData="handleUpdateShareData()" :shareData="shareData" :reviewData="formatReviewItem(item)" @changeHelpful="(data)=>{changeHelpful(data,item)}"></reviewListItem>
+				<reviewListItem
+					:shareData="shareData"
+					:reviewData="formatReviewItem(item)" 
+					@handleUpdateShareData="handleUpdateShareData()" 
+					@changeHelpful="(data)=>{changeHelpful(data,item)}">
+				</reviewListItem>
 			</block>
 		</view>
 		<!-- star下拉选项弹窗 -->
@@ -71,8 +86,8 @@
 		<singleSelect ref="sortSelect" refName="popupSort" :currentIndex="currentSortIndex" :options="sortData"
 			@change="handleSort">
 		</singleSelect>
-		<!-- 更多筛选弹窗 -->
-		<uni-popup ref="popupMoreFilter" @change="(e)=>{pageMetaShow = e.show;}">
+		<!-- 右侧FILTER弹窗 -->
+		<!-- <uni-popup ref="popupMoreFilter" @change="(e)=>{pageMetaShow = e.show;}">
 			<view class="popup-content popup-more-filter">
 				<view class="header">
 					<image mode="widthFix" class="goback" @click="$refs.popupMoreFilter.close()" src="@/static/images/p_detail_left_arrow@2x.png" />
@@ -101,7 +116,51 @@
 					<view class="done-btn" @click="handleFilterDone">{{$t('goods_detail.done_btn')}}</view>
 				</view>
 			</view>
+		</uni-popup> -->
+		<uni-popup ref="popupMoreFilter" @change="(e)=>{pageMetaShow = e.show;}">
+			<view class="popup-content popup-more-filter">
+				<view class="header">
+					<image mode="widthFix" class="goback" @click="$refs.popupMoreFilter.close()" src="@/static/images/p_detail_left_arrow@2x.png" />
+					<view class="title">{{$t('goods_detail.filter')}}</view>
+				</view>
+				<view class="filter-content-box">
+					<view class="filter-item-box2">
+						<view class="attr_title font-MS">{{$t('goods_detail.star')}}</view>
+						<view class="attr_vals font-MR">
+						    <view v-for="(item,index) in starData" :key="index" 
+								@tap="checkStar(index,item)"
+								:class="'items flex justify-content-between align-items-center ' + (item.selected ? 'checked' : '') "
+							>	<!-- @tap="()=>{item.selected = !item.selected}" -->
+						        <view>
+						            <text class="label">{{$t(item.language)}}</text>
+						        </view>
+						        <view class="checkbox"></view>
+						    </view>
+						</view>
+					</view>
+					<view class="line"></view>
+					<view class="filter-item-box2">
+						<view class="attr_title font-MS">{{$t('goods_detail.picture')}}</view>
+						<view class="attr_vals font-MR">
+						    <view v-for="(item,index) in pictureFilterData" :key="index"
+								:class="'items flex justify-content-between align-items-center ' + (item.selected ? 'checked' : '') "
+								@tap="checkPics(index,item)"
+							>
+						        <view>
+						            <text class="label">{{$t(item.language)}}</text>
+						        </view>
+						        <view class="checkbox"></view>
+						    </view>
+						</view>
+					</view>
+				</view>
+				<view class="footer">
+					<view class="clear-btn" @click="handleFilterClear">{{$t('goods_detail.clear_btn')}}</view>
+					<view class="done-btn" @click="handleFilterDone">{{$t('goods_detail.done_btn')}}</view>
+				</view>
+			</view>
 		</uni-popup>
+		
 		<!-- 所有图片弹窗 -->
 		<uni-popup ref="popupAllPhotoDialog" @change="(e)=>{pageMetaShow = e.show;}">
 			<view class="popup-content popup-all-phptos">
@@ -155,10 +214,16 @@
 				reviewsData: {},
 				currentSortIndex: 0,
 				reviewItemDetail:{},
-				sortData: [{
+				sortData: [
+					{
 						label: 'Recommend',
 						value: '',
 						language: "goods_detail.recommend"
+					},
+					{
+						label: 'Top Reviews',
+						value: '',
+						language: "goods_detail.top_reviews"
 					},
 					{
 						label: 'Oldest to Most Recent',
@@ -176,12 +241,14 @@
 					{
 						label: 'Just Look At The Pictures',
 						value: 1,
-						language: 'goods_detail.look_at_pictures'
+						language: 'goods_detail.look_at_pictures',
+						selected: false
 					},
 					{
 						label: "Don't Look At Pictures",
 						value: 2,
-						language: 'goods_detail.do_not_look_at_picture'
+						language: 'goods_detail.do_not_look_at_picture',
+						selected: false
 					}
 				],
 				has_image:'',
@@ -189,7 +256,7 @@
 					p:1,// 当前页码
 					reviewdate:"",
 					star:"",
-					has_image:"",
+					has_image:""
 				},
 				img_params_p: 1, // 图片分页
 				imgList:[], // 图片列表
@@ -198,32 +265,38 @@
 				starData: [{
 						label: 'All',
 						value: '',
-						language: "goods_detail.all"
+						language: "goods_detail.all",
+						selected: false
 					},
 					{
 						label: '5 Star',
 						value: 5,
-						language: "goods_detail.star5"
+						language: "goods_detail.star5",
+						selected: false
 					},
 					{
 						label: '4 Star',
 						value: 4,
-						language: "goods_detail.star4"
+						language: "goods_detail.star4",
+						selected: false
 					},
 					{
 						label: '3 Star',
 						value: 3,
-						language: "goods_detail.star3"
+						language: "goods_detail.star3",
+						selected: false
 					},
 					{
 						label: '2 Star',
 						value: 2,
-						language: "goods_detail.star2"
+						language: "goods_detail.star2",
+						selected: false
 					},
 					{
 						label: '1 Star',
 						value: 1,
-						language: "goods_detail.star1"
+						language: "goods_detail.star1",
+						selected: false
 					}
 				],
 				xscrollPercentage:0,
@@ -311,20 +384,53 @@
 			},
 			// 排序下拉
 			handleSort(index, item) {
+				console.log(index, item)
 				this.currentSortIndex = index;
 				this.params.reviewdate = this.sortData[index].value
 				this.params.p = 1;
 				this.reviewsList = []
+				if(index == 1 || item.label == "Top Reviews") {
+					this.params.reviewdate = ''
+					this.params.top_review = '1'
+				} else {
+					this.params.top_review = ''
+				}
 				this.getList()
 			},
 			// 星级下拉
 			handleStar(index, item) {
 				this.currentStarIndex = index;
 			},
+			// 星级勾选
+			checkStar(index, item) {
+				item.selected = !item.selected
+				const selectedData = this.starData.filter(i => i.selected)
+				const len = selectedData.length
+				if(len === 0) {
+					this.currentStarIndex = 0
+				} else {
+					this.currentStarIndex = selectedData.map(i => {
+						return i.value == '' ? 0 : i.value
+					}).join(",")
+				}
+			},
+			checkPics(index, item) {
+				item.selected = !item.selected
+				const selectedData = this.pictureFilterData.filter(i => i.selected)
+				const len = selectedData.length
+				if(len === 0) {
+					this.has_image = 0
+				} else {
+					this.has_image = selectedData.map(i => {
+						return i.value == '' ? 0 : i.value
+					}).join(",")
+				}
+			},
 			// 筛选done
 			handleFilterDone() {
+				console.log(this.params)
 				this.params.p = 1;
-				this.params.star = this.starData[this.currentStarIndex].value;
+				this.params.star = this.currentStarIndex;
 				this.params.has_image = this.has_image;
 				this.reviewsList = [];
 				this.$refs.popupMoreFilter.close();
@@ -341,6 +447,12 @@
 					star:"",
 					has_image:'',
 				}
+				this.starData.map(i => {
+					return i.selected = false
+				})
+				this.pictureFilterData.map(i => {
+					return i.selected = false
+				})
 				this.$refs.popupMoreFilter.close();
 				this.reviewsList = [];
 				this.getList();
@@ -400,9 +512,7 @@
 		left: 0;
 	}
 	.reviews-list-box .reviews-box {
-		padding: 32rpx;
-		padding-top: 8rpx;
-		padding-bottom: 18rpx;
+
 		position: relative;
 		z-index: 2;
 		background: #fff;
@@ -431,91 +541,85 @@
 		margin-left: 8rpx;
 	}
 	
-	.my-filter-box {
+	.recommend-filter {
 		width: 100%;
-		height: 96rpx;
-		border-top: 1px solid #F1F1F1;
-		border-bottom: 1px solid #F1F1F1;
+		border-top: 2rpx solid #F1F1F1;
+		border-bottom: 2rpx solid #F1F1F1;
 		position: relative;
 		z-index: 2;
 		background: #fff;
-	}
-	
-	.filter-menu {
-		height: 100%;
-		width: 50%;
-		font-size: 28rpx;
-		position: relative;
-		.pop_menu{
-			position: absolute;
-			width: 100vw;		
-			background: #fff;
-			left: 0;
-			top: calc(1px + 100%);
-			z-index: 9;
-			height: 0;
-			transition: all 200ms;
-			overflow: hidden;
-			border-radius: 0rpx 0rpx 15rpx 15rpx;
-			padding: 0 30.77rpx 0 94.23rpx;
-			.menu_item{
-				width: 100%;
-				height: 92.31rpx;
-				padding: 0 65.38rpx 0 0;
-				color: #666;
-				@include onepxBorder(#eee);
-				&.selected{
-					color: #000;
-					font-weight: bold;
-				}
-				.text{
-					font-size: 27rpx;				
-					line-height: 32rpx;
-				}
-				.img_box{
-					width: 30.77rpx;
-					height: 30.77rpx;
-					.img{
-						width: 30.77rpx;
-						height: 30.77rpx;
-					}
-				}
-			}
+		display: inline-flex;
+		@mixin filterBoxFont($family: 'Montserrat-SemiBold', $fw: 600, $fs: 23.08rpx, $color: #222) {
+		    font-family: $family;
+		    font-weight: $fw;
+		    font-size: $fs;
+		    color: $color;
+			line-height: 27rpx;
 		}
-		.pop_menu.open{
-			height: unset;
-		}
-	
-		.choosed {
-			color: #000000;
-			font-size: 27rpx;
-			line-height: 32rpx;
-			height: 38rpx;
-			margin-right: 7.69rpx;
-		}
-	
-		.open-pop .down_arrow_img{
-			width: 34.62rpx;
-			height: 34.62rpx;
-		}
-		.open-pop .down_arrow_img.open {
-			transform: rotate(180deg);
-		}
-	
-	}
-	
-	.filter-dialog {
-		text-align: center;
-		width: 50%;
-		font-size: 27rpx;
-		line-height: 32rpx;
-		color: #000000;
-		.filter_img{
+		.icon {
 			width: 34.62rpx;
 			height: 34.62rpx;
 			margin-left: 7.69rpx;
 		}
+		.icon-rotate {
+			transform: rotate(180deg);
+		}
+		.recommend-box {
+			@include filterBoxFont;
+			position: relative;
+			height: 94.23rpx;
+			display: flex;
+			.recommend {
+				padding-left: 88.46rpx;
+				display: flex;
+				align-items: center;
+			}
+			.pop-menu{
+				height: 0;
+				width: 100vw;	
+				padding: 0 88.46rpx 30.77rpx;
+				background: #fff;
+				border-radius: 0rpx 0rpx 23rpx 23rpx;
+				position: absolute;
+				top: calc(1px + 100%);
+				z-index: 9;
+				transition: all 200ms;
+				overflow: hidden;
+				.menu-item, .menu-item-selected{
+					width: 100%;
+					height: 90.38rpx;
+					border-bottom: 2rpx solid #EEEEEE;
+					display: flex;
+					align-items: center;
+					@include filterBoxFont('Montserrat-Medium', 500, _, #666)
+				}
+				.menu-item-selected {
+					@include filterBoxFont('Montserrat-Bold', bold, _, #222)
+				}
+			}
+			.pop-menu-open{
+				height: unset;
+			}
+		}
+		.line {
+			width: 2rpx;
+			height: 46rpx;
+			background: #F1F1F1;
+			margin-top: 26.92rpx;
+			position: absolute;
+			right: 375rpx;
+		}
+		.filter-dialog {
+			@include filterBoxFont;
+			margin: 0 132.69rpx 0 136.54rpx;
+			display: flex;
+			flex: 1;
+			align-items: center;
+			justify-content: flex-end;
+		}
 	}
+	
+
 	.popup-more-filter {
 		background: #fff;
 		width: 80vw;
@@ -528,9 +632,11 @@
 			display: flex;
 			justify-content: center;
 			position: relative;
-			font-size: 32rpx;
-			font-weight: bold;
-			color: #000;
+			font-family: 'Montserrat-SemiBold';
+			font-weight: 600;
+			font-size: 35rpx;
+			color: #222222;
+			line-height: 41rpx;
 			padding-bottom: 24rpx;
 			height: 48rpx;
 			@include onepxBorder(#eee);
@@ -542,10 +648,15 @@
 			}
 		}
 		.filter-content-box {
-			padding: 62rpx 42rpx;
+			padding: 5.77rpx 44.23rpx 0 42.31rpx;
 			flex: 1;
 			height: 0;
 			overflow-y: auto;
+			.line {
+				width: 512rpx;
+				height: 0rpx;
+				border-bottom: 2rpx solid #EEEEEE;
+			}
 			.filter-item-box {
 				margin-bottom: 22rpx;
 				.label{
@@ -593,6 +704,53 @@
 					}
 				}
 			}
+			.filter-item-box2 {
+				padding: 38.46rpx 0;
+				color: #393939;
+				.attr_title {
+					padding-bottom: 38.46rpx;
+					font-size: 30.77rpx;
+					font-weight: 600;
+				}
+				.attr_vals{
+				    overflow: hidden;
+				    transition: all 200ms;
+				    .items{
+				        margin-bottom: 32.69rpx;
+				        font-size: 26.93rpx;
+						font-weight: 500;
+				        white-space: nowrap;
+				        transition: all 200ms;
+				        &:last-child{
+				            margin-bottom: 0;
+				        }
+				        .count{
+				            color: #999;
+				        }
+				        &.checked{
+				            .checkbox{
+				                border-color: #393939;
+				                display: flex;
+				                justify-content: center;
+				                align-items: center;
+				                &::after{
+				                    content: '';
+				                    width: 15.39rpx;
+				                    height: 15.39rpx;
+				                    background-color: #393939;
+				                }
+				            }
+				        }
+				        .checkbox{
+				            width: 28.85rpx;
+				            height: 28.85rpx;
+				            border-radius: 4rpx;
+				            border: 2px solid #999;
+				            margin: 1px;
+				        }
+				    }
+				}
+			}
 		}
 		.footer {
 			display: flex;
@@ -606,26 +764,32 @@
 				border: 1px solid #ccc;
 				color: #000;
 				margin-right: 32rpx;
+				border-radius: 35rpx;
 			}
 			.done-btn {
 				padding: 12rpx 30rpx;
 				border: 1px solid #000;
 				color: #fff;
 				background: #000;
+				border-radius: 35rpx;
 			}
 		}
 	}
 	.all-reviews-images-box {
 		.title-box {
-			padding: 22rpx 32rpx;
-			.title{
-				font-size: 28rpx;
-				color: #333;
-				font-weight: bold;
-			}
+			margin: 21.15rpx 30.77rpx 30.77rpx 30.77rpx;
+			font-family: 'Montserrat-SemiBold';
+			font-weight: 600;
+			font-size: 23rpx;
+			color: #333333;
+			line-height: 27rpx;
 			.see-all-photos {
-				font-size: 24rpx;
-				color: #107EFF;
+				width: 165rpx;
+				height: 29rpx;
+				font-family: 'Montserrat-Regular';
+				font-weight: 400;
+				color: #0071E3;
+				text-decoration-line: underline;
 			}
 		}
 		.images-wrapper{
@@ -634,6 +798,7 @@
 			.images-box {
 				display: flex;
 				flex-wrap: nowrap;
+				border-radius: 8rpx;
 				.img-item {
 					width: 200rpx;
 					margin-right: 16rpx;
@@ -690,12 +855,15 @@
 				position: absolute;
 			}
 			.title {
-				font-size: 36rpx;
-				color: #333333;
 				margin-left: 24rpx;
-				font-weight: bold;
 				text-align: center;
 				flex: 1;
+				
+				font-family: 'Montserrat-SemiBold';
+				font-weight: 600;
+				font-size: 35rpx;
+				color: #222222;
+				line-height: 41rpx;
 			}
 		}
 		.all-imgs-box {
@@ -709,7 +877,6 @@
 				flex-wrap: wrap;
 			}
 			.uni-scroll-view-content {
-				
 				.img-item {
 					width: calc((100vw - 96rpx) / 3);
 					height: calc((100vw - 96rpx) / 3);

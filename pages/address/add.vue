@@ -2,7 +2,7 @@
 	<view class="address-add-box dui-padding-top-header">
 		<pageHeader :styleType="2" :backSelf="judgeBackUrl()" :title="judgePageHeader()"></pageHeader>
 		<view class="container">
-			<view class="container-top-tips" v-if="address_id == '' && fromWhichPage == 'checkout' && addressType == 'address'">
+			<view class="container-top-tips" v-if="address_id == '' && fromWhichPage == 'checkout' && addressType == 'address' && isShowShoppingTip == '1'">
 				{{$t('address.billing_address_block.tip_content')}}
 			</view>
 			<view class="container-top-tips" v-if="address_id == '' && fromWhichPage == 'checkout' && addressType == 'billing'">
@@ -32,7 +32,7 @@
 							<view class="required-star">*</view>
 						</view>
 					</template>
-					<input type="text" v-model="formData.first_name" />
+					<uni-easyinput type="text" v-model="formData.first_name"/>
 				</uni-forms-item>
 				<uni-forms-item name="last_name">
 					<template v-slot:label="{ label, required }">
@@ -41,7 +41,7 @@
 							<view class="required-star">*</view>
 						</view>
 					</template>
-					<input type="text" v-model="formData.last_name" />
+					<uni-easyinput type="text"  v-model="formData.last_name" />
 				</uni-forms-item>
 				<uni-forms-item name="telephone">
 						<template v-slot:label="{ label, required }">
@@ -50,16 +50,16 @@
 								<view class="required-star">*</view>
 							</view>
 						</template>
-					<input type="text" v-model="formData.telephone" />
+					<uni-easyinput type="text"  v-model="formData.telephone" />
 				</uni-forms-item>
-				<uni-forms-item name="street1">
+				<uni-forms-item name="street1" class="form-address1">
 					<template v-slot:label="{ label, required }">
 						<view class="custom-label-box">
 							<view>{{ $t('address.street1_label') }}</view>
 							<view class="required-star">*</view>
 						</view>
 					</template>
-					<googleAutocompletePlace @changeSelect="changeSelect" v-model="formData.street1"></googleAutocompletePlace>
+					<googleAutocompletePlace   @changeSelect="changeSelect" v-model="formData.street1"></googleAutocompletePlace>
 				</uni-forms-item>
 				<uni-forms-item name="street2">
 					<template v-slot:label="{ label, required }">
@@ -67,7 +67,7 @@
 							<view>{{ $t('address.street2_label') }}</view>
 						</view>
 					</template>
-					<input type="text" v-model="formData.street2" :placeholder="$t('address.street2')" />
+					<uni-easyinput type="text"  v-model="formData.street2" :placeholder="$t('address.street2')" />
 				</uni-forms-item>
 				<uni-forms-item name="city">
 					<template v-slot:label="{ label, required }">
@@ -76,7 +76,7 @@
 							<view class="required-star">*</view>
 						</view>
 					</template>
-					<input type="text" v-model="formData.city" />
+					<uni-easyinput type="text"   v-model="formData.city" />
 				</uni-forms-item>
 				<uni-forms-item name="addressState">
 					<template v-slot:label="{ label, required }">
@@ -102,7 +102,7 @@
 							<view class="required-star">*</view>
 						</view>
 					</template>
-					<input type="text" v-model="formData.zip"/>
+					<uni-easyinput type="text"  v-model="formData.zip"/>
 				</uni-forms-item>
 			</uni-forms>
 			<!-- shipping address 设置默认地址 -->
@@ -220,6 +220,8 @@
 				currentOpenPop:'',
 				addressType: 'address', // 地址类型 address代表shippingAddress；billing代表billingAddress
 				fromWhichPage:'', // 从哪个页面跳转进来的
+				actionType: 'add',  //add 添加地址， edit编辑地址
+				isShowShoppingTip: 0, //是否显示shopping地址提示
 				backType: "", // 值如果是 cartNoAddress 则跳转到/pages/checkout/index页面，vipNoAddress 则跳 /pages/vip/index页面，否则正常跳转
 				save_as_shipping:2, // 首次添加时billing,是否同步为shipping[1是|2否]
 				countrySearchKey: '', // 国家搜索关键词
@@ -306,6 +308,12 @@
 			if(e.addressType){
 				this.addressType = e.addressType;
 			}
+			if(e.actionType) {
+				this.actionType = e.actionType;
+			}
+			if(e.isShowShoppingTip) {
+				this.isShowShoppingTip = e.isShowShoppingTip;
+			}
 			this.initAddressInfo(e);
 		},
 		mounted() {
@@ -315,7 +323,7 @@
 			//#endif
 		},
 		methods: {
-			popupChange(show,name) {
+ 			popupChange(show,name) {
 				if(show) {
 					this.currentOpenPop = name;
 				} else {
@@ -324,9 +332,16 @@
 			},
 			judgePageHeader() {
 				if(this.fromWhichPage == 'checkout' || this.fromWhichPage == 'vipPage') {
-					return this.addressType=='billing'?this.$t('address.billing_address_block.title'):this.$t('address.address_block.title')
+					if(this.addressType == 'billing') {
+						return this.$t('address.billing_address_block.title')
+					} else {
+						if (this.isShowShoppingTip == 1) {
+							return this.$t('address.address_block.title')
+						}
+						return this.actionType == 'add' ? this.$t('address.add_new_address') : this.$t('address.title')
+					}
 				} else {
-					return this.$t('address.title')
+					return this.actionType == 'add' ? this.$t('address.add_new_address') : this.$t('address.title')
 				}
 			},
 			// 判断返回的路径
@@ -588,7 +603,9 @@
 		align-items: center;
 		line-height: 52rpx;
 		font-size: 32rpx;
-		color: #333;
+		color: #393939;
+		margin-bottom: 7rpx;
+		padding-left: 32rpx;
 	}
 	
 	.custom-label-box .required-star {
@@ -605,7 +622,10 @@
 		align-items: center;
 		padding: 0 32rpx;
 		padding-bottom: 32rpx;
+		padding-left: 58rpx;
 		border-bottom: 16rpx solid #F5F5F5;
+		margin-top: 68rpx;
+		overflow: hidden;
 	}
 	.set-as-address-box .set-checkbox {
 		margin-right: 16rpx;
@@ -623,12 +643,22 @@
 	}
 	.address-add-box .container>>>.uni-forms-item__content {
 		font-size: 32rpx;
-		border: 1px solid #DDDDDD;
-		border-radius: 4rpx;
+		/* border: 1px solid #DDDDDD; */
+		/* border-radius: 46rpx; */
+	}
+	.address-add-box .container>>>.uni-easyinput__content {
+		font-size: 32rpx;
+		border-radius: 46rpx;
+		padding: 0 32rpx;
+	}
+	
+	.address-add-box .container>>>.uni-easyinput__content .uni-icons.content-clear-icon {
+		font-size: 46rpx !important;
 	}
 	.address-add-box .container>>>.uni-forms-item__error {
-		color: #FF0000;
-		font-size: 24rpx;
+		color: #FF512B;
+		font-size: 27rpx;
+		left: 23rpx;
 	}
 	.address-add-box .container>>>.uni-forms-item__error uni-text {
 		display: flex;
@@ -636,10 +666,10 @@
 	}
 	.address-add-box .container>>>.uni-forms-item__error uni-text::before {
 		content: '';
-		background-image: url('@/static/images/checkout_icon/error-icon@2x.png');
+		background-image: url('@/static/images/checkout_icon/error-icon-new@2x.png');
 		display: inline-block;
-		width: 36rpx;
-		height: 36rpx;
+		width: 40rpx;
+		height: 40rpx;
 		background-size: cover;
 		margin-right: 8rpx;
 	}
@@ -651,18 +681,20 @@
 
 	.address-add-box .container>>> uni-input {
 		font-size: 32rpx;
-		min-height: 96rpx;
-		line-height: 96rpx;
-		padding: 0 32rpx;
+		min-height: 92rpx;
+		line-height: 92rpx;
+		padding: 0 !important;
 	}
 	
 	.customer-input {
-		min-height: 96rpx;
-		line-height: 96rpx;
+		min-height: 92rpx;
+		line-height: 92rpx;
 		padding: 0 32rpx;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		border-radius: 46rpx;
+		border: 2rpx solid #999999;
 	}
 	.customer-input .select_label {
 		white-space: nowrap;
@@ -682,7 +714,9 @@
 		min-height: 64rpx;
 		line-height: 64rpx;
 	}
-
+	.address-add-box .container .form-address1 {
+		margin-bottom: 60rpx;
+	}
 	.address-add-box>>>uni-checkbox .uni-checkbox-input.uni-checkbox-input-checked {
 		color: #000 !important;
 		border-color: #000 !important;
@@ -701,10 +735,11 @@
 	}
 
 	.address-add-box .tips {
-		color: #333333;
+		color: #0071E3;
 		font-size: 28rpx;
 		text-align: center;
-		padding-bottom: 184rpx;
+		padding-bottom: 76rpx;
+		margin-top: 46rpx;
 	}
 
 	.address-add-box .tips a {
@@ -728,6 +763,7 @@
 		font-size: 36rpx;
 		text-align: center;
 		line-height: 80rpx;
+		border-radius: 40rpx;
 	}
 
 	.address-add-box .container .footer-toolbar .btn.cancel-btn {
@@ -800,7 +836,7 @@
 		white-space: nowrap;
 	}
 	.security-privacy-module {
-		padding: 32rpx;
+		padding: 30rpx;
 	}
 	.security-privacy-module-title {
 	    color:#198055;
@@ -812,14 +848,20 @@
 	}
 	.security-privacy-module-content {
 		color: #666;
-		font-size: 30rpx;
-		word-spacing:-1px;
+		font-size: 27rpx;
+		line-height: 42rpx;
 	}
 	.container-top-tips {
 		background: #F2F7FF;
 		margin: 0 32rpx 32rpx;
-		padding: 16rpx 32rpx;
+		padding: 15rpx 30rpx;
 		color: #666666;
-		font-size: 28rpx;
+		font-size: 27rpx;
+		line-height: 42rpx;
+	}
+	
+	.dui-primary-btn {
+		border-radius: 77rpx;
+		background-color: #222;
 	}
 </style>

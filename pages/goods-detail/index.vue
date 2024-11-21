@@ -10,10 +10,10 @@
 		<view class="goods-detail-header-box page-max-width" :class="scrollTop>5?'bg_white':''">
 			<view class="flex justify-content-between goods-detail-header">
 				<view class="flex justify-content-between align-items-center">
-					<image class="icon" mode="widthFix" src="@/static/images/p_detail_left_arrow@2x.png" @click="goback()" />
+					<image class="icon" mode="widthFix" src="@/static/images/goods-details-back@2x.png" @click="goback()" />
 				</view>
 				<view class="flex justify-content-between align-items-center">
-					<image class="icon icon-share1" mode="widthFix" src="@/static/images/p_detail_share_2@2x.png" @tap="showShareToast(1)"></image>
+					<image class="icon" mode="widthFix" src="@/static/images/goods-details-share@2x.png" @tap="showShareToast(1)"></image>
 				</view>
 			</view>
 			<view @click.stop="" class="share-desc-tip-box" v-if="showShareDescTip">
@@ -25,10 +25,11 @@
 					</view>
 					<image @click="showShareDescTip=false" class="close-icon" mode="widthFix" src="@/static/images/fission_sharing/close_icon.png"></image>
 				</view>
-				
 			</view>
 			<view v-if="showFloorTab" id="product-floor-tab" class="page-max-width">
-				<view v-for="(item,index) of floorTabArr" :key="index" class="floor-tab__item font-bold" :class="floorTabActive == index?'floor-tab__item_active':''" @click="handleScrollTo(item)">
+				<view v-for="(item,index) of floorTabArr" :key="index" 
+					class="floor-tab__item font-bold" :class="floorTabActive == index?'floor-tab__item_active':''" 
+					@click="handleScrollTo(item)">
 					<text class="floor-tab__item-name">
 						{{$t(item.language)}}
 					</text>
@@ -40,14 +41,13 @@
 			<view class="swiper-container" v-if="!goodsDetail.videoId" @click="openShowImgDialog">
 				<!-- <swiper :style="{ height: (swiperHeight == 0 ?480+'rpx':swiperHeight+'px')}" class="swiper_box" -->
 				<!-- 3:4 -->
-				<swiper :style="{ height: '1000rpx'}" class="swiper_box"
+				<swiper :style="{ height: '750rpx'}" class="swiper_box"
 					:current="swiperCurrent" :autoplay="false" circular="true" :interval="interval" :duration="duration"
 					:display-multiple-items="1"
 					@change="swiperchange">
 					<block v-for="(item, index) in goodsDetail.thumbnail_img" :key="index">
 						<swiper-item>
-							<image :id="'swiper-item-image' + index" :src="item.url" class="slide-image" :lazy-load="true"
-								mode="widthFix" />
+							<image :id="'swiper-item-image' + index" :src="item.url" class="slide-image" :lazy-load="true" mode="widthFix" />
 						</swiper-item>
 					</block>
 				</swiper>
@@ -55,10 +55,16 @@
 					{{ swiperCurrent+1}}/{{goodsDetail.thumbnail_img.length}}
 				</view>
 			</view>
+			
 			<!-- 特价活动商品售卖进度(如果有裂变banner显示，优先裂变banner) -->
-			<view class="special_activity_sale_progress-box" v-if="(!aicode || (aicode && is_have_order != 0))&&goodsDetail.special_data && goodsDetail.special_data.is_spu_special == 1&&goodsDetail.special_data.is_show == 1&&goodsDetail.can_sale">
+			<view class="special_activity_sale_progress-box" 
+				v-if="(!aicode || (aicode && is_have_order != 0)) && 
+					goodsDetail.special_data && 
+					goodsDetail.special_data.is_spu_special == 1 && 
+					goodsDetail.special_data.is_show == 1 &&
+					goodsDetail.can_sale">
 				<view class="left-box">
-					<image mode="widthFix" class="img1" src="@/static/images/lower_price/lower_price_flash_white@2x.png"></image>
+					<image mode="widthFix" class="img1" src="@/static/images/lower_price/flash_blue.png"></image>
 					<view class="stock-progress-box">
 						<view class="text">{{goodsDetail.special_data.spu_stock_text}}</view>
 						<view class="bar-box">
@@ -67,29 +73,23 @@
 					</view>
 				</view>
 				<view class="right-box">
-					{{$store.state.site_name_upper}}
+					<!-- {{$store.state.site_name_upper}} -->
+					FLASH
 					<image mode="widthFix" class="img2" src="@/static/images/lower_price/lower_price_flash_white_1@2x.png"></image>
 					{{$t('lower_price_active.ale')}}
 				</view>
-				
 			</view>
-			<!-- 裂变banner显示 -->
-			<view class="detail-share-banner-box" v-if="aicode">
-				<block v-if="!$store.getters.hasLogin || ($store.getters.hasLogin && is_have_order == 0)">
-					<image class="detail-share-banner" mode="widthFix" src="@/static/images/detail/detail_share_banner.png"></image>
-					<view class="text-box font-family-KronaOne">
-						<view class="text">{{$t('fission_sharing.product_detail_fission_text')}}</view>
-						<view v-if="!$store.getters.hasLogin" @click="$refs.fissionSharingTipsPopup.open()" class="fission-btn">{{$t('fission_sharing.product_detail_fission_btn')}}</view>
-					</view>
-				</block>
-			</view>
+			
 			<!-- 商品信息 -->
 			<view class="goods-info">
 				<view class="goods-title">{{ goodsDetail.name }}</view>
 				<view class="flex justify-content-between align-items-center">
 					<view>
 						<!-- 属于特价活动商品并且用户已购买过该件商品且已购数量大于等于限购数量【goodsDetail.special_qty_left==0】并且已选择size时  或者是特价商品并且无库存，恢复原价-->
-						<view class="special-activity-goods-price goods-price" v-if="(goodsDetail.special_data&&goodsDetail.special_data.is_spu_special == 1&&goodsDetail.special_qty_left==0&&isSizeSelected) || (goodsDetail.special_data&&goodsDetail.special_data.is_spu_special== 1&&!goodsDetail.can_sale)">
+						<view class="special-activity-goods-price goods-price" 
+							v-if="goodsDetail.special_data && 
+								  goodsDetail.special_data.is_spu_special == 1 && 
+								  ((goodsDetail.special_qty_left == 0 && isSizeSelected) || !goodsDetail.can_sale)">
 							{{ goodsDetail.price_info.price.symbol }}{{ goodsDetail.price_info.price.value }}
 						</view>
 						<view v-else>
@@ -114,44 +114,83 @@
 							</block>
 						</view>
 					</view>
+					<!-- 评价 -->
 					<view @click="$public.handleNavTo('/pages/goods-detail/reviews-list?id='+id+'&spu='+goodsDetail.spu)">
-						<starRate :num="goodsDetail.reviw_rate_star_average">
+						<starRate :num="goodsDetail.reviw_rate_star_average" :starSize="'34.62rpx'">
 							<text class="review-count flex align-items-center">({{goodsDetail.review_count}})</text>
-							<view class="iconfont icon-goto"></view>
+							<image class="icon-arrow-right" src="@/static/images/detail/icon-right@2x.png" mode="widthFix"></image>
+							<!-- <view class="iconfont icon-goto"></view> -->
 						</starRate>
 					</view>
 				</view>
 				<!-- 用户是vip并且是会员产品 -->
-				<view v-if="showVip && goodsDetail.member_price && goodsDetail.isVip" class="user-is-vip flex align-items-center">
+				<view v-if="showVip && goodsDetail.member_price && goodsDetail.isVip" 
+					class="user-is-vip flex align-items-center">
 					<view><text class="font-bold">-{{goodsDetail.discount_off}}</text>%</view>
 					<view class="vip-line"></view>
 					<view class="flex-1">{{$t('vip.exclusive_discounts', {site_name: $store.state.site_name_upper,discount_off:goodsDetail.discount_off})}}</view>
 				</view>
 				<!-- 用户当前不是vip并且是会员产品 新版样式-->
-				<view v-if="showVip && goodsDetail.member_product && !goodsDetail.isVip" @click="$public.handleNavTo('/pages/vip/index')" class="reminder-buy-vip flex align-items-center">
+				<view v-if="showVip && goodsDetail.member_product && !goodsDetail.isVip" 
+					@click="$public.handleNavTo('/pages/vip/index')" 
+					class="reminder-buy-vip flex align-items-center">
 					<view class="font-bold" style="color: #873c00;">{{goodsDetail.member_price.symbol}}{{goodsDetail.member_price.value}}</view>
 					<view class="vip-tips flex-1" style="margin-left: 16rpx;padding-left:16rpx;border-left: 1px solid rgb(135 60 0 / 20%);">{{$t('vip.product_vip_tip',{site_name: $store.state.site_name_upper,discount_off:goodsDetail.discount_off})}}</view>
 				</view>
 			</view>
+			
+			<!-- 裂变banner显示  v-if="aicode" -->
+			<view v-if="aicode" style="background-color: #fff; padding-top: 23.08rpx;">
+				<view class="detail-share-banner-box">
+					<block v-if="!$store.getters.hasLogin || ($store.getters.hasLogin && is_have_order == 0)">
+						<image class="detail-share-banner" mode="widthFix" src="@/static/images/detail/detail_share_banner_unicoeye.png"></image>
+						<view class="text-box font-family-KronaOne">
+							<view :class="$store.getters.hasLogin ? 'no-button text': 'text'">
+								{{$t('fission_sharing.product_detail_fission_text')}}
+							</view>
+							<view v-if="!$store.getters.hasLogin" @click="$refs.fissionSharingTipsPopup.open()" class="fission-btn">
+								{{$t('fission_sharing.product_detail_fission_btn')}}
+							</view>
+						</view>
+					</block>
+				</view>
+			</view>
+			
 			<!-- 获取优惠券 -->
 			<blockItemBox v-if="couponList.length" @click="$refs.popupCoupon.open('bottom')" :title="$t('goods_detail.get_coupon_discount')">
 			</blockItemBox>
+			
+			<!-- 选择属性 Color / Prescription-->	
 			<view class="options-and-qty-box">
-				<!-- 选择属性 -->
 				<block v-if="goodsDetail.options && goodsDetail.options.length">
 					<view class="goodsDetail-option-box">
 						<view class="product-page-current-attr-box" v-for="(item,index) in goodsDetail.options" :key="index">
-							<view class="label font-bold">{{item.label}}: {{item.label == currentColorObj.key ?currentColorObj.value:''}}</view>
-							<view class="attr-box flex">
+							<view class="label">{{item.label}}: {{item.label == currentColorObj.key ?currentColorObj.value:''}}</view>
+							<view class="attr-box">
 								<template v-for="(item_child,index_child) in item.value" >
-									<view :key="index_child" class="color-item" :class="item_child.active == 'current'?'on':item_child.active =='noactive'?'disabled':''" @click="changeColor(item_child,index_child)" v-if="item_child.show_as_img">
-										<image :class="(!isSizeSelected && !item_child.color_variant_stock) || (!item_child.has_stock&&isSizeSelected)?'img_out_stock':''" :src="item_child.show_as_img" mode="aspectFill"></image>
-										<view class="has-discount" v-if="item_child.has_discount&&!item_child.is_hot"></view>
-										<!-- 如果未选中尺码，颜色的库存按颜色变体库存显示，如果选中尺码，颜色库存按sku显示 -->
-										<view class="out-stock" v-if="(!isSizeSelected && !item_child.color_variant_stock) || (!item_child.has_stock&&isSizeSelected)"></view>
-										<view v-if="item_child.is_hot" class="product_hot_tag flex align-items-center justify-content-center">{{$t('goods_detail.hot')}}</view>
+									<view :class="item_child.show_as_img ? 'color_box' : ''">
+										<view v-if="item_child.show_as_img" :key="index_child"
+											class="color-item" 
+											:class="item_child.active == 'current' ? 'color-on' :
+													item_child.active == 'noactive' ? 'color-disabled' : ''" 
+											@click="changeColor(item_child,index_child)" >
+											<!-- 图片 -->
+											<image :class="(!isSizeSelected && !item_child.color_variant_stock) || (!item_child.has_stock&&isSizeSelected)?'img_out_stock':''" :src="item_child.show_as_img" mode="aspectFill"></image>
+											<!-- 折扣标签 -->
+											<view class="has-discount" v-if="item_child.has_discount&&!item_child.is_hot"></view>
+											<!-- 如果未选中尺码，颜色的库存按颜色变体库存显示，如果选中尺码，颜色库存按sku显示 -->
+											<!-- 商品禁选 -->
+											<view v-if="(!isSizeSelected && !item_child.color_variant_stock) || (!item_child.has_stock&&isSizeSelected)"
+												class="out-stock" >
+											</view>
+											<!-- 商品热门标签 -->
+											<view v-if="item_child.is_hot" class="product_hot_tag flex align-items-center justify-content-center">{{$t('goods_detail.hot')}}</view>
+										</view>
 									</view>
-									<view :key="index_child" v-if="!item_child.show_as_img&&item_child.status==1" class="other-item" :class="judgeAttrSelect({item,item_child})" @click="changeOtherAttr(item_child,index_child,item)">
+									<view v-if="!item_child.show_as_img&&item_child.status==1" :key="index_child"  
+										class="other-item" 
+										:class="judgeAttrSelect({item,item_child})" 
+										@click="changeOtherAttr(item_child,index_child,item)">
 										{{item_child.attr_val}}
 									</view>
 								</template>
@@ -161,7 +200,7 @@
 				</block>
 				<!-- 商品数量 -->
 				<view class="product-qty-box">
-					<view class="title font-bold">{{$t('goods_detail.qty')}}:</view>
+					<view class="title">{{$t('goods_detail.Quantity')}}:</view>
 					<view class="qty-box flex align-items-center">
 						<view @click="handleNumReduce()" class="iconfont icon-reduce" :class="qtyValue>1?'':'_disabled'"></view>
 						<input class="qty-input" step="1" type="number" @blur="qtyValueChange" v-model="qtyValue" />
@@ -173,7 +212,7 @@
 					<image class="img" src="@/static/images/black_tip.png" mode="widthFix" />
 					</view>
 					<view class="">
-					{{ $t('goods_detail.sizefor') }}<text class="di" style="color: #FF5C00;">{{ $t('goods_detail.sale',{site_name: $store.state.site_name_upper}) }}</text>{{ $t('goods_detail.torestore') }}
+					{{ $t('goods_detail.sizefor') }}<text class="di" style="color: #8A61E7;">{{ $t('goods_detail.sale',{site_name: $store.state.site_name_upper}) }}</text>{{ $t('goods_detail.torestore') }}
 					</view>				
 				</view>
 			</view>
@@ -181,32 +220,42 @@
 			<view v-if="goodsDetail.tier_price.length" class="p-detail-tier-prices-box">
 				<tier-price :tier_price="goodsDetail.tier_price" :activeIndex="tierActiveIndex"></tier-price>
 			</view>
+			
+			<!-- 条状块 -->
 			<view class="info-list-box">
 				<!-- 描述 -->
 				<blockItemBox @click="$public.handleNavTo(judgeToDetailUrl());maClickInfo('description')"
 					:title="$t('goods_detail.description')">
 				</blockItemBox>
-				<!-- 材料 -->
-				<blockItemBox @click="$public.handleNavTo('/pages/goods-detail/materials?id='+id);maClickInfo('materials')" v-if="goodsDetail.material_composition['Composition'] || goodsDetail.material_composition['Material']" :title="$t('goods_detail.materials')">
-				</blockItemBox>
-				<!-- 物流信息 -->
-				<blockItemBox @click="$public.handleNavTo('/pages/goods-detail/shipping-return');maClickInfo('shipping&returns')"
-					:title="$t('goods_detail.shipping_returns')">
-				</blockItemBox>
-				<!-- 购物安全 -->
-				<blockItemBox @click="$public.handleNavTo('/pages/cms/article/article?url_key=app-shopping-security');maClickInfo('shoppingSecurity')"
-					:title="$t('goods_detail.shopping_security')">	
-				</blockItemBox>
+				<!-- FQA -->
+				<!--  v-if="goodsDetail.material_composition['Composition'] || goodsDetail.material_composition['Material']" -->
+				<blockItemBox @click="$public.handleNavTo('/pages/goods-detail/fqa');maClickInfo('faq')" :title="$t('goods_detail.faq')"></blockItemBox>
 				<!-- size guide -->
-				<blockItemBox @click="$public.handleNavTo('/pages/goods-detail/sizeguide?id='+id);maClickInfo('sizeGuide')"
+				<blockItemBox v-if="hasSizeGuide"
+					@click="$public.handleNavTo('/pages/goods-detail/unicoeye-size-guide?id='+id);maClickInfo('size guide')"
 					:title="$t('goods_detail.size_guide')">
 				</blockItemBox>
+				<!-- Assistant -->
+				<blockItemBox @click="$public.handleNavTo('/pages/goods-detail/assistant');maClickInfo('assistant')"
+					:title="$t('goods_detail.assistant')">	
+				</blockItemBox>
+				<!-- 物流信息deliver_shipping -->
+				<blockItemBox @click="$public.handleNavTo('/pages/goods-detail/deliver-shipping');maClickInfo('deliver shipping')"
+					:title="$t('goods_detail.deliver_shipping')">
+				</blockItemBox>
 			</view>
-			<!-- reviews -->
-			<view class="reviews-box">
+			
+			<!-- 固定的背景图 -->
+			<view v-if="BgImg" class="mb15r">
+				<image :src="BgImg" mode="widthFix" style="width: 100%"></image>
+			</view>
+			
+			<!-- Customer review -->
+			<view class="reviews-box" :class="goodsDetail.productReview.coll.length == 0 ? 'pb31r' : ''">
 				<view class="review-header flex justify-content-between align-items-center">
-					<view class="reviews-title">{{$t("goods_detail.reviews")}}</view>
-					<view @click="$public.handleNavTo('/pages/goods-detail/reviews-list?id='+id+'&spu='+goodsDetail.spu)" class="view-all-box flex align-items-center">
+					<view class="reviews-title">{{$t("goods_detail.customer_review")}}</view>
+					<view @click="$public.handleNavTo('/pages/goods-detail/reviews-list?id='+id+'&spu='+goodsDetail.spu)" 
+						class="view-all-box flex align-items-center">
 						<view>{{$t("goods_detail.view_all")}}</view>
 						<view class="iconfont icon-goto"></view>
 					</view>
@@ -214,19 +263,27 @@
 				<reviewsBar :reviewsData="goodsDetail"></reviewsBar>
 				<view class="reviews-list-box">
 					<block v-for="(item,index) in goodsDetail.productReview.coll" :key="index">
-						<reviewListItem :scrollTop="scrollTop" :shareData="shareData" :reviewData="formatReviewItem(item)" @changeHelpful="(data)=>{changeHelpful(data,item)}"></reviewListItem>
+						<reviewListItem 
+							:scrollTop="scrollTop" 
+							:shareData="shareData" 
+							:reviewData="formatReviewItem(item)" 
+							@changeHelpful="(data)=>{changeHelpful(data,item)}">
+						</reviewListItem>
 					</block>
 				</view>
 			</view>
-
+			
 			<view class="recommend-box">
-				<!-- 推荐 -->
-				<view v-if="recommendSideList.length" class="recommend-container siimilar_products">
-					<recommendHeader :title="$t('recommend.header4')" :num="recommendSideList.length"></recommendHeader>
-					<recommendGoodsList module_name="product_details_sp" ref="good_list_ref_re" @popupChange="(value)=>{pageMetaShow=value}" :goods="recommendSideList" :scrollTop="scrollTop"></recommendGoodsList>
+				<!-- Similar style recommendations -->
+				<view v-if="recommendSideList.length">
+					<recommendHeader :title="$t('recommend.header5')" :num="recommendSideList.length"></recommendHeader>
+					<recommendGoodsList ref="good_list_ref_re"
+						@popupChange="(value)=>{pageMetaShow=value}" 
+						:goods="recommendSideList" :scrollTop="scrollTop">
+					</recommendGoodsList>
 				</view>
 				<!-- 红人图 -->
-				<view class="recommend-container" v-if="goodsDetail.red_person_image && goodsDetail.red_person_image.length">
+				<!-- <view class="recommend-container" v-if="goodsDetail.red_person_image && goodsDetail.red_person_image.length">
 					<recommendHeader :title="$t('goods_detail.style_gallery')" :num="goodsDetail.red_person_image.length"></recommendHeader>
 					<view class="red_person_img_box">
 						<scroll-view :show-scrollbar="false" :scroll-x="true">
@@ -237,22 +294,27 @@
 							</view>
 						</scroll-view>
 					</view>
-				</view>
-				<!-- 推荐 -->
+				</view> -->
+				<!-- 推荐  customers also viewed -->
 				<view v-if="recommendList.length" class="goods-container">
-					<recommendHeader :title="$t('recommend.header3')"></recommendHeader>
+					<recommendHeader :title="$t('recommend.header6')"></recommendHeader>
 					<good-list module_name="product_details_cav" ref="goods_list" @popupChange="(value)=>{pageMetaShow=value}" :goods="recommendList"></good-list>
 				</view>
 			</view>
 			<!-- footer -->
 			<view class="footer-box page-max-width flex justify-content-between align-items-center">
-				<view @click="isLoading?'':handleClickAddToCart()" :class="!isAddToShoppingCart?'_disabled':''" class="add-to-bag-btn flex flex-column align-items-center justify-content-center font-bold">
-					<view>
-					{{isLoading?'': $t("goods_detail.add_to_bag")}}
-					</view>
-					<view v-if="!isViewPrice&&goodsDetail.can_sale" class="flex footer-price">
+				<view @click="isLoading?'':changeFav()" class="footer-wish-box">
+					<image v-if="favicon" src="@/static/images/p_detail_collect_sel@2x.png" mode="widthFix" />
+					<image v-else src="@/static/images/p_detail_collect@2x.png" mode="widthFix" />
+				</view>
+				
+				<view @click="isLoading?'':handleClickAddToCart()" :class="!isAddToShoppingCart?'_disabled':''" 
+					class="add-to-bag-btn flex flex-column align-items-center justify-content-center">
+					<view>{{isLoading?'': $t("goods_detail.add_to_bag")}}</view>
+					<!-- 下拉到一定位置在ADD TO BAG下面显示价格 -->
+					<!-- <view v-if="!isViewPrice&&goodsDetail.can_sale" class="flex footer-price">-->
 						<!-- 属于特价活动商品并且用户已购买过该件商品且已购数量大于等于限购数量【goodsDetail.special_qty_left==0】并且已选择size时 或者无库存，恢复原价-->
-						<view class="special-activity-goods-price goods-price" v-if="(goodsDetail.special_data&&goodsDetail.special_data.is_spu_special == 1&&goodsDetail.special_qty_left==0&&isSizeSelected) || (goodsDetail.special_data&&goodsDetail.special_data.is_spu_special== 1&&!goodsDetail.can_sale)">
+						<!-- <view class="special-activity-goods-price goods-price" v-if="(goodsDetail.special_data&&goodsDetail.special_data.is_spu_special == 1&&goodsDetail.special_qty_left==0&&isSizeSelected) || (goodsDetail.special_data&&goodsDetail.special_data.is_spu_special== 1&&!goodsDetail.can_sale)">
 							{{ goodsDetail.price_info.price.symbol }}{{ goodsDetail.price_info.price.value }}
 						</view>
 						<block
@@ -265,16 +327,12 @@
 						<block v-else>
 							<view v-if="goodsDetail.member_product && goodsDetail.isVip" :class="tierActiveIndex>0?'text-line-through':''" class="goods-price flex align-items-center">
 								<!-- <image class="vip-tag-img" src="@/static/images/vip/vip_icon.png"/> -->
-								{{ goodsDetail.member_price.symbol }}{{ goodsDetail.member_price.value }}
+								<!-- {{ goodsDetail.member_price.symbol }}{{ goodsDetail.member_price.value }}
 								<text class="goods-originalPrice">{{ goodsDetail.price_info.price.symbol }}{{ goodsDetail.price_info.price.value }}</text>
 							</view>
 							<view v-else :class="tierActiveIndex>0?'goods-price text-line-through':'goods-price'">{{ goodsDetail.price_info.price.symbol }}{{ goodsDetail.price_info.price.value }}</view>
 						</block>
-					</view>
-				</view>
-				<view @click="isLoading?'':changeFav()" class="footer-wish-box">
-					<image v-if="favicon" src="@/static/images/p_detail_collect_sel@2x.png" mode="widthFix" />
-					<image v-else src="@/static/images/p_detail_collect@2x.png" mode="widthFix" />
+					</view> -->
 				</view>
 			</view>
 		</view>
@@ -332,7 +390,7 @@
 				<block v-for="(item, index) in allColorThumbnailImgs" :key="index">
 					<swiper-item class="flex align-items-center">
 						<movable-area style="width:100%;height:100%;">
-							<movable-view scale-min="1" scale-max="5" scale="true" class="max movable_box_class flex align-items-start" direction="all" style="width:100%;height:100%;">
+							<movable-view scale-min="1" scale-max="5" scale="true" class="max movable_box_class flex align-items-center" direction="all" style="width:100%;height:100%;">
 								<image :id="'swiper-item-image' + index" :src="item.url" style="height: 100%;background:#000;" class="slide-image" :lazy-load="true"
 								mode="aspectFit" />
 							</movable-view>
@@ -394,7 +452,7 @@
 				<block v-for="(item, index) in goodsDetail.thumbnail_img" :key="index">
 					<swiper-item class="flex align-items-start">
 						<movable-area style="width:100%;height:100%;">
-							<movable-view scale-min="1" scale-max="5" scale="true" class="max movable_box_class flex align-items-start" direction="all" style="width:100%;height:100%;">
+							<movable-view scale-min="1" scale-max="5" scale="true" class="max movable_box_class flex align-items-center" direction="all" style="width:100%;height:100%;">
 								<image :id="'swiper-item-image' + index" :src="item.url" class="slide-image" :lazy-load="true"
 								mode="widthFix" />
 							</movable-view>
@@ -545,7 +603,12 @@
 		<!-- 裂变提示弹窗 -->
 		<fissionSharingTipsPopup navToUrl="/pages/login/index?is_special=3&in_site_source=cashgrab_register_window" :tipsData="goodsDetail.index_copywriting_tips?goodsDetail.index_copywriting_tips:[]" ref="fissionSharingTipsPopup"></fissionSharingTipsPopup>
 		<!-- 分享弹窗 -->
-		<sharePopup key_prefix="product_share_" @clickBarItem="(type)=>{handleClickBarItem(type)}" ref="popupShare" :isDifferPlatformWord="true" :shareData="shareData" :title="$t('fission_sharing.share_popup_title')" @changePageMeta="(show)=>{pageMetaShow = show}"></sharePopup>
+		<sharePopup ref="popupShare" 
+			key_prefix="product_share_" 
+			@clickBarItem="(type)=>{handleClickBarItem(type)}" 
+			:isDifferPlatformWord="true" :shareData="shareData" 
+			:title="$t('fission_sharing.share_popup_title2')" 
+			@changePageMeta="(show)=>{pageMetaShow = show}"></sharePopup>
 		
 		<custom-tabbar realPageName="goodsDetails"></custom-tabbar>
 		<getCoupon moduleName="product_details" ref="getCouponRef" @closeNewcomerCoupon="closeNewcomerCoupon()" @notOpenNewcomerCoupon="notOpenNewcomerCoupon()" :returnUrl="'/pages/goods-detail/index?id=' + id"></getCoupon>
@@ -588,7 +651,10 @@
 			customTooltip
 		},
 		computed: {
-			...mapState(['cartCount','showVip','aicode','isViewFissionPage','isShowedDetailFloatTip'])
+			...mapState(['cartCount','showVip','aicode','isViewFissionPage','isShowedDetailFloatTip','appConfig']),
+			notAutoSelectSpuAttr() {
+				return this.appConfig.notAutoSelectSpuAttr?.name?.toLowerCase() || '';
+			}
 		},
 		data() {
 			return {
@@ -735,7 +801,9 @@
 				rec_engine: '',
 				ab_key: '',
 				module: 'product_details',
-				isLoaded: false
+				isLoaded: false,
+				BgImg: "",
+				hasSizeGuide: 0 // 判断是否存在SizeGuide
 			};
 		},
 		onHide() {
@@ -869,7 +937,13 @@
 			handleNumAdd() {
 				this.qtyValue++;
 				this.judgingWholesalePrices(this.qtyValue)
-				if(!this.isShowedSpecialTOriginalTip && this.isSizeSelected && this.qtyValue>this.goodsDetail.special_qty_left&&this.goodsDetail.special_qty_left!=0&& this.goodsDetail.special_data&& this.goodsDetail.special_data.is_spu_special == 1&&this.goodsDetail.can_sale) {
+				if(!this.isShowedSpecialTOriginalTip && 
+					this.isSizeSelected && 
+					this.qtyValue > this.goodsDetail.special_qty_left &&
+					this.goodsDetail.special_qty_left != 0 && 
+					this.goodsDetail.special_data && 
+					this.goodsDetail.special_data.is_spu_special == 1 &&
+					this.goodsDetail.can_sale) {
 					this.showedSpecialTOriginalTip()
 				}
 			},
@@ -1010,27 +1084,16 @@
 			},  
 			// 判断产品属性是否选中
 			judgeAttrSelect(data) {
-				var className = '';
-				if(data.item_child.active== 'current') {
-					if(data.item.label.toLowerCase() == 'size'&&!this.isSizeSelected) {
-						if(!data.item_child.has_stock) {
-							className = 'isOutStock'
-						} else {
-							className = ''
-						}
-					} else {
-						className = 'on';
-					}
-				} else if(data.item_child.active== 'noactive') {
-					className = 'disabled'
-				} else {
-					if(!data.item_child.has_stock) {
-						className = 'isOutStock'
-					} else {
-						className = ''
-					}
+				const { item, item_child } = data
+				const isNotAutoSelectSpuAttr = item.label.toLowerCase() === this.notAutoSelectSpuAttr;	// 美瞳默认不选中的spu属性动态配置
+				const isSizeSelected = this.isSizeSelected;	// 	有无选中
+				const hasStock = item_child.has_stock;		// 	有无库存
+				const activeStatus = item_child.active || ""
+				return {
+					'other-disabled': activeStatus === 'noactive',
+					'other-on': activeStatus === 'current' && (!isNotAutoSelectSpuAttr || isSizeSelected),
+					'other-isOutStock': !hasStock && (!['noactive', 'current'].includes(activeStatus) || (activeStatus === 'current' && isNotAutoSelectSpuAttr && !isSizeSelected))
 				}
-				return className
 			},
 			// 获取购物安全静态块内容
 			getStatickBlock() {
@@ -1124,8 +1187,12 @@
 							}
 						})
 					})
-					var sizeOptions = goodsDetail.options.filter(item=>{return item.label.toLowerCase() == 'size'});
-					if(sizeOptions.length == 0 || (sizeOptions.length>0 && sizeOptions[0].value.length <2)) {
+					var sizeOptions = goodsDetail.options.filter(item=>{return item.label.toLowerCase() == this.notAutoSelectSpuAttr});
+					var sizeValue = [];
+					if(sizeOptions.length>0&&sizeOptions[0].value) {
+						sizeValue = sizeOptions[0].value.filter(item => item.status==1)
+					}
+					if(sizeOptions.length == 0 || (sizeOptions.length>0 && sizeValue.length <2)) {
 						this.isSizeSelected = true;
 					}
 				} else {
@@ -1248,7 +1315,7 @@
 			},
 			// 改变size
 			changeOtherAttr(data,index,parentData) {
-				var isSize = parentData.label.toLowerCase() == 'size';
+				var isSize = parentData.label.toLowerCase() == this.notAutoSelectSpuAttr;
 				if (data.id !== this.id || !this.isSizeSelected) {
 					this.swiperCurrent = 0
 					this.id = data.id;
@@ -1262,7 +1329,6 @@
 			},
 			// 改变颜色
 			changeColor(data,index) {
-
 				if (data.id !== this.id || !this.isSizeSelected) {
 					this.swiperCurrent = 0
 					this.id = data.id;
@@ -1464,7 +1530,6 @@
 			},
 			// 获取产品详情
 			getProductDetails(params) {
-
 				var that = this
 				// isSizeSelected 1选中 2不选中
 				var queryData = {product_id: that.id,v:'1.0',isSizeSelected:(this.isSizeSelected || params.isSize)?1:2};
@@ -1474,8 +1539,8 @@
 				this.$apis.getProductDetail(queryData,{loading:false}).then(res =>{
 					uni.hideLoading()
 					var goodsDetail = res.data.product;
-
-
+					this.BgImg = res.data?.goods_details_bg_img
+					this.hasSizeGuide = res.data?.product?.hasSizeGuide
 					that.formatData(goodsDetail,params.type,res.data.product_share_content)
 					this.isLoaded = true;
 					if(!params.no_recommend) {
@@ -1541,7 +1606,7 @@
 					let redirectUrl = "/"+currentPath
 					var param = [];
 					for (let key in currentParams) {
-					    param.push(key + '=' + currentParams[key]);
+						param.push(key + '=' + currentParams[key]);
 					}
 					if(param.length > 0){
 						redirectUrl += "?" + param.join("&");
@@ -1596,8 +1661,6 @@
 							success: (result) => {},
 							fail: (error) => {}
 						})
-
-
 					},
 					fail: (error) => {
 						uni.setStorage({
@@ -1624,7 +1687,6 @@
 			},
 			// 打开分享弹窗
 			showShareToast(type) {
-				
 				if(this.$store.getters.hasLogin) {
 					if(this.shareData&&this.shareData.url) {
 						this.$refs.popupShare.open('bottom')
@@ -1677,9 +1739,10 @@
 				nodeQuery.select('.reviews-box').boundingClientRect()
 				nodeQuery.select('.recommend-box').boundingClientRect()
 				nodeQuery.select('.goods-detail-header-box').boundingClientRect()
+				// 报错 先注释
 				nodeQuery.exec((res) => {
 					this.reviewOffsetTop = res[0].top;
-					this.recommendOffsetTop = res[1].top;
+					this.recommendOffsetTop = res[1]?.top;
 					this.headerHeight = res[2].height;
 				})
 				if(this.scrollTop > this.imgListHeight - this.headerHeight){
@@ -1730,7 +1793,7 @@
 	};
 </script>
 <style scoped lang="scss">
-	@import './css/index.css';
+	@import './css/index.scss';
 	::v-deep {
 		.global-top-btn {
 			bottom: 260rpx;
@@ -1766,10 +1829,11 @@
 		top: 0;
 		width: 38rpx;
 		height: 23rpx;
-		background: #FF004D;
-		border-radius: 12rpx 12rpx 12rpx 0rpx;
+		background: linear-gradient( 90deg, #780EFF 0%, #DA49D6 54%, #FF6EA7 100%);
+		border-radius: 12rpx 12rpx 12rpx 4rpx;
+		font-family: 'Montserrat-SemiBold';
 		font-weight: 600;
-		font-size: 15rpx;
+		font-size: 15.38rpx;
 		color: #FFFFFF;
 		line-height: 18rpx;
 	}
@@ -1942,20 +2006,51 @@
 			font-size: 28rpx;
 			margin-bottom: 24rpx;
 		}
+		// .qty-box {
+		// 	.iconfont {
+		// 		width: 64rpx;
+		// 		height: 64rpx;
+		// 		display: flex;
+		// 		justify-content: center;
+		// 		align-items: center;
+		// 		background: #EEEEEE;
+		// 		font-size: 28rpx;
+		// 	}
+		// 	.qty-input {
+		// 		width: 100rpx;
+		// 		text-align: center;
+		// 		font-size: 32rpx;
+		// 	}
+		// }
 		.qty-box {
-			.iconfont {
-				width: 64rpx;
-				height: 64rpx;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				background: #EEEEEE;
-				font-size: 28rpx;
-			}
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 194rpx;
+			height: 65rpx;
+			border-radius: 46rpx;
+			border: 2px solid #393939;
 			.qty-input {
-				width: 100rpx;
+				height: 100%;
 				text-align: center;
-				font-size: 32rpx;
+				font-size: 26.92rpx;
+				width: 78.85rpx;
+				color:#393939;
+			}
+			.iconfont {
+				width: 34.62rpx;
+				height: 34.62rpx;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			.icon-reduce.disabled {
+				color: #999999;
+				pointer-events: none;
+			}
+			.icon-add.disabled {
+				color: #999999;
+				pointer-events: none;
 			}
 		}
 	}
@@ -1972,7 +2067,7 @@
 		width: 82rpx;
 		height: 82rpx;
 		position: absolute;
-		top: 40vh;
+		top: 45vh;
 		.img {
 			width: 100%;
 		}

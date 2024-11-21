@@ -1,6 +1,6 @@
 <template>
 	<view class="google-autocomplete-place-box">
-		<input v-bind="$attrs" @blur="handleBlur" @focus="handleFocus" :maxlength="255" @input="input" type="text" v-model="address" />
+		<uni-easyinput v-bind="$attrs" @blur="handleBlur" @focus="handleFocus" :maxlength="255" @input="input" type="text" v-model="address" />
 		<view v-show="isShowPlaceBox&&predictionsList.length" class="place-list-box">
 			<block v-for="item in predictionsList" :key="item.placePrediction.placeId">
 				<view @click="selectPlace(item.placePrediction)" class="place-item">{{item.placePrediction.text.text}}</view>
@@ -61,14 +61,15 @@
 			    });
 			},
 			input(e) {
-				this.$emit('updateValue', e.target.value);
-				if(!e.target.value) {
+				const value = e
+				this.$emit('updateValue', value);
+				if(!value) {
 					this.predictionsList = []
 				}
-				if(!e.target.value.endsWith(' ')) {
+				if(!value.endsWith(' ')) {
 					// 输入字符是3的倍数才请求googlemap接口（业务要求）
-					if(e.target.value.length>0&&e.target.value.length% 3 == 0) {
-						this.$debounce(this.getGooglePlace, 300, [e.target.value])
+					if(value.length>0&&value.length% 3 == 0) {
+						this.$debounce(this.getGooglePlace, 300, [value])
 					}
 				}
 			},

@@ -15,7 +15,7 @@
 		<!-- 分享成功弹窗 -->
 		<uni-popup class="shareSuccessPopup" ref="shareSuccessPopup" @change="(e)=>{changeShareSuceessPopup(e.show)}">
 			<view class="share-success-content-box">
-				<image mode="widthFix" @click="$refs.shareSuccessPopup.close()" class="close-btn" src="@/static/images/icon/close_icon_white@2x.png"></image>
+				<image mode="widthFix" @click="$refs.shareSuccessPopup.close()" class="close-btn" src="@/static/images/icon/close-black.png"></image>
 				<view class="content-box">
 					<view class="success-icon-box"><image mode="widthFix" class="success-icon" src="@/static/images/icon/success-icon.png"></image></view>
 					<view class="text1 font-bold">{{$t('fission_sharing.success_popup.text1')}}</view>
@@ -170,7 +170,7 @@ export default {
 <style lang="scss" scoped>
 .share-and-win-box {
 	padding-top: 96rpx;
-	padding-bottom: 115.38rpx;
+	padding-bottom: 96.16rpx;
 	background: #FFF5E7;
 	.shareSuccessPopup {
 		.share-success-content-box {
@@ -178,13 +178,13 @@ export default {
 			max-height: 90vh;
 			padding: 38.46rpx;
 			background: #fff;
-			border-radius: 8rpx;
+			border-radius: 24rpx;
 			position: relative;
 			.close-btn {
 				width: 34.62rpx;
 				position: absolute;
-				right: -57.7rpx;
-				top: 0;
+				right: 16rpx;
+				top: 16rpx;
 			}
 			.content-box {
 				text-align: center;
@@ -210,8 +210,8 @@ export default {
 					padding-bottom: 55.77rpx;
 				}
 				.text3 {
-					background: #000000;
-					border-radius: 4rpx;
+					background: #222;
+					border-radius: 42rpx;
 					height: 81rpx;
 					text-align: center;
 					font-size: 31rpx;

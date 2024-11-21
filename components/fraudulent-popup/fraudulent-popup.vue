@@ -2,7 +2,7 @@
 	<uni-popup ref="fraudulentRef">
 		<popupContentTemplate class="wrapper" @close="close()" :title="title">
 			<template v-slot:content>
-				<view v-html="content"></view>
+				<view class="fraudulent_content" v-html="content"></view>
 			</template>
 			<template v-slot:footer>
 				<button class="btn-close" type="primary" @tap="close()">{{$t("fraudulent.ok")}}</button>
@@ -46,15 +46,27 @@
 </script>
 <style lang="scss" scoped>
 	.wrapper {
-		border-radius: 8rpx;
+		border-radius: 24rpx;
 		width: 626rpx;
+		position: relative;
 
 
 		::v-deep .title {
-			margin-top: 20rpx;
+			padding-top: 16rpx;
+			color: #222 !important;
 		}
 
 		::v-deep {
+			.main-content-box {
+				overflow: visible !important;
+				max-height: none !important;
+			}
+			.icon-close {
+				position: absolute;
+				right: 16rpx;
+				top: 16rpx;
+				font-size: 36rpx !important;
+			}
 			.header-title {
 				font-weight: bold;
 				font-size: 27rpx;
@@ -76,11 +88,12 @@
 					margin-left: 4rpx;
 				}
 			}
-
 			.fraudulent-item {
 				margin-bottom: 25rpx;
 			}
-
+			.btn-close::after {
+				border: none !important;
+			}
 		}
 
 		.btn-close {
@@ -88,6 +101,13 @@
 			margin: 20rpx 32rpx 0;
 			font-size: 31rpx;
 			line-height: 81rpx;
+			border-radius: 42rpx;
+		}
+		
+		.fraudulent_content {
+			max-height: 610rpx;
+			overflow-y: auto;
+			overflow-x: hidden;
 		}
 	}
 </style>

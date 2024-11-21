@@ -118,7 +118,7 @@
 				isLastPage:false, // 是否最后一页
 				page: 0,
 				listLen: 0,// list长度
-				lastHttpObj: {} // 最后一次请求的参数
+				lastHttpObj: {}, // 最后一次请求的参数
 			}
 		},
 		onLoad() {
@@ -148,8 +148,9 @@
 					this.list.length = this.listLen; // 删除最后一页数据，待会要重新获取一下
 				}
 				this.page += 1; 
-				this.lastHttpObj = {...this.listParams,p:this.page};
-				this.$apis.distributeWalletInfo(this.lastHttpObj).then(res => {
+				const params = JSON.stringify(this.lastHttpObj) == '{}' ? {...this.listParams,p:this.page} : this.lastHttpObj
+				this.$apis.distributeWalletInfo(params).then(res => {
+					this.lastHttpObj = {...this.listParams,p:this.page};
 					uni.hideLoading();
 					let result = res.data;
 					this.listLen = this.list.length; // 先保存长度再赋值，用于删除最后一页的数据
@@ -171,6 +172,7 @@
 				this.tips = type == 1 ? this.$t('distribute.cash.wihdrawal_tip') : this.$t('distribute.cash.wihdrawal_amount_tip')
 				this.$refs.toastTip.showToast();
 			},
+
 			chooseCate(cate) {
 				this.listParams.cate = cate;
 				this.listParams.type = 0;

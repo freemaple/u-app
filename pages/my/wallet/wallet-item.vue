@@ -45,7 +45,7 @@
 				<view class="detail-item flex justify-content-between" v-show="listType != 2">
 					<view>
 						{{$t('my_wallet.status')}}
-						<i v-if="item.type_rel == 'wallet_type_cash_withdraw_deduct'" @click="getBalanceWithdrawTip();$refs.balanceToastTip.open('center');" class="iconfont icon-question" style="margin-left: 4rpx;"></i>
+						<i v-if="item.type_rel == 'wallet_type_cash_withdraw_deduct'" @click="getBalanceWithdrawTip();" class="iconfont icon-question" style="margin-left: 4rpx;"></i>
 					</view>
 					<view>{{listType == 3 ? item.status_text : item.status}}</view>
 				</view>
@@ -53,8 +53,8 @@
 		</view>
 		
 		<!-- balance-withdraw提示信息 -->
-		<uni-popup ref="balanceToastTip" background-color="#fff" @change="(e)=>{pageMetaShow = e.show;}">
-			<view class="popup-content" style="width:calc(100vw - 40px)">
+		<uni-popup ref="balanceToastTip" @change="(e)=>{pageMetaShow = e.show;}">
+			<view class="popup-content" style="width:calc(100vw - 40px);background-color: #fff;border-radius: 23rpx;">
 				<view class="tip-box balance-toast-main">
 					<view class="balance-toast-title">
 						{{$t('my_wallet.balance_toast_title')}}
@@ -188,12 +188,15 @@
 			},
 			getBalanceWithdrawTip() {
 				if(this.balanceWithdrawTipHtml != '') {
+					this.$refs.balanceToastTip.open('center');
 					return;
 				}
+				uni.showLoading()
 				this.$apis.getHtmlBlock({identify: 'balance-withdrawal-status-tips'}).then(res => {
 					uni.hideLoading();
 					if (res.code == 200 && res.data && res.data['balance-withdrawal-status-tips']) {
 						this.balanceWithdrawTipHtml = res.data['balance-withdrawal-status-tips'];
+						this.$refs.balanceToastTip.open('center');
 					}
 				})
 			}
@@ -279,12 +282,13 @@
 		line-height: 1.5;
 	}
 	.close-btn {
-		height: 96rpx;
+		height: 81rpx;
 		text-align: center;
 		color: #fff;
 		background: #000;
 		line-height: 96rpx;
 		margin-top: 32rpx;
+		border-radius: 40rpx;
 	}
 }
 .withdrawBtn {

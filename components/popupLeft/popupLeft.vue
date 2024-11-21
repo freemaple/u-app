@@ -78,7 +78,7 @@
 					</view>
 					<view class="pop-footer">
 						<view class="copyright">
-							©2023 Dressin
+							©2023 {{ $store.state.site_name }}
 						</view>
 					</view>
 				</scroll-view>

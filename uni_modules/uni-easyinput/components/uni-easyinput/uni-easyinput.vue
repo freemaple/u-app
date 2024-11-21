@@ -1,34 +1,86 @@
 <template>
 	<view class="uni-easyinput" :class="{'uni-easyinput-error':msg}" :style="boxStyle">
 		<view class="uni-easyinput__content" :class="inputContentClass" :style="inputContentStyle">
-			<uni-icons v-if="prefixIcon" class="content-clear-icon" :type="prefixIcon" color="#c0c4cc"
-				@click="onClickIcon('prefix')" size="22"></uni-icons>
-			<textarea v-if="type === 'textarea'" class="uni-easyinput__content-textarea"
-				:class="{'input-padding':inputBorder}" :name="name" :value="val" :placeholder="placeholder"
-				:placeholderStyle="placeholderStyle" :disabled="disabled"
-				placeholder-class="uni-easyinput__placeholder-class" :maxlength="inputMaxlength" :focus="focused"
-				:autoHeight="autoHeight" @input="onInput" @blur="_Blur" @focus="_Focus" @confirm="onConfirm"></textarea>
-			<input v-else :type="type === 'password'?'text':type" class="uni-easyinput__content-input"
-				:style="inputStyle" :name="name" :value="val" :password="!showPassword && type === 'password'"
-				:placeholder="placeholder" :placeholderStyle="placeholderStyle"
-				placeholder-class="uni-easyinput__placeholder-class" :disabled="disabled" :maxlength="inputMaxlength"
-				:focus="focused" :confirmType="confirmType" @focus="_Focus" @blur="_Blur" @input="onInput"
+			<uni-icons v-if="prefixIcon" 
+				class="content-clear-icon" 
+				:type="prefixIcon" 
+				color="#666"
+				@click="onClickIcon('prefix')" 
+				size="16"></uni-icons>
+			<textarea v-if="type === 'textarea'" :name="name" :value="val"
+				class="uni-easyinput__content-textarea"
+				:class="{'input-padding':inputBorder}"  
+				:placeholder="placeholder"
+				:placeholderStyle="placeholderStyle"
+				:disabled="disabled"
+				placeholder-class="uni-easyinput__placeholder-class" 
+				:maxlength="inputMaxlength" 
+				:focus="focused"
+				:autoHeight="autoHeight" 
+				@input="onInput" 
+				@blur="_Blur" 
+				@focus="_Focus" 
+				@confirm="onConfirm"></textarea>
+			<input v-else :name="name" :value="val"
+				:type="type === 'password' ? 'text' : type" 
+				class="uni-easyinput__content-input"
+				:style="inputStyle"  
+				:password="!showPassword && type === 'password'"
+				:placeholder="placeholder" 
+				:placeholderStyle="placeholderStyle"
+				placeholder-class="uni-easyinput__placeholder-class" 
+				:disabled="disabled" 
+				:maxlength="inputMaxlength"
+				:focus="focused" 
+				:confirmType="confirmType" 
+				@focus="_Focus" 
+				@blur="_Blur" 
+				@input="onInput"
 				@confirm="onConfirm" />
 			<template v-if="type === 'password' && passwordIcon">
 				<!-- 开启密码时显示小眼睛 -->
-				<uni-icons v-if="isVal" class="content-clear-icon" :class="{'is-textarea-icon':type==='textarea'}"
-					:type="showPassword?'eye-slash-filled':'eye-filled'" :size="22"
-					:color="focusShow ? primaryColor :'#c0c4cc'" @click="onEyes">
+				<uni-icons v-if="isVal" color="#666"
+					class="content-clear-icon"
+					:class="{'is-textarea-icon':type==='textarea'}"
+					type="clear" 
+					:size="16"
+					@click="onClear"> <!-- :color="focusShow ? primaryColor :'#c0c4cc'" --> 
 				</uni-icons>
+				<image v-if="isVal && !showPassword" class="psw_eye_icon"
+					src="./icon-eye-off@2x.png" 
+					@click="onEyes" 
+					mode="widthFix"></image>
+				<image v-if="isVal && showPassword" class="psw_eye_icon"
+					src="./icon-eye@2x.png" 
+					@click="onEyes" 
+					mode="widthFix"></image>
+				<!-- <uni-icons v-if="isVal" 
+					class="content-clear-icon mr21r" 
+					:class="{'is-textarea-icon':type==='textarea'}"
+					:type="showPassword?'eye':'eye-slash'" 
+					:size="16"
+					@click="onEyes"> 
+				</uni-icons> -->
+				<!-- :color="focusShow ? primaryColor :'#c0c4cc'" --> 
 			</template>
 			<template v-else-if="suffixIcon">
-				<uni-icons v-if="suffixIcon" class="content-clear-icon" :type="suffixIcon" color="#c0c4cc"
-					@click="onClickIcon('suffix')" size="22"></uni-icons>
+				<uni-icons v-if="suffixIcon"
+					class="content-clear-icon mr21r" 
+					:type="suffixIcon"
+					size="16"
+					color="#666"
+					@click="onClickIcon('suffix')">
+				</uni-icons>
 			</template>
 			<template v-else>
-				<uni-icons v-if="clearable && isVal && !disabled  && type !== 'textarea'" class="content-clear-icon"
-					:class="{'is-textarea-icon':type==='textarea'}" type="clear" :size="clearSize"
-					:color="msg?'#dd524d':(focusShow? primaryColor :'#c0c4cc')" @click="onClear"></uni-icons>
+				<uni-icons v-if="clearable && isVal && !disabled  && type !== 'textarea'" 
+					class="content-clear-icon mr21r"
+					:class="{'is-textarea-icon':type==='textarea'}" 
+					type="clear" 
+					:size="clearSize"
+					color="#666"
+					@click="onClear"> <!-- :color="msg?'#dd524d':(focusShow? primaryColor :'#c0c4cc')" -->
+				</uni-icons>
 			</template>
 			<slot name="right"></slot>
 		</view>
@@ -42,12 +94,12 @@
 	 * @tutorial https://ext.dcloud.net.cn/plugin?id=3455
 	 * @property {String}	value	输入内容
 	 * @property {String }	type	输入框的类型（默认text） password/text/textarea/..
-	 * 	@value text			文本输入键盘
-	 * 	@value textarea	多行文本输入键盘
-	 * 	@value password	密码输入键盘
-	 * 	@value number		数字输入键盘，注意iOS上app-vue弹出的数字键盘并非9宫格方式
-	 * 	@value idcard		身份证输入键盘，信、支付宝、百度、QQ小程序
-	 * 	@value digit		带小数点的数字键盘	，App的nvue页面、微信、支付宝、百度、头条、QQ小程序支持
+	 * @value text			文本输入键盘
+	 * @value textarea	    多行文本输入键盘
+	 * @value password		密码输入键盘
+	 * @value number		数字输入键盘，注意iOS上app-vue弹出的数字键盘并非9宫格方式
+	 * @value idcard		身份证输入键盘，信、支付宝、百度、QQ小程序
+	 * @value digit			带小数点的数字键盘	，App的nvue页面、微信、支付宝、百度、头条、QQ小程序支持
 	 * @property {Boolean}	clearable	是否显示右侧清空内容的图标控件，点击可清空输入框内容（默认true）
 	 * @property {Boolean}	autoHeight	是否自动增高输入区域，type为textarea时有效（默认true）
 	 * @property {String }	placeholder	输入框的提示文字
@@ -65,8 +117,8 @@
 	 * @value left	去除左侧空格
 	 * @value right	去除右侧空格
 	 * @value start	去除左侧空格
-	 * @value end		去除右侧空格
-	 * @value all		去除全部空格
+	 * @value end	去除右侧空格
+	 * @value all	去除全部空格
 	 * @value none	不去除空格
 	 * @property {Boolean}	inputBorder	是否显示input输入框的边框（默认true）
 	 * @property {Boolean}	passwordIcon	type=password时是否显示小眼睛图标
@@ -404,7 +456,7 @@
 					this.isEnter = false
 				})
 			},
-
+			
 			/**
 			 * 清理内容
 			 * @param {Object} event
@@ -447,7 +499,7 @@
 
 <style lang="scss">
 	$uni-error: #e43d33;
-	$uni-border-1: #DCDFE6 !default;
+	$uni-border-1: #DDDDDD !default;
 
 	.uni-easyinput {
 		/* #ifndef APP-NVUE */
@@ -488,7 +540,7 @@
 		height: 35px;
 		// min-height: 36px;
 	}
-
+	
 	.uni-easyinput__placeholder-class {
 		color: #999;
 		font-size: 12px;
@@ -524,7 +576,7 @@
 	}
 
 	.content-clear-icon {
-		padding: 0 5px;
+		padding: 0 13.46rpx;
 	}
 
 	.label-icon {
@@ -541,7 +593,7 @@
 		flex-direction: row;
 		align-items: center;
 		border: 1px solid $uni-border-1;
-		border-radius: 4px;
+		border-radius: 24px;
 		/* #ifdef MP-ALIPAY */
 		overflow: hidden;
 		/* #endif */
@@ -601,5 +653,11 @@
 			color: #D5D5D5;
 			font-size: 12px;
 		}
+	}
+	
+	.psw_eye_icon {
+		width:46.15rpx;
+		margin-left: 13.46rpx;
+		margin-right: 34.62rpx;
 	}
 </style>

@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<page-meta :page-style="'overflow:'+(pageMetaShow?'hidden':'visible')"></page-meta>
-		<popup-right @handleFilterQuery="handleFilterQuery" belong_module="search" :showFilter="showFilter" ref="popupRight" :symbol="symbol" :filter_info="filter_info"></popup-right>
+		<popup-right @handleFilterQuery="handleFilterQuery" belong_module="search" :showFilter="showFilter" ref="popupRight" :symbol="symbol" :filter_info="Array.isArray(filter_info) ? {} : filter_info"></popup-right>
 
 		<!-- <filter-modal @filterPrice="handleFilterPrice" @closeFilter="handleCloseFilter" :showFilter="showFilter">
 		</filter-modal> -->
@@ -23,7 +23,7 @@
 						<i class="iconfont"></i>
 					</view>
 					<view @tap="handleShowSearchEntry();handleSearchClickMa()" :class="'nav-content ' + (!searchContent?'nosearchContent':'')">
-						{{ searchContent ? searchContent : $t('search.shoppingfor', {site_name: $store.state.site_name_upper})}}
+						{{ searchContent ? searchContent : $t('search.shoppingfor', {site_name: $store.state.site_name})}}
 					</view>
 					<view v-if="searchContent" @tap="handleShowSearchEntry(1);handleSearchClickMa()" class="nav-cancle">
 						<i class="iconfont"></i>
@@ -31,14 +31,14 @@
 				</view>
 				<view class="header_right_icons flex">
 					<view @tap="handleChangeListType" class="changeListLayout flex align-items-center">
-					<image
-					v-show="showSingleList"
-						class="view_img"
-						src="@/static/images/icon/viewGrid.png"
-						mode="heightFix"
-					/>
-					<image
-						v-show="!showSingleList"
+						<image
+							v-show="showSingleList"
+							class="view_img"
+							src="@/static/images/icon/viewGrid.png"
+							mode="heightFix"
+						/>
+						<image
+							v-show="!showSingleList"
 							class="view_img"
 							src="@/static/images/icon/hangzhuangshitu.png"
 							mode="heightFix"
@@ -46,7 +46,7 @@
 					</view>
 					<view class="nav-bag" @tap="goToCart">
 						<uni-badge absolute="rightTop" type="error" size="small"  :max-num=999 :text=cartCount>
-							<i class="iconfont"></i>
+							<image class="nav-bag_icon" src="@/static/images/icon/shopping_bag 2x.png" mode="heightFix" />
 						</uni-badge>
 					</view>
 				</view>
@@ -65,7 +65,7 @@
 				</view>
 				<view class="search-input">
 					<input v-model="searchContent" @focus="handleSearchClickMa()" @confirm="newSearchFunc(searchContent)" class="uni-input"
-						:placeholder="$t('search.shoppingfor', {site_name: $store.state.site_name_upper})" />
+						:placeholder="$t('search.shoppingfor', {site_name: $store.state.site_name})" />
 					<image
 						class="img"
 						v-show="!searchContent"
@@ -122,7 +122,7 @@
 			<view class="search_page" v-if="searchHidden">
 				<scroll-view scroll-y="true">
 					<view class="keywrods_wrapper recently_search_ma" v-show="recentSearch.length&&searchHidden">
-					<view class="search-title recently_search font-bold">
+					<view class="search-title recently_search">
 						<view>{{ $t('search.recently_searched') }}</view>				
 						<view class="recently_btns flex justify-content-between">
 							<view v-show="!showOpenDelete" class="clearall" @tap="handleClearall">{{ $t('search.clear_all') }}</view>
@@ -139,23 +139,23 @@
 						</view>
 					</view>
 					<view :class="'search-keys ' + (recentMore ? 'more' : '')" v-show="recentSearch.length&&searchHidden">						
-						<text-show-more @showItmsChange="(items)=>{recentlyMaValueArr = items;recentlyItemVisibility()}" @tapKey="(key)=>{handleTapKey({key,maModuleName:'search_recent',maEventName:'search_recent_click'})}" clsName="RECENT_CLS" :allItems="recentSearch" :isRecently="true" :showOpenDelete="showOpenDelete"></text-show-more>
+						<text-show-more @showItmsChange="(items)=>{recentlyMaValueArr = items;recentlyItemVisibility()}" @tapKey="handleTapKey" clsName="RECENT_CLS" :allItems="recentSearch" :isRecently="true" :showOpenDelete="showOpenDelete"></text-show-more>
 					</view>
 				</view>
 				<view class="keywrods_wrapper hot_search_ma" v-show="hotWords.length&&searchHidden">
-					<view class="search-title recently_search font-bold">
+					<view class="search-title recently_search">
 						<view>{{ $t('search.hot') }}</view>
 					</view>
 					<view class="search-keys" v-show="hotWords.length&&searchHidden">
-						<text-show-more @showItmsChange="(items)=>{hotMaValueArr = items;hotItemVisibility()}" @tapKey="(key)=>{handleTapKey({key,maModuleName:'search_popular',maEventName:'search_popular_click'})}" clsName="HOTITEM_CLS" :allItems="hotWords" :isHotItems="true"></text-show-more>
+						<text-show-more @showItmsChange="(items)=>{hotMaValueArr = items;hotItemVisibility()}" @tapKey="handleTapKey" clsName="HOTITEM_CLS" :allItems="hotWords" :isHotItems="true"></text-show-more>
 					</view>
 				</view>
 				<view class="keywrods_wrapper trend_search_ma" v-show="trend_search_words.length&&searchHidden">
-					<view class="search-title recently_search font-bold">
+					<view class="search-title recently_search">
 						<view>{{ $t('search.trending') }}</view>
 					</view>
 					<view class="search-keys" v-show="trend_search_words.length&&searchHidden">
-						<text-show-more @showItmsChange="(items)=>{trendMaValueArr = items;trendItemVisibility()}" @tapKey="(key)=>{handleTapKey({key,maModuleName:'search_trending',maEventName:'search_trending_click'})}" clsName="TRENDING_CLS" :allItems="trend_search_words" :isTrending="true"></text-show-more>
+						<text-show-more @showItmsChange="(items)=>{trendMaValueArr = items;trendItemVisibility()}" @tapKey="handleTapKey" clsName="TRENDING_CLS" :allItems="trend_search_words" :isTrending="true"></text-show-more>
 					</view>
 				</view>
 				</scroll-view>
@@ -174,11 +174,11 @@
 				<view class="search-text">{{$t('search.no_results_found',{'searchtext':searchText})}}</view>
 				<view class="correction-text">{{$t('search.showing_result_for', {'searchCorrectionText': searchCorrectionText})}}</view>
 			</view>
-			<view v-if="!searchHidden && (!specialCateParams.cate_id && !saleParams.is_all)&&tophits.length" class="tophits_wrapper flex space-between">
+			<!-- <view v-if="!searchHidden && (!specialCateParams.cate_id && !saleParams.is_all)&&tophits.length" class="tophits_wrapper flex space-between">
 				<view v-for="(value,key) of tophits" :key="key">
 					<view :class="'search_tag ' + (checkedTag==v ? 'checked' : '')" v-for="(v,k) in value" :key="k" @tap="handleClickTag(k,v)">{{ v }}</view>
 				</view>
-			</view>
+			</view> -->
 			<campaign-countdown @changeSaleTitle="(val)=>{saleTitle=val}" v-if="showCountDown" @handleChangecountDownType="handleChangecountDownType" :countDownType="countDownType"></campaign-countdown>
 
 			<!-- 优惠券xy不展示筛选 -->
@@ -200,7 +200,7 @@
 			<good-list :module_name="module_name" ref="good_list_ref" :item_list_type="'search'" :showCountDown="showCountDown" :item_list_id="'search'"  :item_list_name="searchValue" :isFirstQuery="isFirstQuery" @popupChange="(value)=>{pageMetaShow=value}" :showLoading="(loadingMoreHidden&&searchs.length>0)" :loadingMoreHidden="loadingMoreHidden" :showNoMore="true" :showSingleList="showSingleList" v-if="!searchHidden" :goods="searchs" :ishowSpecialPriceOff="true">
 			</good-list>
 
-			<getCoupon moduleName="search"  ref="getCouponRef"></getCoupon>
+			<getCoupon moduleName="search" ref="getCouponRef"></getCoupon>
 <!-- 			<view class="bottom-nomore flex justify-content-center align-items-center"
 				v-if="loadingMoreHidden && !searchHidden">{{ $t('search.nomore_good') }}</view> -->
 			<view v-if="!noneHidden" class="goods-none">
@@ -278,7 +278,6 @@ export default {
 			symbol: '$',
 			filterAttrs: '',
 			filter_info: {},
-			selected_filter_info: '',
 			showExpandBtn: true,
 			checkedTag: '',
 			price_max: 0,	
@@ -313,7 +312,6 @@ export default {
 			return app.globalData.titleBarHeight
 		}		
 	},	
-	
 	mounted() {
 		this.$nextTick(()=>{
 			this.startSearchBoxObserver();
@@ -372,6 +370,14 @@ export default {
 			uni.showLoading()
 			this.searchProduct()
 		}
+		// 首页Series跳转
+		if(options && options.q) {
+			this.searchHidden = false;
+			this.showNav = true;
+			this.searchContent = options.q
+			this.searchValue = options.q
+			this.searchProduct()
+		}
 		// 热词查询
 		this.queryHotWords()
 		setTimeout(()=>{
@@ -405,7 +411,7 @@ export default {
 	/**
 	 * 生命周期函数--监听页面卸载
 	 */
-	onUnload(){
+	onUnload () {
 		if(this.observer){
 			this.observer.disconnect();
 			this.observer = null;
@@ -862,7 +868,7 @@ export default {
 				}
 			})
 		},
-		searchProduct: function () {
+		searchProduct: function (filters=true) {
 			uni.showLoading()	
 			var that = this;
 			that.setData({
@@ -878,7 +884,7 @@ export default {
 				...that.saleParams,
 				...that.specialCateParams
 			}
-			if(that.filterAttrs){
+			if(filters && that.filterAttrs){
 				params.filterAttrs = that.filterAttrs
 			}
 			if(that.attrq){
@@ -956,11 +962,8 @@ export default {
 							maFilter = {...JSON.parse(params.filterAttrs)}
 						}
 						if(params.price) {
-							let priceArr = params.price.split('-');
-							let pArr = priceArr.map(item => item || '0');
-							maFilter['price'] = pArr.join('-');
+							maFilter['price'] = params.price;
 						}
-						
 						var maResultType = res.data.products.length?1:2
 						if(this.searchCorrectionText && this.searchCorrectionText.toLocaleUpperCase() != this.searchText.toLocaleUpperCase()) {
 							maResultType = 3
@@ -1031,25 +1034,23 @@ export default {
 				searchHidden: true
 			});
 		},
-		handleTapKey(item) {
+		handleTapKey(key) {
 			let that = this
 			if(!that.showOpenDelete){
-				that.handleDeleteSingleRecently(item.key)
+				that.handleDeleteSingleRecently(key)
 			}else{
 				that.setData({
-					searchContent: item.key
+					searchContent: key
 				})
-				that.newSearchFunc(item.key);
-			}		
-			that.$maEvent.custom_event({
-				event_category: 'search',
-				event_action: item.maEventName,
-				event_name: item.key,
-				module: item.maModuleName,
-				event_data: {
-					event_value:item.key
-				}
+				that.newSearchFunc(key);
+			}			
+		},
+		handleTapHotKey(key) {
+			let that = this			
+			that.setData({
+				searchContent: key
 			})
+			that.newSearchFunc(key);
 		},
 		newSearchFunc(key) {
 			this.isFirstQuery = true							
@@ -1089,7 +1090,7 @@ export default {
 					recentSearch: result
 				});			
 			
-			that.searchProduct();
+			that.searchProduct(false);
 			this.trackEvent();
 		},
 		handleToSearch() {
@@ -1114,7 +1115,6 @@ export default {
 			const that = this
 			that.showFilter = true
 			that.$refs['popupRight'].open()
-			that.$refs['popupRight'].checkSelectedTag(that.selected_filter_info)
 			that.$maEvent.custom_event({
 				event_category: 'search',
 				event_action: 'search_filter_button',
@@ -1150,7 +1150,6 @@ export default {
 		// },
 		handleFilterQuery(data) {
 			const {filterAttrs, priceRange} = data
-			this.selected_filter_info = filterAttrs
 			this.setData({
 				searchs: [],
 				filterAttrs,
@@ -1297,6 +1296,7 @@ export default {
 
 	.nav-search {
 		// width: 582rpx;
+		border-radius: 58rpx 58rpx 58rpx 58rpx;
 		width: calc(100vw - 349rpx);
 		flex: 1;
 		height: 64rpx;
@@ -1353,27 +1353,9 @@ export default {
 		width: 72rpx;
 		margin: 12rpx 16rpx;
 		align-items: center;
-
-		i:nth-child(1) {
-			&::before {
-				content: "\E698";
-				font-size: 48rpx;
-				color: #333;
-			}
-		}
-
-		i:nth-child(2) {
-			margin-top: 10rpx;
-			margin-left: -8rpx;
-			text-align: center;
-			line-height: 30rpx;
-			color: #fff;
-			font-size: 20rpx;
-			background: linear-gradient(to bottom right, #fd4d4d, #ff165e);
-			width: 30rpx;
-			height: 30rpx;
-			display: inline-block;
-			border-radius: 50%;
+		.nav-bag_icon{
+			width: 46.16rpx;
+			height: 46.16rpx;
 		}
 	}
 	.nav-bag-lower{
@@ -1418,7 +1400,7 @@ export default {
 			height: 69rpx;
 			font-size: 29.77rpx;
 			width: 615rpx;
-			caret-color: red;
+			caret-color: #814EFF;
 			padding-left: 34.62rpx;
 			padding-right: 72rpx;
 		}
@@ -1461,7 +1443,8 @@ export default {
 		box-sizing: border-box;
 		padding-left: 34.62rpx;
 		padding-right: 34.62rpx;
-
+		font-weight: bold;
+		font-family: 'Montserrat-SemiBold';
 	}
 	.recently_search{
 		position: relative;
@@ -1483,8 +1466,8 @@ export default {
 				margin: 0 15.38rpx;
 			}
 			.img_delete{
-				width: 34.62rpx;
-				height: 34.62rpx;
+				width: 46.16rpx;
+				height: 46.16rpx;
 			}
 			i.delete{
 			
@@ -1501,6 +1484,7 @@ export default {
 		height: 96rpx;
 		padding: 0 41rpx;
 		color: #333;
+		font-family: 'Montserrat-SemiBold';
 		.filter-dialog {
 			text-align: center;
 			line-height: 96rpx;

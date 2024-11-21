@@ -35,3 +35,18 @@
 		}
 	}
 }
+@mixin font-SemiBold($family: 'Montserrat-SemiBold', $fs: 30.77rpx, $color: #222, $fw: 600) {
+    font-family: $family;
+    font-size: $fs;
+    color: $color;
+	font-weight: $fw;
+}
+@mixin font-MRegular($family: 'Montserrat-Regular', $fs: 23.07rpx, $color: #999, $fw: 400) {
+    font-family: $family;
+    font-size: $fs;
+    color: $color;
+	font-weight: $fw;
+}
+@mixin MRegular($family: 'Montserrat-Regular') {
+    font-family: $family;
+}

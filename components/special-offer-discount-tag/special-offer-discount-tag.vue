@@ -1,13 +1,8 @@
 <template>
-	<view class="special-offer-discount-tag-box">
-		<view class="tag_image_box">
-			<image class="img" src="@/static/images/lower_price/discount_tag_icon@2x.png" style="width: 100%;" mode="widthFix" />
-		</view>
-		<view class="discount_tag_value" :style="{ fontSize: uptateFontSize }">
-			<text class="font-bold value">
-				-{{discount}}</text>
-			<text>%</text>
-		</view>
+	<view class="special-offer-discount-tag-box" 
+		:style="{ fontSize: uptateFontSize }"
+		:class="isSpecial ? 'specialBg' : 'normalBg'">
+		<text class="font-bold value">{{discount}}%{{$t('goods_detail.OFF')}}</text>
 	</view>
 </template>
 
@@ -21,8 +16,13 @@
 			},
 			fontSize: {
 				type: String,
-				default: '27rpx'
+				default: '19.24rpx'
+			},
+			isSpecial: {
+				type: Boolean,
+				default: true
 			}
+
 		},
 		computed: {
 			uptateFontSize() {
@@ -40,31 +40,16 @@
 <style lang="scss" scoped>
 .special-offer-discount-tag-box {
 	position: absolute;
-	left: 0;
-	top: 0;
-	width: 92rpx;
-	height: 38rpx;
-	.tag_image_box {
-		width: 100%;
-		height: 100%;
-		position: absolute;
-		left: 0;
-		top: 0;
-		.img{
-			width: 100%;
-			height: 100%;
-		}
-	}
-	.discount_tag_value {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%,-50%);
-		color: #fff;
-		font-size: 23rpx;
-		.value {
-			font-size: inherit;
-		}
-	}
+	left: 7.7rpx;
+	top: 7.7rpx;
+	padding: 5.77rpx 13.47rpx;
+	color: #fff;
+	border-radius: 38.47rpx;
+}
+.specialBg {
+	background: url(../off-tag/icons/offTab.png) no-repeat center/cover;
+}
+.normalBg {
+	background: #814EFF;
 }
 </style>

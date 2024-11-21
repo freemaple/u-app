@@ -1,24 +1,33 @@
 <template>
-	<view>
+	<view style="width: 100%;">
 		<page-meta :page-style="'overflow:'+(pageMetaShow?'hidden':'visible')"></page-meta>
 		<!-- <back-top :showBtn="showBacktopBtn"></back-top> -->
-		<view class="cart-list-wrapper" :style="judgeContainerHeight()">
-			<view v-if="undoObj.id" class="undo-wrapper" :style="goodsList.list.length>0?'bottom:calc(238rpx + 118rpx)':'bottom:118rpx;'">
-				<view class="flex justify-content-between align-items-center undo-box">
-					<view>{{$t('cart.item_removed')}}</view>
+		<view class="cart-list-wrapper">
+			<!-- 移除商品之后底部弹出Undo撤回栏 -->
+			<view v-if="undoObj.id" class="undo-wrapper" :style="{position: 'fixed', bottom: goodsList.list.length > 0 ? '238rpx' : '123rpx'}">
+				<view class="undo-box flex justify-content-between align-items-center">
+					<view style="font-family: 'Montserrat-Medium';">{{$t('cart.item_removed')}}</view>
 					<view class="undo-right-box flex align-items-center">
 						<view class="undo-btn" @click="handleUndo">{{$t('cart.Undo')}}</view>
 						<image mode="widthFix" @click="handleCloseUndo" class="undo-close-btn" src="@/static/images/distribute/close.png"></image>
 					</view>
 				</view>
 			</view>
-			<pageHeader :styleType="2" :title="$t('cart.shopping_cart')"></pageHeader>
+			<pageHeader :showIcon="false" :styleType="2" :title="$t('cart.bag_upper')"></pageHeader>
 			<view class="container-box">
 				<template v-if="goodsList.list.length > 0 && !$store.getters.hasLogin && shipping_info != ''">
-					<view class="cart-to-login-tip">
+					<view class="cart-to-login-tip mb16r">
 						<view style="flex: 1;">{{ shipping_info.text.guest_text }}</view>
 						<view class="cart-to-login-btn" @click="toLogin">
 							{{ $t('cart.sign_in') }}
+						</view>
+					</view>
+				</template>
+				<template v-if="goodsList.list.length > 0 && $store.getters.hasLogin && free_shipping_tips != ''">
+					<view class="cart-to-free-shipping">
+						<view class="flex no-wrap">
+							<image src="@/static/images/cart/free-shipping-icon.png" class="icon" mode="widthFix" />
+							<view class="content" v-html="free_shipping_tips"></view>
 						</view>
 					</view>
 				</template>
@@ -33,23 +42,26 @@
 						</view>
 					</view>
 				</template>
+				<!-- 商品空白页 -->
 				<template v-if="goodsList.list.length == 0">
-					<view class="cart-empty-box flex flex-column align-items-center">
+					<view class="cart-empty-box">
 						<image mode="widthFix" class="cart-empty-img" src="@/static/images/cart/cart_empty@2x.png"></image>
-						<text class="cart-empty-text">{{$t("cart.empty_word")}}</text>
-						<text v-if="!$store.getters.hasLogin" class="cart-empty-text-sign-in">{{$t('cart.empty_sign_in')}}</text>
+						<view class="cart-empty-text">{{$t("cart.empty_word")}}</view>
+						<view v-if="!$store.getters.hasLogin" class="cart-empty-text-sign-in">{{ $t('cart.empty_sign_in') }}</view>
+						<!-- 已登录 -->
 						<view class="btns-container is-login" v-if="$store.getters.hasLogin">
-							<view class="primary-btn cart-btn" @tap="toHome">{{ $t('cart.continue_shop') }}</view>
+							<view class="primary-btn cart-btn mt75r" @tap="toHome">{{ $t('cart.go_shopping') }}</view>
 						</view>
+						<!-- 无登录 -->
 						<view class="btns-container" v-else>
-							<view class="primary-btn cart-btn" @tap="$public.handleNavTo('/pages/login/index?in_site_source=cart')">{{ $t('cart.sign_in_and_register') }}</view>
-							<view class="cart-btn" @tap="toHome">{{ $t('cart.continue_shop') }}</view>
+							<view class="primary-btn cart-btn font-MS" @tap="$public.handleNavTo('/pages/login/index?in_site_source=cart')">{{ $t('cart.sign_in_and_register') }}</view>
+							<view class="cart-btn font-MM" @tap="toHome">{{ $t('cart.continue_shop') }}</view>
 						</view>
 					</view>
-					
 				</template>
 
 				<template name="cart-goods-list" v-if="goodsList.list.length > 0">
+					<view class="mt23r"></view>
 					<view class="goodsList">
 						<view class="a-gooods" v-for="(item, index) in goodsList.list" :key="index" :id="`cartProductItems-${item.product_id}`">
 							<cartProductItem
@@ -72,9 +84,9 @@
 				</template>
 				<template name="cart-goods-list" v-if="goodsList.notActiveList.length > 0">
 					<view class="goods-line" v-if="goodsList.list.length > 0"></view>
-					<view class="goodsList">
+					<view class="goodsList-no-active">
 						<view class="no-active-goods-header flex align-items-center justify-content-between">
-							<view class="title">{{$t('cart.not_active_goods_list_title')}}({{goodsList.notActiveList.length}})</view>
+							<view class="title">{{$t('cart.item_taken_off_the_shelves')}}({{goodsList.notActiveList.length}})</view>
 							<view class="remove-all" @click="$refs.popupRemoveAll.open('center')">{{$t('cart.remove_all')}}</view>
 						</view>
 						<view class="a-gooods" v-for="(item, index) in goodsList.notActiveList" :key="index" :id="`cartProductItems-${item.product_id}`">
@@ -98,40 +110,108 @@
 					</view>
 				</template>
 				<view class="dividing-line" v-if="recommendList.length"></view>
-				<!-- 推荐 -->
-				<view v-if="recommendList.length" class="goods-container">
+				<!-- 推荐RECOMMEND FOR YOU -->
+				<view v-if="recommendList.length" class="goods-container"  
+					:style="{'padding-bottom': goodsList.list.length === 0 ? '180rpx' : '0', 
+						'background-color': '#fff'}">
 					<view class="u-text-header">
-						{{$t('recommend.header2')}}
+						{{$t('recommend.header1')}}
 					</view>
-					<good-list module_name="cart_ymal" ref="good_list_ref_re" @popupChange="(value)=>{pageMetaShow=value;$public.isPullDown(!pageMetaShow)}" :goods="recommendList" @addSuccess="loadCartInfo()"></good-list>
+					<good-list ref="good_list_ref_re"
+						module_name="cart_ymal" 
+						@popupChange="(value)=>{pageMetaShow=value;$public.isPullDown(!pageMetaShow)}" 
+						:goods="recommendList" 
+						@addSuccess="loadCartInfo()"
+						:setPadding="goodsList.list.length > 0">
+					</good-list>
 				</view>
 			</view>
-			<view v-if="goodsList.list.length > 0" class="footer-box border-top-1px border-bottom-1px">
-				<view class="cart-select-shop-tips" v-if="shipping_info != '' && shipping_info.is_free_shipping != 1">
+			<!-- 结算框遮罩层 -->
+			<view class="overlay" v-if="settleBoxVisible && !hideSettleBox" @click="settleBoxVisible = false"></view>
+			<!-- 结算框 -->
+			<view v-if="goodsList.list.length > 0" class="footer-box app-bottom">
+				<!-- <view v-if="shipping_info != '' && shipping_info.is_free_shipping != 1"
+					class="cart-select-shop-tips" >
 					<image src="@/static/images/icon/trumpet.png"></image>
 					<view style="flex: 1;" v-html="shipping_info.text.shipping_cost_text"></view>
-				</view>
-				<view style="display: flex;border-top: 1px solid #ddd;" class="top justify-content-between">
+				</view> -->
+				<view class="top flex justify-content-between" :class="settleBoxVisible && !hideSettleBox ? '' : 'top-border'">
+					<transition name="fade">
+						<view class="settleBox" v-if="settleBoxVisible && !hideSettleBox">
+							<view class="settle_bag">
+								<text>{{$t('cart.bag')}}({{activeNumber}})</text>
+								<image @click="settleBoxVisible = false" 
+									src="@/static/images/distribute/close.png" mode="widthFix" />
+							</view>
+							<view class="settle_Promotions">
+								<view class="promotions_text">{{$t('cart.promotions')}}</view>
+								<view class="promotions_item mb15r" v-if="Number(goodsList.special_product_reduction_total) > 0">
+									<view class="itemText">{{$t('cart.discount_applied')}}</view>
+									<view class="discount">-{{currencySymbol}}{{goodsList.special_product_reduction_total}}</view>
+								</view>
+								<view class="promotions_item" v-if="Number(goodsList.promotion_product_reduction_total) > 0">
+									<view class="itemText">{{$t('cart.falsh_sale')}}</view>
+									<view class="discount">-{{currencySymbol}}{{goodsList.promotion_product_reduction_total}}</view>
+								</view>
+							</view>
+							<view class="total_sale" v-if="Number(goodsList.totalPrice)">
+								<view class="text">{{$t('cart.totalNew')}}</view>
+								<view class="sale_val">
+									Saved {{currencySymbol}}{{ goodsList.totalPrice }}
+								</view>
+							</view>
+						</view>
+					</transition>
+					<!-- ALL -->
 					<view class="select-all flex align-items-center">
 						<view @click="bindAllSelect" :class="isAllSelect?'icon-radio-checked':'icon-radio-check'"></view>
 						<view>{{$t('cart.all')}}</view>
 					</view>
-					<view style="display: flex;align-items: center;">
-						<view class="footer-right-box" :style="String(goodsList.totalPrice).length>7?'font-size:20rpx;':''" @click="$refs.popupSaveMoney.open('bottom')">
+					<view class="flex align-items-center">
+						<view class="footer-right-box" 
+							:class="[String(goodsList.totalPrice).length > 7 ? 'fs20' : '']"
+							@click="onShowSettleBox">
+							<!-- @click="$refs.popupSaveMoney.open('bottom')" -->
+							<!-- @click="settleBoxVisible = !settleBoxVisible" -->
 							<view v-if="Number(goodsList.totalPrice)" class="total-price-box flex align-items-end">
-								<text :style="String(goodsList.totalPrice).length>7?'font-size:20rpx;':'font-size: 24rpx;align-self: center;'">{{$t('cart.total')}}: </text><text class="total-price" :style="String(goodsList.totalPrice).length>7?'font-size:20rpx;':''"><text>{{currencySymbol}}</text>{{ goodsList.totalPrice }}</text>
+								<!-- Subtotal: -->
+								<view class="subtotal-text"
+									:class="[String(goodsList.totalPrice).length > 7 ? 'fs20' : '']">
+									{{$t('cart.total')}}:
+								</view>
+								<!-- 价格 -->
+								<text class="total-price" :class="[String(goodsList.totalPrice).length > 7 ? 'fs20' : '']">
+									<text style="font-size: 23.08rpx">{{currencySymbol}}</text>
+									<text v-if="goodsList.totalPrice.includes('.')">
+										<text class="price-integer">{{ goodsList.totalPrice_int }}</text>
+										<text>{{ goodsList.totalPrice_decimal }}</text>
+									</text>
+									<text v-else>
+										<text class="price-integer">{{ goodsList.totalPrice }}</text>
+									</text>
+								</text>
 							</view>
-							<view v-if="Number(goodsList.product_reduction_total)" class="reduction-total">
-								{{$t('cart.saved')}} {{currencySymbol}}{{goodsList.product_reduction_total}}
-								<image class="cart-down-icon" src="@/static/images/icon/cart-down.png" mode=""></image>
+							<!-- Saved $xxx  -->
+							<view v-if="Number(goodsList.product_reduction_total)" class="reduction-total" >
+								<text>{{$t('cart.saved')}} {{currencySymbol}}{{goodsList.product_reduction_total}}</text>
+								<image v-if="settleBoxVisible && !hideSettleBox" class="cart-down-icon" src="@/static/images/cart/cart_up_arrow.png" mode="widthFix"></image>
+								<image v-else class="cart-down-icon" src="@/static/images/cart/cart_down_arrow.png" mode="widthFix"></image>
 							</view>
 						</view>
-						<button :loading="isCheckouting" style="width: 320rpx;margin-left: 16rpx;" class="dui-primary-btn" :class="activeNumber?'':'_disabled'" @tap="isCheckouting?'':handleCheckOut()">{{$t("cart.check_out")}} ({{activeNumber}})</button>					
+						<!-- CHECKOUT -->
+						<button :loading="isCheckouting" 
+							style="width: auto; margin-left: 15.38rpx;" 
+							class="dui-primary-btn" 
+							:class="activeNumber?'':'_disabled'" 
+							@tap="isCheckouting?''
+							:handleCheckOut()">
+						{{$t("cart.check_out")}}({{activeNumber}})
+						</button>					
 					</view>
 				</view>
 			</view>
 			<!-- 购物车弹窗 -->
-			<shoppingCartPopup 
+			<shoppingCartPopup
 				@popupChange="(value)=>{pageMetaShow=value;$public.isPullDown(!pageMetaShow)}"
 				ref="shoppingCartPopup_Cart" 
 				@changeOtherAttr="handleChangeOtherAttr" 
@@ -156,9 +236,9 @@
 			<uni-popup ref="popupDelete" class="delete-popup-box" @change="(e)=>{pageMetaShow = e.show;$public.isPullDown(!pageMetaShow)}">
 				<view class="content-main">
 					<image @click="$refs.popupDelete.close()" mode="widthFix" src="@/static/images/distribute/close.png" class="close"></image>
-					<view class="title">{{$t('cart.delete_popup_text')}}</view>
-					<view class="dui-primary-btn move-to-wish" @click="handleDeleteConfirm('move-to-wish')">{{$t('cart.move_wish')}}</view>
-					<view class="dui-primary-btn delete" @click="handleDeleteConfirm()">{{$t('cart.delete')}}</view>
+					<view class="title">{{$t('cart.delete_popup_text_Upper')}}</view>
+					<view class="dui-primary-btn move-to-wish" @click="handleDeleteConfirm('move-to-wish')">{{$t('cart.move_wish_upper')}}</view>
+					<view class="dui-primary-btn delete" @click="handleDeleteConfirm()">{{$t('cart.delete_upper')}}</view>
 				</view>
 			</uni-popup>
 			<!-- 清空无库存或下架产品确认弹窗 -->
@@ -166,8 +246,8 @@
 				<view class="content-main">
 					<image @click="$refs.popupRemoveAll.close()" mode="widthFix" src="@/static/images/distribute/close.png" class="close"></image>
 					<view class="title">{{$t('cart.delete_all_popup_text')}}</view>
-					<view class="dui-primary-btn delete" @click="handleDeleteAll">{{$t('cart.delete')}}</view>
-					<view class="dui-primary-btn cancle" @click="$refs.popupRemoveAll.close()">{{$t('cart.cancle')}}</view>
+					<view class="dui-primary-btn delete" @click="handleDeleteAll">{{$t('cart.delete_upper')}}</view>
+					<view class="dui-primary-btn cancle" @click="$refs.popupRemoveAll.close()">{{$t('cart.cancle_upper')}}</view>
 				</view>
 			</uni-popup>
 			<!-- 省钱详细弹窗 -->
@@ -190,7 +270,7 @@
 									<view>{{$t('cart.all')}}</view>
 								</view>
 								<view class="footer-right-box flex align-items-center" :style="String(goodsList.totalPrice).length>7?'font-size:20rpx;':''">
-									<view class="flex" :class="String(goodsList.totalPrice).length>7?'align-items-center':'align-items-end'">
+									<view class="flex " :class="String(goodsList.totalPrice).length>7?'align-items-center':'align-items-end'">
 										<view @click="$refs.popupSaveMoney.open('bottom')" v-if="Number(goodsList.product_reduction_total)" class="reduction-total">{{$t('cart.saved')}} {{currencySymbol}}{{goodsList.product_reduction_total}}</view>
 										<view v-if="Number(goodsList.totalPrice)" class="total-price-box flex align-items-end">
 											<text>{{$t('cart.total')}}: </text><text class="total-price" :style="String(goodsList.totalPrice).length>7?'font-size:20rpx;':''">{{currencySymbol}}{{ goodsList.totalPrice }}</text>
@@ -220,18 +300,18 @@
 					<view class="dui-primary-btn" :class="showEmailValidateError || (!showEmailValidateError&&!email)?'_disabled':''" @click="sendStockNotice()">{{$t('cart.submit')}}</view>
 				</view>
 			</uni-popup>
-		</view>
-		<!-- 订阅成功弹窗 -->
-		<uni-popup ref="popupNotifySuccess" class="notify-success-popup-box" @change="(e)=>{pageMetaShow = e.show;$public.isPullDown(!pageMetaShow)}">
-			<view class="content-main">
-				<view class="header">
-					<view class="title">{{notify_item.record_type=='out_of_stock'?$t('cart.out_stock_popup.title'):$t('cart.off_shelf_popup.title')}}</view>
-					<image @click="$refs.popupNotifySuccess.close()" src="@/static/images/distribute/close.png" mode="widthFix" class="close-btn" />
+			<!-- 订阅成功弹窗 -->
+			<uni-popup ref="popupNotifySuccess" class="notify-success-popup-box" @change="(e)=>{pageMetaShow = e.show;$public.isPullDown(!pageMetaShow)}">
+				<view class="content-main">
+					<view class="header">
+						<view class="title">{{notify_item.record_type=='out_of_stock'?$t('cart.out_stock_popup.title'):$t('cart.off_shelf_popup.title')}}</view>
+						<image @click="$refs.popupNotifySuccess.close()" src="@/static/images/distribute/close.png" mode="widthFix" class="close-btn" />
+					</view>
+					<view class="content">{{notify_item.record_type=='out_of_stock'?$t('cart.out_stock_popup.content_success'):$t('cart.off_shelf_popup.content_success')}}</view>
+					<view class="dui-primary-btn" @click="$refs.popupNotifySuccess.close()">{{$t('cart.ok')}}</view>
 				</view>
-				<view class="content">{{notify_item.record_type=='out_of_stock'?$t('cart.out_stock_popup.content_success'):$t('cart.off_shelf_popup.content_success')}}</view>
-				<view class="dui-primary-btn" @click="$refs.popupNotifySuccess.close()">{{$t('cart.ok')}}</view>
-			</view>
-		</uni-popup>
+			</uni-popup>
+		</view>
 		<list-loading v-show="showLoading" :fixedCenter="true"></list-loading>
 		<custom-tabbar currentTab="Cart"></custom-tabbar>
 	</view>
@@ -251,7 +331,7 @@ export default {
     },
     data() {
         return {
-			isCheckouting:false,
+			free_shipping_tips: '', //免邮提示s
 			pageMetaShow:false,
 			showEmailValidateError:false,
 			old_item:{},
@@ -267,6 +347,8 @@ export default {
                 totalPrice: 0,
 				base_product_total: 0,
 				product_reduction_total:0,
+				promotion_product_reduction_total: 0,
+				special_product_reduction_total: 0,
                 currencySymbol: '',
                 list: [],
 				currency:{},
@@ -283,9 +365,12 @@ export default {
 			},
 			showBacktopBtn: false,
 			shipping_info: '',
+			isCheckouting:false,
 			currentClickItem:{},
 			special_qty_left_text:"",
 			oldNumber:'',
+			settleBoxVisible: false,
+			hideSettleBox: false,
 			module_name: 'cart'
         };
     },
@@ -336,11 +421,15 @@ export default {
 		},
 		handleOutOfStock(item) {
 			this.notify_item={...item,record_type:'out_of_stock'};
-			this.$refs.popupNotify.open('bottom');
+			if(item.if_subscribe != 1) {
+				this.$refs.popupNotify.open('bottom')
+			}
 		},
 		handleOffShelf(item) {
 			this.notify_item={...item,record_type:'off_shelf'};
-			this.$refs.popupNotify.open('bottom')
+			if(item.if_subscribe != 1) {
+				this.$refs.popupNotify.open('bottom')
+			}
 		},
 		// 调用发货通知接口
 		sendStockNotice() {
@@ -360,9 +449,9 @@ export default {
 		},
 		judgeContainerHeight() {
 			if(this.goodsList.list.length>0) {
-				return {'padding-top':'96rpx','padding-bottom':'calc(216rpx + 115.38rpx)'}
+				return {'padding-top':'96rpx','padding-bottom':'216rpx'}
 			} else {
-				return {'padding-top':'96rpx','padding-bottom':'115.38rpx'}
+				return {'padding-top':'96rpx'}
 			}
 		},
 		handleGoTop(){
@@ -402,7 +491,9 @@ export default {
 			this.isCheckouting = true;
 			this.$apis.checkCartList().then(res=>{
 				this.$public.handleNavTo('/pages/checkout/index')
-				this.isCheckouting = false;
+				setTimeout(() => {
+					this.isCheckouting = false;
+				}, 1000);
 				let items = [];
 				this.goodsList.list.forEach((item, index) => {
 					if(item.active == 1){
@@ -422,7 +513,8 @@ export default {
 				})
 			}).catch(e=>{
 				this.isCheckouting = false;
-			});
+			})
+			
 		},
 		countTotal(data) {
 			let goodsAllList = this.goodsList.list.concat(this.goodsList.notActiveList);
@@ -483,13 +575,15 @@ export default {
 				this.id = data._id;
 			}
 		},
-
+		onShowSettleBox() {
+			this.settleBoxVisible = !this.settleBoxVisible
+		},
         loadCartInfo (config) {
 			this.$apis.getCartList({v:'1.1'},config).then(res =>{
 				this.showLoading = false;
 				let carNum = 0;
 				if (res.code == 200) {
-					let result = res.data
+					let result = res.data;
 					this.email = result.email;
 					var cart_info = result.cart_info;
 					var currency = result.currency;
@@ -497,6 +591,8 @@ export default {
 					    totalPrice: 0,
 						base_product_total: 0,
 						product_reduction_total:0,
+						promotion_product_reduction_total: 0,
+						special_product_reduction_total: 0,
 					    currencySymbol: '',
 						currency: currency,
 					    list: [],
@@ -505,15 +601,27 @@ export default {
 					if (cart_info) {
 						let cart_products = cart_info.products || [];
 						this.activeNumber = cart_info.active_items_count;
-						
 					    goodsList.totalPrice = cart_info.product_total;
 						goodsList.base_product_total = cart_info.base_product_total;
 						goodsList.product_reduction_total = cart_info.product_reduction_total;
+						goodsList.promotion_product_reduction_total = cart_info.promotion_product_reduction_total
+						goodsList.special_product_reduction_total = cart_info.special_product_reduction_total
+						const transformTotalPrice = this.$public.transformPrice(goodsList.totalPrice, 'totalPrice')
+						goodsList = {...goodsList, ...transformTotalPrice}
+						if(Number(goodsList.promotion_product_reduction_total) <= 0 && Number(goodsList.special_product_reduction_total) <= 0) {
+							this.hideSettleBox = true
+						} else {
+							this.hideSettleBox = false
+						}
 					    goodsList.currencySymbol = currency.symbol;
 					    this.setData({
 					        currencySymbol: currency.symbol
 					    });
 						cart_products.map(item=>{
+							item = {
+								...item,
+								...this.$public.transformPrice(item.product_price,'product_price')
+							}
 							if(item.not_active_status) {
 								goodsList.notActiveList.push(item);
 							} else {
@@ -537,6 +645,7 @@ export default {
 						shipping_info: result.shipping_info,
 						special_qty_left_text:result.special_qty_left_text
 					});
+					this.free_shipping_tips = result.free_shipping_tips;
 					if(this.currentClickItem&&this.currentClickItem.special_type>0) {
 						var filterData =  this.goodsList.list.filter((item)=>{return item.special_data && item.special_data.btn_grey && item.product_id == this.currentClickItem.product_id })
 						if(filterData.length) {
@@ -636,6 +745,8 @@ export default {
 			let params = {up_type: _total - current_qty,item_id: data.item_id,current_qty:current_qty};
 			this.delete_item = {...data,...params}
 			// not_active_status 1:下架 2:无库存
+			console.log(data, 'data');
+			console.log(data.not_active_status);
 			if(!data.not_active_status && this.$store.getters.hasLogin) {
 				this.$refs.popupDelete.open('center');
 			} else {
@@ -772,13 +883,15 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-@import "cart.scss";
 .cart-list-wrapper .footer-box{
-	bottom: 115.38rpx;
+}
+.settleBox {
+	bottom: 100rpx !important;
 }
 ::v-deep {
 	.global-top-btn {
 		bottom: 340rpx;
 	}
 }
+@import "cart.scss"
 </style>
