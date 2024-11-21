@@ -32,7 +32,7 @@
 								<view class="a-goods" v-for="(pitem, p_index) in item.item_products" :key="p_index">
 									<view class="img-box">
 										<image :src="pitem.pic" class="img" />
-										<specialOfferDiscountTab v-if="pitem.member_product != 1 && pitem.line_price" :is-special="pitem.is_special_price==1" :discount="pitem.discount_off"  fontSize="18rpx"></specialOfferDiscountTab>
+										<view v-if="pitem.member_product != 1 && pitem.line_price" class="special-price-discount_off">-{{pitem.discount_off}}%</view>
 									</view>
 									<view class="text-box-info">
 										<view class="goods-name">{{ pitem.name }}</view>
@@ -215,7 +215,6 @@ import ListLoading from '@/components/list-loading/list-loading.vue';
 import uniCountdown from "@/components/l-uni-countdown/uni-countdown.vue"
 import chatPlugin from '@/utils/chatPlugin.js'
 import { mapState } from 'vuex'
-import specialOfferDiscountTab from '@/components/special-offer-discount-tag/special-offer-discount-tag.vue'
 
 var app = getApp(); // 语言
 
@@ -223,8 +222,7 @@ export default {
     components: {
         navigation,
 		ListLoading,
-		uniCountdown,
-		specialOfferDiscountTab
+		uniCountdown
     },
     data() {
         return {
@@ -264,7 +262,7 @@ export default {
             this.order_status = e.order_status;
         }
 		this.getOrderListData(e);
-		this.queryCancelReason()
+		this.queryCancelReason();
     },
 	onPageScroll: function (t) {
         if (t.scrollTop >= 180) {
@@ -830,6 +828,9 @@ export default {
 		content: '\e6c2';
 	}
 	.reason_text {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 		flex: 1;
 		margin-left: 20rpx;
 	}
@@ -860,7 +861,7 @@ export default {
 	.reason_li {
 		width: 100%;
 		/* padding: 0.4rem 0; */
-		min-height: 60rpx;
+		height: 60rpx;
 		margin: 20rpx 0;
 	}
     .bottom_confirm{
@@ -910,8 +911,8 @@ export default {
 	    box-sizing: border-box;
 	    position: relative;
 		&.active{
-			color: #8A61E7;
-			border-bottom: 6rpx solid #8A61E7;
+			color: #f85184;
+			border-bottom: 6rpx solid #f85184;
 		}
 		.red-dot {
 		    width: 16rpx;
@@ -990,7 +991,7 @@ export default {
 }
 .goods-img-container .img-box {
     width: 140rpx;
-    height: 140rpx;
+    height: 186rpx;
     overflow: hidden;
     margin-right: 10rpx;
     background-color: #f7f7f7;
@@ -998,7 +999,7 @@ export default {
 }
 .goods-img-container .img-box .goods-img {
     width: 140rpx;
-    height: 140rpx;
+    height: 186rpx;
 }
 .goods-list .a-goods {
     display: flex;
@@ -1009,14 +1010,22 @@ export default {
 }
 .goods-list .a-goods .img-box {
     width: 140rpx;
-    height: 140rpx;
+    height: 186rpx;
     margin-right: 20rpx;
     background-color: #f7f7f7;
 	position: relative;
 }
+.goods-list .a-goods .img-box .special-price-discount_off {
+	position: absolute;
+	top: 10rpx;
+	left: 0;
+	background: #ffe3d4;
+	color: #825a3d;
+	font-size: 20rpx;
+}
 .goods-list .a-goods .img-box .img {
 	width: 140rpx;
-	height: 140rpx;
+	height: 186rpx;
 }
 .goods-list .text-box {
 	flex: 1;

@@ -58,7 +58,7 @@ export default {
 					rules: [
 						{
 							required: true,
-							errorMessage: 'The email you entered is invalid, Please check your email and try again.'
+							errorMessage: 'Please enter a valid email address.'
 						},
 					]
 				},

@@ -7,6 +7,7 @@ import $mUtils from '@/utils/util.js';
 import {ForterModule} from "@/uni_modules/ut-forter";
 // #endif
 import  AppUpdate from '@/utils/appUpdate.js'; 
+import  { setPermissionsInform } from '@/utils/noticePermissions.js'; 
 
 export default {
     data() {
@@ -43,7 +44,9 @@ export default {
 		// #ifdef APP-PLUS
 		this.openinstall();
 		this.plusEvent();
-		this.$trackEvent.app_open();
+		setTimeout(() => {
+			this.$trackEvent.app_open();
+		}, 1000);
 		// #endif
         var that = this;
         that.globalData.urls();
@@ -81,6 +84,9 @@ export default {
 		// #ifdef H5
 		this.$store.commit('SET_HomeCoupon', true);
 		// #endif
+		uni.$off('appDateLog').$on('appDateLog',(data) => {
+			this.appDateLog();
+		});
     },
 	onShow(){
 		// #ifdef APP-PLUS
@@ -203,7 +209,6 @@ export default {
 								this.openBindData = bindData;
 								aicode = bindData.aicode;
 							}
-							
 							let utmParams = {};
 							if(bindData.utm_source) {
 								utmParams.utm_source = bindData.utm_source
@@ -222,6 +227,7 @@ export default {
 							} else {
 								this.$store.commit('SET_UTMPARAMS', utmParams);
 							}
+							this.$maEvent.app_visit(bindData);
 						}
 						//是否显示首页优惠劵弹框
 						let isHomeCoupon = true;
@@ -243,49 +249,49 @@ export default {
 		},
 		//plus事件
 		plusEvent(){
+			//获取通知权限
+			// setPermissionsInform() 
 			let client = uni.getSystemInfoSync().platform
 			// 监听系统通知栏消息点击事件
 			plus.push.addEventListener('click', (msg) => {
-			    let link = '';
-			    if (client == 'ios') {
-			        // ios
-			        try {
-			            if (typeof msg.payload === 'object') {
-			                // iOS payload 直接是对象
-			                if (msg.payload.payload && msg.payload.payload.link) {
-			                    link = msg.payload.payload.link;
-			                }
-			            } else {
-			                // iOS payload 需要解析为对象
-			                let parsedPayload = JSON.parse(msg.payload);
-			                if (parsedPayload.payload && parsedPayload.payload.link) {
-			                    link = parsedPayload.payload.link;
-			                }
-			            }
-			        } catch (e) {
-			            console.error('error', e);
-			        }
-			    } else {
-			        // android
-			        try {
-			            let payload = msg.payload;
-			            if (typeof payload != 'object') {
-			                payload = JSON.parse(payload);
-			            }
-			            if (payload.payload && payload.payload.link) {
-			                link = payload.payload.link;
-			            }
-			        } catch (e) {
-			            console.error('error', e);
-			        }
-			    }
-			    if (link) {
-			        this.navTo(link);
-			    }
+				try{
+					this.$trackEvent.appPushClickLog(msg);
+				} catch(e){
+					
+				}
+				let payload = msg.payload;
+				// iOS/android
+				try {
+					if (payload&&typeof payload === 'object') {
+						// iOS/android payload 直接是对象
+					} else {
+						// iOS/android payload 需要解析为对象
+						payload = JSON.parse(payload);
+					}
+				} catch (e) {
+					console.error('error', e);
+				}
+				let is_click_event = false;
+				// iOS跳转页面
+				if (payload&&payload.link) {
+					this.appPushLink(payload);
+					is_click_event = true;
+				}
+				if (payload&&payload.message_id) {
+					is_click_event = true;
+				}
+				if(is_click_event){
+					this.$trackEvent.appPushClick(msg, payload);
+				}
 			}, false);
-			
+
 			// 监听接收透传消息事件
 			plus.push.addEventListener('receive', (msg) => {
+				try {
+					this.$trackEvent.appPushReceiveLog(msg);
+				} catch(e){
+					
+				}
 				let payload = msg.payload;
 				try {
 					// 检查 payload 的类型，如果是字符串则解析为 JSON 对象
@@ -293,29 +299,56 @@ export default {
 						payload = JSON.parse(payload);
 					}
 					// 透传消息的处理逻辑
-					if (payload.payload && payload.payload.link) {
+					if (client == 'ios') {
 						var options = {
 							...payload,
 							cover: false
 						};
-						// 在线处理
-						if (payload.payload.is_online === 1) {
-							let messageTitle = payload.payload.title;
-							let messageContent = payload.payload.content;
+						// ios在线处理
+						if (payload.is_online == 1) {
+							let messageContent = payload.content;
 							// 创建本地消息
-							plus.push.createMessage(messageContent, options.payload, {
-								title: messageTitle
-							});
+							plus.push.createMessage(messageContent, JSON.stringify(options), options);
 						} else {
-							// 离线处理
+							// ios离线处理
 							plus.push.createMessage(msg.content, JSON.stringify(options), options);
 						}
-					}
+					} 
+					// else {
+					// 	// 安卓离线处理
+					// 	plus.push.createMessage(payload.content, JSON.stringify(payload), {
+					// 		title: payload.title
+					// 	});
+					// }
 				} catch (e) {
 					console.error('Error parsing payload:', e);
 				}
+				// 安卓跳转页面
+				if (client == 'android') {
+					if (payload&&payload.link) {
+						this.appPushLink(payload);
+						this.$trackEvent.appPushClick(msg, payload);
+					}
+				}
 			}, false);
-
+		},
+		//appPush跳转
+		appPushLink(payload){
+			if(payload.link){
+				let flag  = payload.link.indexOf("?") != -1 ? '&' : '?';
+				payload.link = payload.link + flag + "insite_mkt_type=push";
+				if(payload.message_id){
+					payload.link += "&message_id=" + payload.message_id;
+				}
+				let switchIndex = $mUtils.checkSwitch(payload.link, this);
+				if(switchIndex != -1){
+					this.$store.commit('SET_PUSHDATA', {
+						insite_mkt_type: "push",
+						message_id: payload.message_id || ''
+					});
+				}
+				this.navTo(payload.link);
+			}
 		},
 		navTo(url) {
 			if (!url || url.length == 0) {
@@ -411,7 +444,7 @@ export default {
 					return false;
 				}
 				this.appLogLoading = true;
-				this.$apis.postAppDateLog(data, () => {
+				this.$apis.postAppDateLog(data).then(() => {
 					this.appLogLoading = false;
 				}).catch(() => {
 					this.appLogLoading = false;
@@ -438,13 +471,6 @@ export default {
 </script>
 <style>
 	@import "static/common.css";
-	body{
-		font-family: 'Montserrat-Medium';
-		font-weiht: 500;
-	}
-	/deep/.uni-tabbar {
-		box-shadow: 0px -2px 16px 0px rgba(0,0,0,0.1);
-	}
     /deep/.uni-tabbar__item:nth-child(2) img{
         /* transform: scale(1.5); */
     }
@@ -538,11 +564,7 @@ export default {
 		z-index: 98;
 	}
 	::v-deep uni-button[loading]:before {
-		margin-bottom: 9rpx;
 		width: 36rpx;
 		height: 36rpx;
 	}
-</style>
-<style lang="scss">
-	@import "static/common.scss";
 </style>

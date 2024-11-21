@@ -117,6 +117,17 @@
 				module_name: 'wishlist'
 			};
 		},
+		onTabItemTap(item) {
+			this.$maEvent.custom_event({
+				event_category: 'tabBar',
+				event_action: 'tabBar_button',
+				event_name: 'tabBar_button',
+				module: 'tabBar',
+				event_data: {
+					event_value: 'wishlist'
+				},
+			});
+		},
 		onReachBottom() {
 			if (this.$store.getters.hasLogin && this.p < this.pageTotal) {
 				this.p++;
@@ -135,17 +146,6 @@
 				this.getList();
 			}
 			this.recommendProduct();
-		},
-		onTabItemTap(item) {
-			this.$maEvent.custom_event({
-				event_category: 'tabBar',
-				event_action: 'tabBar_button',
-				event_name: 'tabBar_button',
-				module: 'tabBar',
-				event_data: {
-					event_value: 'wishlist'
-				},
-			});
 		},
 		onShow(){
 			if(this.$store.getters.hasLogin) {
@@ -422,7 +422,7 @@
 
 	.fav-list-box .fav-list-content .fav-item .right .top .special-price-box .special-price {
 		font-size: 32rpx;
-		color: #8A61E7;
+		color: #f85184;
 		margin-right: 12rpx;
 	}
 

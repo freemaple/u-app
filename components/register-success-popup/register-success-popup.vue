@@ -81,7 +81,7 @@
 				width: 100vw;
 				height: 100%;
 				overflow-y: auto;
-				padding: 128rpx 46rpx;
+				padding: 128rpx 32rpx;
 				.rigister-icon {
 					width: 130rpx;
 					margin-bottom: 40rpx;
@@ -89,25 +89,23 @@
 				.tips-1 {
 					color: #000;
 					font-size: 36rpx;
-					margin-bottom: 123.08rpx;
+					margin-bottom: 40rpx;
 					text-align: center;
 				}
 				.shop-now-btn {
+					min-width: 288rpx;
+					height: 88rpx;
+					line-height: 84rpx;
 					padding: 0 40rpx;
 					font-size: 32rpx;
 					background: #000000;
 					color: #fff;
 					display: inline-block;
 					margin-bottom: 60rpx;
-					font-family: 'Montserrat-SemiBold';
-					height: 96rpx;
-					line-height: 96rpx;
-					text-align: center;
-					border-radius: 46rpx;
-					width: 100%;
+					font-weight: bold;
 				}
 				.content-box {
-					padding: 60rpx 46rpx;
+					padding: 60rpx 48rpx;
 					width: 100%;
 					background: url('@/static/images/reg_success_bg.png') no-repeat right center;
 					background-size: cover;

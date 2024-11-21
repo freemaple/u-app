@@ -127,11 +127,10 @@
 	width: 48rpx;
 }
 .page-header-box .title {
-	font-family: "Montserrat-SemiBold";
-	font-size: 34.62rpx;
+	font-size: 36rpx;
 	color: #000;
 	margin-left: 24rpx;
-	font-weight: 600;
+	font-weight: bold;
 	position: relative;
 	overflow: hidden;
 	text-overflow: ellipsis;

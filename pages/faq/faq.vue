@@ -82,9 +82,6 @@ export default {
       }
        
     })
-    
-    
-    
   },
   onShow() {
 	  this.$maEvent.visit_event({

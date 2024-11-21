@@ -1,5 +1,5 @@
 <template>
-	<view :class="'cate-list ' + (open_popmenu ? 'no_scroll ' : '') + (showTabbar ? 'showTabbar ' : '') + (child_category_info.length || isBannerShow ? '' : 'pt_class')">
+	<view :class="'cate-list ' + (open_popmenu ? 'no_scroll ' : '') + (showTabbar ? 'showTabbar ' : '') + (child_category_info.length ? '' : 'pt_class')">
 		<page-meta :page-style="'overflow:'+(pageMetaShow?'hidden':'visible')"></page-meta>
 		<!-- 点击头部菜单按钮左侧弹窗 -->
 		<popupLeft v-if="showPopupLeft" ref='popupLeft'></popupLeft>
@@ -7,22 +7,47 @@
 		<view class="new_header_wrapper">			
 			<view class="cate_header_box flex align-items-center justify-content-between">
 				<view @tap="handleBack" class="cate_back">
-					<image class="img" src="@/static/images/header_back_icon@2x.png" mode="scaleToFill"/>
+					<image
+						class="img"
+						src="@/static/images/header_back_icon@2x.png"
+						mode="scaleToFill"
+					/>
 				</view>
-				<view class="cate_name font-bold font-MS">{{ language.category_list }}</view>
+				<view class="cate_name font-bold">{{ language.category_list }}</view>
 				<view class="right_icons flex">
 					<view @tap="handleToSearch" class="search_icon flex align-items-center">
-						<image class="img" src="@/static/images/category_top_search@2x.png" mode="scaleToFill" />
+						<image
+							class="img"
+							src="@/static/images/category_top_search@2x.png"
+							mode="scaleToFill"
+						/>
 					</view>
 					<view class="layout_icon flex align-items-center">
-						<image @tap="changeListType" v-show="showSingleList" class="img" src="@/static/images/icon/viewGrid.png" mode="scaleToFill" />
-						<image @tap="changeListType" v-show="!showSingleList" class="img" src="@/static/images/icon/hangzhuangshitu.png" mode="scaleToFill"/>
+						<image
+							@tap="changeListType"
+							v-show="showSingleList"
+							class="img"
+							src="@/static/images/icon/viewGrid.png"
+							mode="scaleToFill"
+						/>
+						<image
+							@tap="changeListType"
+							v-show="!showSingleList"
+							class="img"
+							src="@/static/images/icon/hangzhuangshitu.png"
+							mode="scaleToFill"
+						/>
 					</view>
 				</view>
 				
 			</view>
 		</view>
-		<back-top :showBtn="showBtn" />
+		<view :class="'global-top-btn flex align-items-center justify-content-center '+ (!showBtn?'global-btn-none':'')" @click="backTop">
+            <image class="img"
+				mode="aspectFill"
+                src="@/static/images/icon/back_top_icon@2x.png"
+            />
+        </view>
 		<!-- <view class="list_cart">
 			<navigator url="/pages/cart/cartPage" hover-class="navigator-hover">			
 				<view class="cart">
@@ -31,9 +56,9 @@
 				</uni-badge>
 				</view>					
 			</navigator>	
-		</view> -->	
+		</view> -->
 		<!-- 过滤筛选 -->
-		<popup-right @handleFilterQuery="handleFilterQuery" :showFilter="showFilter" belong_module="category" ref="popupRight" :symbol="symbol" :filter_info="Array.isArray(filter_info) ? {} : filter_info"></popup-right>
+		<popup-right @handleFilterQuery="handleFilterQuery" :showFilter="showFilter" belong_module="category" ref="popupRight" :symbol="symbol" :filter_info="filter_info"></popup-right>
 		
 		
 		<view @touchmove.stop.prevent="()=>{}" class="menu_mask" @tap="handleCloseMenu" v-show="open_popmenu"></view>
@@ -44,93 +69,74 @@
 					<scroll-view  :scroll-left="scrollLeft" :scroll-x="true" :class="'child_categorys '+(showListChildCates?'':'new_child_categorys')" v-show="child_category_info.length">
 						<view class="flex ">
 							<view class="child_categorys_wrapper flex" >
-								<view @tap="handleSelectChildCategory(item)" v-for="(item,index) in child_category_info" :key="index" :class="'child_category_item flex justify-content-center align-item-center '+ (item.checked ? 'checked': '')">
-									<image :src="item.img" mode="widthFix " :lazy-load="true" class="child_category_img"/>
+								<view @tap="handleSelectChildCategory(item)" v-for="(item,index) in child_category_info" :key="index" :class="'child_category_item flex '+ (item.checked ? 'checked': '')">
+									<image :src="item.img" mode="widthFix" :lazy-load="true" class="child_category_img"/>
 									<view class="child_category_name">
 										<view class="text">{{ item.name }}</view>	
 									</view>
 								</view>	
+								
 							</view>
 						</view>
 					</scroll-view>	
 				</view>
-			</view>
-			<view v-show="isPriceRangePart" style="position: relative;z-index:10;background:#fff; border-top: 2rpx solid #F1F1F1; border-bottom: 2rpx solid #F1F1F1;">
-				<view class="sticky_wrapper" v-if="filterTagsArr.length > 0">
-					<tag-list
-						:tagArray="filterTagsArr"
-						:tagId="selectedTag.id"
-						@emitTag="setTag('price', $event)"
-						:activedColor="'#FFFFFF'"
-						:activedBackgroundColor="'#814EFF'"
-						:unActivedColor="'#393939'"
-						:unActivedBackgroundColor="'#EFEAF4'"
-						:boxMargin="'34.62rpx 0 34.62rpx 32.69rpx'">
-					</tag-list>
-				</view>
-			</view>
-			<view ref="cateImage" class="cate_image" v-if="isBannerShow" style="width: 100%;height: 211.54rpx;">
-				<image style="width: 100%;height: 100%; z-index: 9" :src="cateImage" mode="aspectFill" :lazy-load="true" />
-			</view>
-			<view ref="my-filter-box" @touchmove.stop.prevent="()=>{}" v-if="showTabbar&&child_category_info.length" 
-				:class="'my-filter-box flex ' + (showListChildCates ? ' ' : 'fixed_box ')+ (!showListChildCates ? 'fixed_box2 ' : '') + (isPriceRangePart ? 'fixed_box4' :'')" >
+			</view>					
+			
+			<view @touchmove.stop.prevent="()=>{}" v-if="showTabbar&&child_category_info.length" :class="'my-filter-box flex ' + (showListChildCates ? ' ' : 'fixed_box ')+ (!showListChildCates ? 'fixed_box2 ' : '') " >
 				<view @tap="openPop" class="filter-menu flex align-items-center justify-content-center">
 					<view class="choosed font-bold">
-						{{ choosedMenu && choosedMenu.label }}
+						{{ choosedMenu.label }}
 					</view>
 					<view class="open-pop">
 						<image src="@/static/images/icon/filter@2x.png" mode="widthFix" :lazy-load="true" class="down_arrow_img"/>
+
 					</view>
 					<view :class="'pop_menu ' + (open_popmenu ? 'open' : '')" >
 						<view @tap="handleChangeMenu(item)" v-for="(item, index) in cards" :key="index" :class="'menu_item flex justify-content-between align-items-center ' + (item.selected ? 'selected' : '')">
 							<view class="text">{{ item.label }}</view>
+							<view v-show="item.selected" class="img_box">
+								<image class="img"
+									mode="aspectFill"
+									src="@/static/images/icon/checked_icon@2x.png"
+								/>	
+							</view>
 						</view>	
 					</view>
 				</view>
 				<view class="filter-dialog  flex align-items-center justify-content-center" @tap="openFilter">
 					<view class="font-bold">{{ $t('search.filter') }}</view>
-					<image  src="@/static/images/icon/icon-filters@2x.png" mode="widthFix" :lazy-load="true" class="filter_img"/>
+					<image  src="@/static/images/icon/down_arrow@2x.png" mode="widthFix" :lazy-load="true" class="filter_img"/>
 				</view>
 			</view>
-			<view ref="my-filter-box" @touchmove.stop.prevent="()=>{}" 
-				v-if="showTabbar&&!child_category_info.length" 
-				:class="'my-filter-box flex ' + (!isBannerShow || (isBannerShow && cate_image_has_scrolled) ? 'fixed_box3' : '') + (isPriceRangePart ? 'fixed_box4' :'')" >
+			<view @touchmove.stop.prevent="()=>{}" v-if="showTabbar&&!child_category_info.length" :class="'my-filter-box flex fixed_box3' " >
 				<view @tap="openPop" class="filter-menu flex align-items-center justify-content-center">
 					<view class="choosed font-bold">
-						{{ choosedMenu && choosedMenu.label }}
+						{{ choosedMenu.label }}
 					</view>
 					<view class="open-pop">
 						<image src="@/static/images/icon/filter@2x.png" mode="widthFix" :lazy-load="true" class="down_arrow_img"/>
+
 					</view>
 					<view :class="'pop_menu ' + (open_popmenu ? 'open' : '')" >
 						<view @tap="handleChangeMenu(item)" v-for="(item, index) in cards" :key="index" :class="'menu_item flex justify-content-between align-items-center ' + (item.selected ? 'selected' : '')">
 							<view class="text">{{ item.label }}</view>
+							<view v-show="item.selected" class="img_box">
+								<image class="img"
+									mode="aspectFill"
+									src="@/static/images/icon/checked_icon@2x.png"
+								/>	
+							</view>
 						</view>	
 					</view>
 				</view>
-				<!-- Filter -->
 				<view class="filter-dialog  flex align-items-center justify-content-center" @tap="openFilter">
 					<view class="font-bold">{{ $t('search.filter') }}</view>
-					<image  src="@/static/images/icon/icon-filters@2x.png" mode="widthFix" :lazy-load="true" class="filter_img"/>
+					<image  src="@/static/images/icon/down_arrow@2x.png" mode="widthFix" :lazy-load="true" class="filter_img"/>
 				</view>
 			</view>
-			<view :class="isPriceRangePart ? '' : 'lists_wrapper'">
-				<view v-show="goods.length" class="flex align-items-center justify-content-center searchCount">{{ $t('search.searchCounts', {searchCount: product_count}) }}</view>
-				<good-list ref="goodList"
-					:module_name="module_name" 
-					:item_list_type="'category'" 
-					:item_list_id="categoryId" 
-					:item_list_name="language.category_list" 
-					@popupChange="(value)=>{pageMetaShow=value}" 
-					:showSingleList="showSingleList"
-					:loadingMoreHidden="loadingMoreHidden" 
-					:isFirstQuery="isFirstQuery" 
-					:language="language" 
-					:goods="goods" 
-					:ishowSpecialPriceOff="true" 
-					:showLoading="loadingMoreHidden && goods.length > 0"
-					:isPriceRangePart="isPriceRangePart">
-				</good-list>
+			<view class="lists_wrapper">
+				<view v-show="goods.length" class="flex align-items-center justify-content-center searchCount">{{ $t('search.searchCount', {searchCount: product_count}) }}</view>
+				<good-list :module_name="module_name" :item_list_type="'category'" :item_list_id="categoryId" :item_list_name="language.category_list" @popupChange="(value)=>{pageMetaShow=value}" :showSingleList="showSingleList" ref="goodList" :loadingMoreHidden="loadingMoreHidden" :showNoMore="false" :isFirstQuery="isFirstQuery" :language="language" :goods="goods" :ishowSpecialPriceOff="true" :showLoading="loadingMoreHidden&&goods.length>0"></good-list>
 			</view>
 			<!-- 推荐 -->
 			<view v-if="recommendList.length" class="goods-container">
@@ -150,7 +156,6 @@
 import navigation from '@/components/navigation/navigation';
 import popupRight from '@/components/popupRight/popupRight'
 import getCoupon from "@/components/get-coupon/get-coupon.vue";
-import backTop from '@/components/back-top/back-top.vue';
 import {mapState} from 'vuex'
 //index.js
 //获取应用实例
@@ -160,15 +165,13 @@ export default {
 	components: {
 		navigation,
 		popupRight,
-		getCoupon,
-		backTop
+		getCoupon
 	},
 
 	data() {
 		return {
 			id: '',
 			queryType: '',
-			is_all: '',
 			pageMetaShow:false,
 			//语言 - begin
 			language: {
@@ -211,24 +214,11 @@ export default {
 			price_max: 0,	
 			price_min: 0,
 			product_count: 0,
-			cateImage: '',
-			cate_image_height:0,
-			cate_image_has_scrolled:false,
-			
-			saleData: [],
-			filterTagsArr: [],
-			selectedTag: {},
-			allSaleProducts: [],
-			isPriceRangePart: false,
-			tag: "",
-			
-			eType: "",
-			eChannel: "",
 			module_name: 'category_hp',
 			lastScrollTop: 0,
-			scrollThreshold: 20,
-			nearBottom: false,//滑到最底部附近
-			nearTop: false,//从顶部附近开始滑
+			scrollThreshold: 10,
+			nearBottom: false,
+			nearTop: false
 		};
 	},
 	watch: {
@@ -243,15 +233,8 @@ export default {
 		}
 	},
 	onLoad: function (e) {
-		var that = this;
-		if(e.module){
-			this.module_name = e.module;
-		}
-		if(e.channel) {
-			this.eChannel = e.channel
-		}
-		this.eType = e.type
 		uni.showLoading();
+		var that = this;
 		uni.$off(that.refName).$on(that.refName, () => {
 			that.showPopupLeft = true
 			that.$refs['popupLeft'] && that.$refs['popupLeft'].$refs['popup'].open()
@@ -266,20 +249,12 @@ export default {
 		}); 
 		that.id = e.id;
 		that.queryType = e.type;
-		that.is_all = e.is_all; //告诉后端是否点击的是all
 		if(e.module){
 			this.module_name = e.module;
 		}
-		if(e.isPriceRangePart) {
-			//  首页低价促销
-			this.isPriceRangePart = Boolean(e.isPriceRangePart)
-			this.tag = e.tag
-			this.getPriceTags()	// 该方法用于获取 低价促销的价格段
-		} else {
-			that.fetchCategory();
-		}
+		that.fetchCategory();
 		// 监听加购动画 显示底部tabbar
-		uni.$off('showBottomTabbar').$on('showBottomTabbar', that.changeTabbar)
+		uni.$off('showBottomTabbar').$on('showBottomTabbar', that.changeTabbar);
 	},
 	onReachBottom() {
 		this.showTabbar = false
@@ -301,10 +276,7 @@ export default {
 		})
 	},
 	computed: {
-		...mapState(['cartCount']),
-		isBannerShow(){
-			return this.cateImage && !this.child_category_info.length
-		}
+		...mapState(['cartCount'])
 	},
 	methods: {
 		changeTabbar(){
@@ -316,6 +288,7 @@ export default {
 				item.checked = false
 			}else{
 				this.categoryId = item.category_id
+				
 				this.child_category_info.forEach(ite=>{
 					ite.checked = false
 				})
@@ -328,7 +301,6 @@ export default {
 				page: 0,
 				goods: [],
 			})
-			this.filterAttrs = '';
 			uni.showLoading();
 			this.fetchCategory()
 		},
@@ -355,9 +327,7 @@ export default {
 		onPageScroll(t){
 			this.$refs['goodList']&&this.$refs['goodList'].pageScrollFunc(t.scrollTop)			
 			this.$refs['good_list_ref_re']&&this.$refs['good_list_ref_re'].pageScrollFunc(t.scrollTop)			
-			let toTop = false			
-			this.cate_image_has_scrolled = t.scrollTop >= this.cate_image_height
-			
+			let toTop = false
 			// if(t.scrollTop - this.scrollTop > 0 && t.scrollTop > 50){
 			// 	toTop = false
 			// 	this.scrollFunc(toTop)
@@ -409,7 +379,7 @@ export default {
 				}
 				this.lastScrollTop = currentScrollTop;
 			} 
-			
+
 			this.scrollTop = t.scrollTop
 			if (t.scrollTop >= 180) {
             	this.showBtn = true
@@ -428,247 +398,119 @@ export default {
 			}, 300)
 		},
 		fetchCategory: function () {
-			if(this.page == 0) {
+			if(this.page ==0) {
 				this.recommendList = []
 			}
 			const that = this;
 			that.setData({
 				page: that.page + 1
 			});
-			let params = {
+			const params = {
 				categoryId: that.categoryId,
 				p: that.page,
-				price: that.selectedTag.name,
+				price: that.priceRange,
 				sort: that.choosedMenu.value,				
 				v: '1.0'
-			}
-			if(this.is_all){
-				params.is_all = this.is_all;
 			}
 			if(this.filterAttrs){
 				params.filterAttrs = this.filterAttrs
 			}
-			if(this.eChannel) {
-				params.channel = this.eChannel
-			}
-			if(this.isPriceRangePart) {
-				const paramsSale = {
-					p: that.page,
-					price: that.selectedTag.name, 
-					sort: that.choosedMenu.value,				
-					v: '1.0',
-					filterAttrs: that.filterAttrs
-				}
-				that.$apis.queryPriceRangeGoods(paramsSale).then(res => {
-					this.isFirstQuery = false
-					this.processFetchCategory(res, paramsSale)
-				})
-			} else {
-				that.$apis.queryCatelist(params).then(res=> {
-					this.isFirstQuery = false
-					this.processFetchCategory(res, params)
-				})
-			}
-		
-		},
-		processFetchCategory(res, params) {
-			var that = this
-			if(res.code == '200') {
-				uni.hideLoading&&uni.hideLoading();
-				that.setData({
-					loadingMoreHidden: true
-				});
-				let goods = that.goods;
-				const {products, page_count, query_item, child_category_info, filter_info, symbol, price_range, product_count, image} = res.data || {}
-				that.symbol = symbol
-				that.cateImage = image
-				that.product_count = product_count || 0
-				// that.price_min = price_range?.price_min
-				// that.price_max = price_range?.price_max
-				// that.$refs['popupRight'].price2 = that.$refs['popupRight'].price2 ? that.$refs['popupRight'].price2 : that.price_max
-				// that.$refs['popupRight'].price1 = that.$refs['popupRight'].price1 ? that.$refs['popupRight'].price1 : that.price_min
-				
-				for(let k in filter_info){
-					filter_info[k]['opened'] = false						
-				}
-				this.filter_info = filter_info;
-				products?.forEach(item => {
-					goods.push(item)
-				});
-				child_category_info.forEach(item=>{
-					if(this.originCategoryId == item.category_id){
-						item.checked = true;
-					}else{
-						item.checked = false;
-					}
-				})
-				const choosedItem = query_item?.frontSort.find(item => {
-					return item.selected
-				})
-				that.setData({
-					goods,
-					isLoadProduct: false,
-					cards: query_item?.frontSort,
-					choosedMenu: choosedItem,			
-					language: {
-						category_list: res.data.name,
-					}
-				});
-				if(!that.child_category_info.length){
-					that.child_category_info = child_category_info
-				}
-				if (page_count == that.page || page_count == 0) { //已经是最后一页了
+			that.$apis.queryCatelist(params).then(res=> {
+				this.isFirstQuery = false
+				if(res.code == '200') {
+					uni.hideLoading&&uni.hideLoading();
 					that.setData({
-						isLastPage: true
+						loadingMoreHidden: true
+					});
+					let goods = that.goods;
+					const {products, page_count, query_item, child_category_info, filter_info, symbol, price_range, product_count} = res.data
+					that.symbol = symbol
+					that.product_count = product_count || 0
+					that.price_min = price_range.price_min
+					that.price_max = price_range.price_max
+					that.$refs['popupRight'].price2 = that.$refs['popupRight'].price2 ? that.$refs['popupRight'].price2 : that.price_max
+					that.$refs['popupRight'].price1 = that.$refs['popupRight'].price1 ? that.$refs['popupRight'].price1 : that.price_min
+					if(!Object.keys(that.filter_info).length){
+						for(let k in filter_info){
+							filter_info[k]['opened'] = false						
+						}
+						that.filter_info = filter_info
+					}
+					
+					products.forEach(item => {
+						goods.push(item)
+					});
+					child_category_info.forEach(item=>{
+						item.checked = false
 					})
-					if(that.isPriceRangePart === false) {
+					const choosedItem = query_item.frontSort.find(item => {
+						return item.selected
+					})
+					that.setData({
+						goods,
+						isLoadProduct: false,
+						cards: query_item.frontSort,
+						choosedMenu: choosedItem,			
+						language: {
+							category_list: res.data.name,
+						}
+					});
+					if(!that.child_category_info.length){
+						that.child_category_info = child_category_info
+					}
+					if (page_count == that.page || page_count==0) { //已经是最后一页了
+						
+						that.setData({
+							isLastPage: true
+						})
 						that.$apis.recommendProduct({category_id:that.categoryId,type: 'cate_rec',size: 30}).then(res => {
 							that.recommendList = res.data.products || [];
+							that.loadingMoreHidden = false
 						}).catch(e=>{
 							that.loadingMoreHidden = false
 						})
 					}
-					that.loadingMoreHidden = false
-				}
-				this.trackEvent({
-					id: that.categoryId,
-					name: res.data.name,
-					products: products
-				});
-				this.getCateImgHeight();
-				var maFilter = {}
-				if(params.filterAttrs) {
-					maFilter = {...JSON.parse(params.filterAttrs)}
-				}
-				
-				if(params.sort || (choosedItem&&choosedItem?.label)) {
-					maFilter['sort'] = params.sort || choosedItem?.label;
-				}
-				if(params.price) {
-					let priceArr = params.price.split('-');
-					let pArr = priceArr.map(item => item || '0');
-
-					maFilter['price'] = pArr.join('-');
-				}
-				if(params.p == 1) {
-					this.$maEvent.custom_event({
-						event_category: 'category',
-						event_action: 'category_pageview_button',
-						event_name:params.categoryId,
-						module: 'category_pageview',
-						event_data: {
-							event_value:params.categoryId,
-							result_type:products?.length?1:2, // 1（有结果） / 2 （无结果）
-							filter:maFilter
-						}
-					})
-				}
-			}
-			if (res.code != 200 || res.data?.products?.length == 0) {
-				that.setData({
-					loadingMoreHidden: false
-				});
-				return;
-			}
-		},
-		// 获取首页特价内容
-		getPriceTags() {
-			this.saleData = [];
-			let saleData = [];
-			this.$apis.getSaleStaticblock({is_need_all: true}).then(res=>{
-				let { title, dressin_sale } = res.data || {}
-				if(dressin_sale && Array.isArray(dressin_sale)) {
-					this.allSaleProducts = dressin_sale
-					// 过滤掉没有商品列表的价格段
-					const tagsHasProducts = dressin_sale.filter(pI => pI?.products?.length > 0)
-					this.filterTagsArr = tagsHasProducts.map((i, idx) => ({
-						id: idx,
-						name: i?.type
-					}));
-				}
-				// 查找从首页点击view more进入列表页面时的价格段标签
-				this.selectedTag = this.filterTagsArr.find(i => i.name == this.tag) ?? {}
-				// 初始化列表数据
-				// this.setTag('price', this.selectedTag)
-				this.fetchCategory();
-			})
-		},
-		setTag(type, tag) {
-			var that = this
-			this.selectedTag = tag
-			if(type == 'price') {
-				const { products, end_time } = this.allSaleProducts.find(item => item.type == tag.name)
-				that.isFirstQuery = true
-				that.setData({
-					page: 1
-				});
-				const params = {
-					p: that.page,
-					price: that.selectedTag.name, 
-					sort: that.choosedMenu?.value,				
-					v: '1.0',
-					filterAttrs: that.filterAttrs
-				}
-				that.$apis.queryPriceRangeGoods(params).then(res => {
-					if(res.code == '200') {
-						let goods = that.goods;
-						const {products, page_count, query_item, child_category_info, filter_info, filter_price, symbol, price_range, product_count, image} = res.data || {}
-						that.symbol = symbol
-						that.cateImage = image
-						that.product_count = product_count || 0
-						// that.$refs['popupRight'].price2 = that.$refs['popupRight'].price2 ? that.$refs['popupRight'].price2 : that.price_max
-						// that.$refs['popupRight'].price1 = that.$refs['popupRight'].price1 ? that.$refs['popupRight'].price1 : that.price_min
-						if(!Object.keys(that.filter_info).length){
-							for(let k in filter_info){
-								filter_info[k]['opened'] = false						
-							}
-							that.filter_info = filter_info
-						}
-						goods = products;
-						child_category_info.forEach(item=>{
-							if(this.originCategoryId == item.category_id){
-								item.checked = true;
-							}else{
-								item.checked = false;
-							}
-						})
-						const choosedItem = query_item?.frontSort.find(item => {
-							return item.selected
-						})
-						that.setData({
-							goods: products ?? [],
-							isLoadProduct: false,
-							cards: query_item?.frontSort,
-							choosedMenu: choosedItem,			
-							language: {
-								category_list: res.data.name,
-							}
-						});
-						if(!that.child_category_info.length){
-							that.child_category_info = child_category_info
-						}
-						that.loadingMoreHidden = false
-						uni.hideLoading&&uni.hideLoading();
-						that.setData({
-							isLastPage: page_count == that.page || page_count == 0 // 是否最后一页
-						})
-						that.loadingMoreHidden = !that.isLastPage
-						that.isFirstQuery = false
-						this.trackEvent({
-							id: that.categoryId,
-							name: res.data.name,
-							products: products
-						});
-						this.getCateImgHeight();
+					this.trackEvent({
+						id: that.categoryId,
+						name: res.data.name,
+						products: products
+					});
+					var maFilter = {}
+					if(params.filterAttrs) {
+						maFilter = {...JSON.parse(params.filterAttrs)}
 					}
-					if (res.code != 200 || res.data?.products?.length == 0) {
+					
+					if(params.sort || (choosedItem&&choosedItem.label)) {
+						maFilter['sort'] = params.sort || choosedItem.label;
+					}
+					if(params.price) {
+						console.log(params);
+						let priceArr = params.price.split('-');
+						let pArr = priceArr.map(item => item || '0');
+						console.log(pArr);
+						maFilter['price'] = pArr.join('-');
+					}
+					if(params.p == 1) {
+						this.$maEvent.custom_event({
+							event_category: 'category',
+							event_action: 'category_pageview_button',
+							event_name:params.categoryId,
+							module: 'category_pageview',
+							event_data: {
+								event_value:params.categoryId,
+								result_type:products.length?1:2, // 1（有结果） / 2 （无结果）
+								filter:maFilter
+							}
+						})
+					}
+				}
+				if (res.code != 200 || res.data.products.length == 0) {
 						that.setData({
 							loadingMoreHidden: false
 						});
 						return;
 					}
-				})
-			}
+			})
 		},
 		trackEvent(data){
 			this.$maEvent.cateListView(data);
@@ -767,16 +609,6 @@ export default {
 			uni.showLoading();
 			this.fetchCategory()
 		},
-		getCateImgHeight() {
-			const query = uni.createSelectorQuery().in(this);
-			this.$nextTick(() => {
-				query.select('.cate_image').boundingClientRect(data => {					
-					if (data) {
-						this.cate_image_height = data.height;
-					}
-				}).exec();
-			})
-		}
 	}
 
 
@@ -836,7 +668,7 @@ export default {
 		}
 	}
 	.layout_icon{
-		margin-left: 30.78rpx;
+		margin-left: 46.15rpx;
 		.img{
 			width: 46.15rpx;
 			height: 46.15rpx;
@@ -930,11 +762,12 @@ export default {
 
 
 .my-filter-box {
+	margin-top: -1px;
 	width: 100%;
 	height: 96rpx;	
 	@include onepxBorder(#F1F1F1);
 	@include onepxBorderTop(#F1F1F1);
-	font-family: 'Montserrat-SemiBold';
+	
 	z-index: 8;
 	background: #fff;
 	// margin-bottom: 22rpx;
@@ -946,15 +779,12 @@ export default {
 	&.fixed_box2{
 		position: fixed;
 		z-index: 8;
-		top: calc(134.6154rpx);
+		top: calc(0rpx + 136.54rpx);
+		// top: calc(0rpx + 144.23rpx);
 	}
 	&.fixed_box3{
 		position: fixed;
 		top: calc(0rpx + 88rpx);
-	}
-	&.fixed_box4 {
-		position: fixed;
-		top: calc(123.08rpx + 88rpx);
 	}
 }
 
@@ -975,7 +805,7 @@ export default {
 		transition: all 200ms;
 		overflow: hidden;
 		border-radius: 0rpx 0rpx 15rpx 15rpx;
-		padding: 0 94.23rpx;
+		padding: 0 30.77rpx 0 94.23rpx;
 		.menu_item{
 			width: 100%;
 			height: 92.31rpx;
@@ -984,9 +814,7 @@ export default {
 			@include onepxBorder(#eee);
 			&.selected{
 				color: #000;
-				.text{
-					font-family: 'Montserrat-SemiBold';
-				}
+				font-weight: bold;
 			}
 			.text{
 				font-size: 26.92rpx;				
@@ -1004,7 +832,6 @@ export default {
 	}
 	.pop_menu.open{
 		height: unset;
-		font-family: 'Montserrat-Medium';
 	}
 
 	.choosed {
@@ -1096,36 +923,36 @@ page {
 	color: #ccc;
 }
 .child_category_item{
-	flex-direction: column;
-	min-width: 60px;
-	margin-bottom: 25rpx;
-	margin-right: 19.24rpx;
+	width: 134.62rpx;
+	height: 182.69rpx;
+	padding: 7.69rpx 21.5rpx 0 21.5rpx;
+	background: #f5f5f5;
+	margin-right: 23.08rpx;
+	margin-bottom: 7.69rpx;
 	border: 1px solid transparent;
-	text-align: center;
-	.child_category_img{
-		margin: auto;
-	}
-	.child_category_name{
-		// min-height: 57.6924rpx;
-		flex: 1;
-		width: 115.39rpx;
-	}
 }
 .child_category_item.checked{
-	.child_category_img{
-		border: 2px solid #8A61E7;
+	position: relative;
+	border: 1px solid #222;
+	i{
+		color: #222;
+		font-size: 14px;
+		position: absolute;
+		right: 0;
+		top: 0;
+		&:after{
+		content: '\e619';
 	}
-	.child_category_name{
-		color: #8A61E7;
 	}
 }
 .child_categorys_wrapper{
-	padding: 5.77rpx 0 20rpx 30.77rpx;
+	padding: 5.77rpx 0 30.77rpx 30.77rpx;
 	flex-wrap: nowrap;
 	width: 100%;
 	
 }
 .sticky_wrapper{
+	// height: 200rpx;
 	background: #fff;
 	position: -webkit-sticky;
 	position: sticky;
@@ -1139,15 +966,16 @@ page {
 }
 .child_category_img{
 	width: 92.31rpx;
-	height: 92.31rpx;
-	border-radius: 50%;
-	background-color:#f5f5f5;
+	height: 123.08rpx;
 }
 .child_category_name{
 	overflow: hidden;
-	margin-top: 11.54rpx;
-	font-size: 21.16rpx;
+	width:100%;
+	font-size: 23.08rpx;
+	
+	
 	color: #666666;
+	// line-height: 23rpx;
 	line-height: 1;
 	.text{
 		//#ifdef APP-IOS
@@ -1172,24 +1000,25 @@ page {
 	position: fixed;
 
 }
-.new_child_categorys{ 
-	.child_category_item{
-		margin-bottom: 0;
-		min-width: 115.39rpx;
-		width: auto;
-		flex-wrap: nowrap;
-		margin-right: 0;
-		align-items: center;
-		.child_category_img{
-			margin-top: 0;
-			margin-bottom: 12rpx;
-			width: 56rpx;
-			height: 56rpx;
-		}
-		.child_category_name{
-			margin-top: 0;
-			font-size: 23.08rpx;
-		}
+.new_child_categorys .child_category_item{
+	min-width: 200rpx;
+	width: 202rpx;
+	height: 100rpx;
+	flex-wrap: nowrap;
+	padding: 7.69rpx 15.38rpx;
+	margin-right: 23.08rpx;
+	align-items: center;
+	.child_category_img{
+		margin-right: 7.69rpx;
+		width: 56rpx;
+		height: 69rpx;
+	}
+	.child_category_name{
+		min-width: 80rpx;
+		font-size: 23.08rpx;
+		color: #333;
+		line-height: 30rpx;
+		// height: 50rpx;
 	}
 }
 </style>

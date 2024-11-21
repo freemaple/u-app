@@ -108,7 +108,7 @@ export default {
 	font-size: 24rpx;
 }
 .container {
-	// font-family: SF UI Text, Roboto, Helvetica, Arial, sans-serif;
+	font-family: SF UI Text, Roboto, Helvetica, Arial, sans-serif;
 	background-color: #f3f3f3;
 	height: 100%;
 

@@ -13,81 +13,6 @@
 	font-family: KronaOne;
 	src: url('~@/static/fonts/KronaOne-Regular.woff') format("woff"),url('~@/static/fonts/KronaOne-Regular.woff2') format("woff2"),url('~@/static/fonts/KronaOne-Regular.ttf') format("truetype");
 }
-@font-face {
-	font-family: 'Montserrat-Regular';
-	src: url('~@/static/fonts/Montserrat/ttf/Montserrat-Regular.ttf') format('truetype'),
-		 url('~@/static/fonts/Montserrat/woff/Montserrat-Regular.woff') format('woff'),
-		 url('~@/static/fonts/Montserrat/woff2/Montserrat-Regular.woff2') format('woff2');
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face {
-	font-family: 'Montserrat-Medium';
-	src: url('~@/static/fonts/Montserrat/ttf/Montserrat-Medium.ttf') format('truetype'),
-		 url('~@/static/fonts/Montserrat/woff/Montserrat-Medium.woff') format('woff'),
-		 url('~@/static/fonts/Montserrat/woff2/Montserrat-Medium.woff2') format('woff2');
-}
-@font-face {
-	font-family: 'Montserrat-SemiBold';
-	src: url('~@/static/fonts/Montserrat/ttf/Montserrat-SemiBold.ttf') format('truetype'),
-		 url('~@/static/fonts/Montserrat/woff/Montserrat-SemiBold.woff') format('woff'),
-		 url('~@/static/fonts/Montserrat/woff2/Montserrat-SemiBold.woff2') format('woff2');
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face {
-	font-family: 'Montserrat-Thin';
-	src: url('~@/static/fonts/Montserrat/ttf/Montserrat-Thin.ttf') format('truetype'),
-		 url('~@/static/fonts/Montserrat/woff/Montserrat-Thin.woff') format('woff'),
-		 url('~@/static/fonts/Montserrat/woff2/Montserrat-Thin.woff2') format('woff2');
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face {
-	font-family: 'Montserrat-Light';
-	src: url('~@/static/fonts/Montserrat/ttf/Montserrat-Light.ttf') format('truetype'),
-		 url('~@/static/fonts/Montserrat/woff/Montserrat-Light.woff') format('woff'),
-		 url('~@/static/fonts/Montserrat/woff2/Montserrat-Light.woff2') format('woff2');
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face {
-	font-family: 'Montserrat-Bold';
-	src: url('~@/static/fonts/Montserrat/ttf/Montserrat-Bold.ttf') format('truetype'),
-		 url('~@/static/fonts/Montserrat/woff/Montserrat-Bold.woff') format('woff'),
-		 url('~@/static/fonts/Montserrat/woff2/Montserrat-Bold.woff2') format('woff2');
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face {
-	font-family: 'Montserrat-Black';
-	src: url('~@/static/fonts/Montserrat/ttf/Montserrat-Black.ttf') format('truetype'),
-		 url('~@/static/fonts/Montserrat/woff/Montserrat-Black.woff') format('woff'),
-		 url('~@/static/fonts/Montserrat/woff2/Montserrat-Black.woff2') format('woff2');
-	font-weight: normal;
-	font-style: normal;
-}
-.font-MR {
-	font-family: 'Montserrat-Regular', sans-serif;
-}
-.font-MM {
-	font-family: 'Montserrat-Medium', sans-serif;
-}
-.font-MS {
-	font-family: 'Montserrat-SemiBold', sans-serif;
-}
-.font-MT {
-	font-family: 'Montserrat-Thin', sans-serif;
-}
-.font-ML {
-	font-family: 'Montserrat-Light', sans-serif;
-}
-.font-MBold {
-	font-family: 'Montserrat-Bold', sans-serif;
-}
-.font-MBlack {
-	font-family: 'Montserrat-Black', sans-serif;
-}
 .font-family-KronaOne {
     font-family: KronaOne;
 }
@@ -108,19 +33,19 @@ page {
 }
 .global-top-btn{
 	position: fixed;
-	right: 0;
+	right: 30.88rpx;
 	bottom: calc(100rpx +  115.38rpx);
 	z-index: 98;
-	width: 123.08rpx;
-	height: 115.39rpx;
+	width: 92.31rpx;
+	height: 92.31rpx;
 	
 }
 .position-relative {
 	position: relative;
 }
 .global-top-btn .img{
-	width: 100%;
-	height: 100%;
+	width: 85%;
+	height: 85%;
 }
 .global-btn-none {
 	opacity: 0;
@@ -455,10 +380,7 @@ body >>> uni-tabbar {
 	text-transform: uppercase;
 }
 .font-bold {
-	font-family: Montserrat-SemiBold;
-}
-.text_start {
-	font-family: 'Montserrat-Medium';
+	font-weight: bold;
 }
 
 .block-loading {
@@ -511,7 +433,6 @@ body >>> uni-tabbar {
     padding: 0 32rpx;
     font-weight: 700;
     background-color: #fff;
-	font-family: 'Montserrat-SemiBold';
 }
 body ::v-deep .uni-badge--error {
 	background-color: #FF005D !important;
@@ -560,8 +481,7 @@ body ::v-deep .uni-badge--error {
 }
 .special-price-discount_off{
 	color: #fff;
-	background: #814EFF;
- border-radius: 38rpx;
+	background: #222;
 }
 .text-line-through-and-gray {
     text-decoration: line-through;
@@ -587,7 +507,6 @@ body ::v-deep .uni-badge--error {
 	color: #fff;
 	font-size: 32rpx;
 	top: 1.13vh;
-	top: 40rpx;
 }
 .big-img-popup >>> .close-img {
 	position: absolute;
@@ -595,7 +514,6 @@ body ::v-deep .uni-badge--error {
 	height: 48rpx;
 	left: 32rpx;
 	top: 1.13vh;
-	top: 40rpx;
 }
 .big-img-popup >>> .share {
 	position: absolute;
@@ -603,7 +521,6 @@ body ::v-deep .uni-badge--error {
 	height: 48rpx;
 	top: 1.13vh;
 	right: 32rpx;
-	top: 40rpx;
 }
 /* .big-image-swiper-dialog {
 	position: fixed;
@@ -693,7 +610,8 @@ uni-app >>> uni-radio .uni-radio-input.uni-radio-input-disabled {
 	color: #fff;
 	text-align: center;
 	cursor: pointer;
-	font-size: 36rpx;
+	font-weight: bold;
+	font-size: 32rpx;
 }
 .dui-primary-btn.disabled {
 	pointer-events: none;
@@ -728,16 +646,4 @@ uni-app >>> uni-radio .uni-radio-input.uni-radio-input-disabled {
 ::v-deep uni-toast .uni-simple-toast__text {
 	padding: 18rpx 19rpx;
 	line-height: 40rpx;
-}
-
-/* 两行文本 */
-.text-line-2 {
-    overflow: hidden;
-    -webkit-line-clamp: 2;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-}
-::v-deep uni-button {
-	font-size: 32rpx;
 }

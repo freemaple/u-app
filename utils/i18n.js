@@ -76,7 +76,7 @@ function setNavigationBarTitle(index) {
 
 let tabBarLangs = [
     ['首页', '分类', '心愿单', '购物车', '我的'],
-    ['Home', 'Category', 'Wishlist', 'Bag', 'Account']
+    ['Home', 'Category', 'Wishlist', 'Cart', 'Account']
 ]; // 设置 TabBar 语言
 
 function setTabBarLang(index) {

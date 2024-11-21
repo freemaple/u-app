@@ -130,7 +130,7 @@
 	}
 
 	.uni-popup__error-text {
-		color: #ff0000;
+		color: #F56C6C;
 	}
 
 	.uni-popup__info {

@@ -356,7 +356,7 @@ export default {
     flex-wrap: nowrap;
     .product_img_box{
         width: 150rpx;
-        height: 150rpx;
+        height: 200rpx;
         margin-right: 20rpx;
         position: relative;
         .image{

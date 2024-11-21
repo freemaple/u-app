@@ -117,7 +117,7 @@
 								<view class="a-goods">
 									<view class="img-box position-relative fff">
 										<image :src="ite.imgUrl" class="img" />
-										<specialOfferDiscountTab v-if="ite.member_product != 1 &&ite.line_price" :is-special="ite.is_special_price==1" :discount="ite.discount_off"  fontSize="18rpx"></specialOfferDiscountTab>
+										<view v-if="ite.member_product != 1 &&ite.line_price" class="special-price-discount_off">-{{ite.discount_off}}%</view>
 									</view>
 									<view class="text-box">
 										<view class="arow arow01">
@@ -363,7 +363,6 @@ import ListLoading from '@/components/list-loading/list-loading.vue';
 import uniCountdown from "@/components/l-uni-countdown/uni-countdown.vue"
 import chatPlugin from '@/utils/chatPlugin.js'
 import { mapState } from 'vuex'
-import specialOfferDiscountTab from '@/components/special-offer-discount-tag/special-offer-discount-tag.vue'
 var app = getApp(); // 语言
 
 var util = require('../../utils/util.js');
@@ -373,8 +372,7 @@ export default {
     components: {
         navigation,
 		ListLoading,
-		uniCountdown,
-		specialOfferDiscountTab
+		uniCountdown
     },
     data() {
         return {
@@ -909,9 +907,6 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.reason_ul {
-	width: 100%;
-}
 .single_status_wrapper{
 	flex-wrap: nowrap;
 	font-size: 28rpx;
@@ -1192,7 +1187,7 @@ page {
 }
 .total-number-row {
 	.total-number {
-		color: #8A61E7;
+		color: #ff165e;
 		font-weight: bold;
 	}
 }
@@ -1241,7 +1236,7 @@ page {
 
 .goods-list .a-goods .img-box {
     width: 140rpx;
-    height: 140rpx;
+    height: 186rpx;
     overflow: hidden;
     margin-right: 20rpx;
     background-color: #d8d8d8;
@@ -1249,7 +1244,7 @@ page {
 
 .goods-list .img-box .img {
     width: 140rpx;
-    height: 140rpx;
+    height: 186rpx;
 }
 
 .goods-list .a-goods .text-box {
@@ -1620,6 +1615,9 @@ page {
 		content: '\e6c2';
 	}
 	.reason_text {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 		flex: 1;
 		margin-left: 20rpx;
 	}
@@ -1650,7 +1648,7 @@ page {
 	.reason_li {
 		width: 100%;
 		/* padding: 0.4rem 0; */
-		min-height: 60rpx;
+		height: 60rpx;
 		margin: 20rpx 0;
 	}
     .bottom_confirm{

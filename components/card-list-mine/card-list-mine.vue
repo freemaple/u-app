@@ -2,18 +2,18 @@
     <view class="card-list">
 		<block v-for="(item, index) in filteredCardList" :key="index">
 			<view @tap="handleTo(item)" :key="item.title" v-if="item.show !=='false'"
-				class="card-item">
+				class="card-item flex align-items-center justify-content-center">
 				<block v-if="item.type">
 					<i :class="'iconfont2 ' + item.type"></i>
 				</block>
-				<view v-else class="item_icon">
-					<image :src="item.src" mode="width"></image>
-				</view>
+				<block v-else>
+					<image :style="item.style" :src="item.img" mode=""></image>
+				</block>
 				<view class="card-content flex align-items-center justify-content-between">
 					<view class="text">
 						{{ item.language ? $t(item.language,{site_name: $store.state.site_name_upper}) : item.title }}
 					</view>
-					<!-- <i class="iconfont"></i> -->
+					<i class="iconfont"></i>
 				</view>
 			</view>
 		</block>
@@ -84,64 +84,61 @@ export default {
 .card-list {
     width: 100%;
     z-index: 1;
+
     .card-item {
         width: 100%;
-        height: 107.69rpx;
-		 // flex align-items-center justify-content-center
-		display: flex;
-		align-items: center;
-		padding: 0 30.77rpx 0 61.54rpx ;
-		//       >i {
-		//           width: 54rpx;
-		//           font-size: 46.5rpx;
-		//           color: #444;
-		//           height: 100%;
-		//           line-height: 90rpx;
-		//       }
-		//       .address::before {
-		//           content: "\e7e7";
-		//       }
-		//       .wishlist::before {
-		//           content: "\e63e";
-		//       }
-		//       .review::before {
-		//           content: "\e695";
-		//       }
-		//       .coupons::before {
-		//           content: "\e609";
-		//       }
-		//       .services::before {
-		//           content: "\e601";
-		//       }
-		// 		.vip::before {
-		// 			content: "\e60a";
-		// 		}
-		.item_icon {
-			display: flex;
-			image {
-				justify-content: flex-end;
-				text-align: right;
-				width: 42.31rpx;
-				height: 42.31rpx; 
-			}
-		}
-        .card-content {
-			display: flex;
-			flex: 1;
+        height: 90rpx;
+        // padding-left: 41.25rpx;
+        box-sizing: border-box;
+
+        >i {
+            width: 54rpx;
+            font-size: 46.5rpx;
+            color: #444;
             height: 100%;
-			margin-left: 30.77rpx;
-            border-bottom: 2rpx solid #EEEEEE;
-			font-size: 27rpx;
-			color: #393939;
-			
-			// @include onepxBorder(#e0e0e0);
-            // >i {
-            //     font-size: 40rpx;
-            //     &::before {
-            //         color: #ccc;
-            //         content: "\e609";
-            //     }
-            // }
+            line-height: 90rpx;
+        }
+
+        .address::before {
+            content: "\e7e7";
+        }
+
+        .wishlist::before {
+            content: "\e63e";
+        }
+
+        .review::before {
+            content: "\e695";
+        }
+
+        .coupons::before {
+            content: "\e609";
+        }
+
+        .services::before {
+            content: "\e601";
+        }
+		.vip::before {
+			content: "\e60a";
+		}
+
+        .card-content {
+            width: calc(100% - 165rpx);
+            height: 100%;
+            font-size: 24rpx;
+            color: #444;
+            padding-left: 22.5rpx;
+            position: relative;
+            @include onepxBorder(#e0e0e0);
+
+            >i {
+                font-size: 40rpx;
+
+                &::before {
+                    color: #ccc;
+                    content: "\e609";
+                }
+            }
         }
     }
 }

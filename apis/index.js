@@ -127,8 +127,6 @@ export const voteFaq = (data) => http.GET(`${baseUrl}/customer/faq/vote`,data);
 
 // 分类产品列表页数据查询
 export const queryCatelist = (data) => http.GET(`${baseUrl}/catalog/category/wxindex`,data);
-// 价格段产品更多查询
-export const queryPriceRangeGoods = (data) => http.GET(`${baseUrl}/catalog/category/unicoeyeindex`,data);
 // 推荐
 export const recommendProduct = (data) => http.GET(`${baseUrl}/customer/ajax/recommenditem`,{rthtml:2,size: 30,...data});
 
@@ -387,11 +385,3 @@ export const turnstileTrack = (data) => http.POST(`${baseUrl}/customer/errintera
 // 获取静态块（ 获取html格式，非json）
 export const getHtmlBlock = (data) => http.GET(`${baseUrl}/customer/ajax/gethtmlblock`,data)
 
-// 获取预售产品
-export const getPreSaleProducts = (data) => http.GET(`${baseUrl}/cms/home/getunicoeyepresaleproducts`,data)
-
-// 获取裂变奖励列表数据
-export const getRewardsLists = (data) => http.GET(`${baseUrl}/distribute/profit/choosereward`,data, {loading:true})
-
-// 提交裂变奖励选择数据
-export const claimRewards = (data) => http.POST(`${baseUrl}/distribute/profit/uniwithdraw`,data, {loading:true})

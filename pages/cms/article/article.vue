@@ -47,7 +47,6 @@
 
 ::v-deep .article-main {
 	padding: 36rpx 32rpx;
-	font-family: 'Montserrat-Regular';
 	img {
 		max-width: 100%;
 	}
