@@ -1,0 +1,207 @@
+miniprogram-to-uniapp v2 转换日志
+
+工具版本：v2.0.18
+转换模式：HBuilder X
+是否合并css：是
+项目 'wxapp' 开始转换...
+sourceFolder = E:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp
+搜索到388个文件，耗时：8ms
+
+[Error]template没有找到这个wxml   is=goodsList.list.length > 0 ? 'cart-goods-list' : 'no-goods'    fileKey: pages/cart/cart
+格式化Error: fileKey: wxParse/htmlparser     type:js       error： Error: Comment "Find the closest opened tag of the same type" was not printed. Please report this error!
+    at Object._ [as ensureAllCommentsPrinted] (D:\Program Files\HBuilderX\plugins\miniprogram-to-uniapp\node_modules\miniprogram-to-uniapp\src\utils\prettier\standalone.js:41:7587)
+    at b (D:\Program Files\HBuilderX\plugins\miniprogram-to-uniapp\node_modules\miniprogram-to-uniapp\src\utils\prettier\standalone.js:41:15205)
+    at D (D:\Program Files\HBuilderX\plugins\miniprogram-to-uniapp\node_modules\miniprogram-to-uniapp\src\utils\prettier\standalone.js:45:576)
+    at D:\Program Files\HBuilderX\plugins\miniprogram-to-uniapp\node_modules\miniprogram-to-uniapp\src\utils\prettier\standalone.js:115:7299
+    at Object.format (D:\Program Files\HBuilderX\plugins\miniprogram-to-uniapp\node_modules\miniprogram-to-uniapp\src\utils\prettier\standalone.js:115:7390)
+    at formateByPrettier (D:\Program Files\HBuilderX\plugins\miniprogram-to-uniapp\node_modules\miniprogram-to-uniapp\src\utils\formatUtils.js:187:24)
+    at Object.formatCode (D:\Program Files\HBuilderX\plugins\miniprogram-to-uniapp\node_modules\miniprogram-to-uniapp\src\utils\formatUtils.js:159:19)
+    at Page.generate (D:\Program Files\HBuilderX\plugins\miniprogram-to-uniapp\node_modules\miniprogram-to-uniapp\src\page\index.js:667:39)
+    at D:\Program Files\HBuilderX\plugins\miniprogram-to-uniapp\node_modules\miniprogram-to-uniapp\src\project\projectHandle.js:369:22
+    at new Promise (<anonymous>)
+write pages.json success!
+write manifest.json success!
+write main.js success!
+
+
+统计信息：
+
+vue文件数量: 31
+支付api数量: 1
+登录api数量: 6
+
+恭喜你，转换完成！
+用时: 51.273s
+在该小程序项目的同级目录可以看到_uni结尾的项目，即是转换好的uniapp项目，相关日志在该目录里。
+
+注：
+    1.因各种原因，本工具并非100%完美转换！有问题实属正常！
+    2.如遇运行报错，请添加QQ群(780359397、361784059、603659851)带图反馈或https://github.com/zhangdaren/miniprogram-to-uniapp提交Issue！
+
+
+hbxExecutableProgram  D:\Program Files\HBuilderX\HBuilderX.exe
+Error: Command failed: D:\Program Files\HBuilderX\HBuilderX.exe undefined
+'D:\Program' �����ڲ����ⲿ���Ҳ���ǿ����еĳ���
+���������ļ���
+
+    at ChildProcess.exithandler (child_process.js:308:12)
+    at ChildProcess.emit (events.js:314:20)
+    at maybeClose (internal/child_process.js:1022:16)
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:287:5)
+Error code: 1
+Signal received: null
+stdout: 
+stderr: 'D:\Program' �����ڲ����ⲿ���Ҳ���ǿ����еĳ���
+���������ļ���
+
+!!! NULL docs activeTextEditor return null
+buffer sync supports: []
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+event: [{"range":{"end":{"character":54,"line":6},"start":{"character":10,"line":6}},"rangeLength":44,"rangeOffset":258,"text":""}]
+event: [{"range":{"end":{"character":10,"line":6},"start":{"character":10,"line":6}},"rangeLength":25,"rangeOffset":258,"text":"dev-appserver.dressin.com"}]
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"","start":{"line":7,"offset":11},"end":{"line":7,"offset":55}}]}]
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"dev-appserver.dressin.com","start":{"line":7,"offset":11},"end":{"line":7,"offset":11}}]}]
+cancel last request:0
+event: [{"range":{"end":{"character":10,"line":6},"start":{"character":10,"line":6}},"rangeLength":1,"rangeOffset":258,"text":"h"},{"range":{"end":{"character":11,"line":6},"start":{"character":10,"line":6}},"rangeLength":1,"rangeOffset":258,"text":""},{"range":{"end":{"character":10,"line":6},"start":{"character":10,"line":6}},"rangeLength":1,"rangeOffset":258,"text":"h"},{"range":{"end":{"character":11,"line":6},"start":{"character":11,"line":6}},"rangeLength":1,"rangeOffset":259,"text":"t"},{"range":{"end":{"character":12,"line":6},"start":{"character":11,"line":6}},"rangeLength":1,"rangeOffset":259,"text":""},{"range":{"end":{"character":11,"line":6},"start":{"character":10,"line":6}},"rangeLength":1,"rangeOffset":258,"text":""},{"range":{"end":{"character":10,"line":6},"start":{"character":10,"line":6}},"rangeLength":1,"rangeOffset":258,"text":"h"},{"range":{"end":{"character":11,"line":6},"start":{"character":11,"line":6}},"rangeLength":1,"rangeOffset":259,"text":"t"},{"range":{"end":{"character":12,"line":6},"start":{"character":12,"line":6}},"rangeLength":1,"rangeOffset":260,"text":"t"},{"range":{"end":{"character":13,"line":6},"start":{"character":12,"line":6}},"rangeLength":1,"rangeOffset":260,"text":""},{"range":{"end":{"character":12,"line":6},"start":{"character":11,"line":6}},"rangeLength":1,"rangeOffset":259,"text":""},{"range":{"end":{"character":11,"line":6},"start":{"character":10,"line":6}},"rangeLength":1,"rangeOffset":258,"text":""},{"range":{"end":{"character":10,"line":6},"start":{"character":10,"line":6}},"rangeLength":1,"rangeOffset":258,"text":"h"},{"range":{"end":{"character":11,"line":6},"start":{"character":11,"line":6}},"rangeLength":1,"rangeOffset":259,"text":"t"},{"range":{"end":{"character":12,"line":6},"start":{"character":12,"line":6}},"rangeLength":1,"rangeOffset":260,"text":"t"},{"range":{"end":{"character":13,"line":6},"start":{"character":13,"line":6}},"rangeLength":1,"rangeOffset":261,"text":"p"},{"range":{"end":{"character":14,"line":6},"start":{"character":13,"line":6}},"rangeLength":1,"rangeOffset":261,"text":""},{"range":{"end":{"character":13,"line":6},"start":{"character":12,"line":6}},"rangeLength":1,"rangeOffset":260,"text":""},{"range":{"end":{"character":12,"line":6},"start":{"character":11,"line":6}},"rangeLength":1,"rangeOffset":259,"text":""},{"range":{"end":{"character":11,"line":6},"start":{"character":10,"line":6}},"rangeLength":1,"rangeOffset":258,"text":""},{"range":{"end":{"character":10,"line":6},"start":{"character":10,"line":6}},"rangeLength":1,"rangeOffset":258,"text":"h"},{"range":{"end":{"character":11,"line":6},"start":{"character":11,"line":6}},"rangeLength":1,"rangeOffset":259,"text":"t"},{"range":{"end":{"character":12,"line":6},"start":{"character":12,"line":6}},"rangeLength":1,"rangeOffset":260,"text":"t"},{"range":{"end":{"character":13,"line":6},"start":{"character":13,"line":6}},"rangeLength":1,"rangeOffset":261,"text":"p"},{"range":{"end":{"character":14,"line":6},"start":{"character":13,"line":6}},"rangeLength":1,"rangeOffset":261,"text":""}]
+event: [{"range":{"end":{"character":13,"line":6},"start":{"character":12,"line":6}},"rangeLength":1,"rangeOffset":260,"text":""}]
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"","start":{"line":7,"offset":14},"end":{"line":7,"offset":15}},{"newText":"p","start":{"line":7,"offset":14},"end":{"line":7,"offset":14}},{"newText":"t","start":{"line":7,"offset":13},"end":{"line":7,"offset":13}},{"newText":"t","start":{"line":7,"offset":12},"end":{"line":7,"offset":12}},{"newText":"h","start":{"line":7,"offset":11},"end":{"line":7,"offset":11}},{"newText":"","start":{"line":7,"offset":11},"end":{"line":7,"offset":12}},{"newText":"","start":{"line":7,"offset":12},"end":{"line":7,"offset":13}},{"newText":"","start":{"line":7,"offset":13},"end":{"line":7,"offset":14}},{"newText":"","start":{"line":7,"offset":14},"end":{"line":7,"offset":15}},{"newText":"p","start":{"line":7,"offset":14},"end":{"line":7,"offset":14}},{"newText":"t","start":{"line":7,"offset":13},"end":{"line":7,"offset":13}},{"newText":"t","start":{"line":7,"offset":12},"end":{"line":7,"offset":12}},{"newText":"h","start":{"line":7,"offset":11},"end":{"line":7,"offset":11}},{"newText":"","start":{"line":7,"offset":11},"end":{"line":7,"offset":12}},{"newText":"","start":{"line":7,"offset":12},"end":{"line":7,"offset":13}},{"newText":"","start":{"line":7,"offset":13},"end":{"line":7,"offset":14}},{"newText":"t","start":{"line":7,"offset":13},"end":{"line":7,"offset":13}},{"newText":"t","start":{"line":7,"offset":12},"end":{"line":7,"offset":12}},{"newText":"h","start":{"line":7,"offset":11},"end":{"line":7,"offset":11}},{"newText":"","start":{"line":7,"offset":11},"end":{"line":7,"offset":12}},{"newText":"","start":{"line":7,"offset":12},"end":{"line":7,"offset":13}},{"newText":"t","start":{"line":7,"offset":12},"end":{"line":7,"offset":12}},{"newText":"h","start":{"line":7,"offset":11},"end":{"line":7,"offset":11}},{"newText":"","start":{"line":7,"offset":11},"end":{"line":7,"offset":12}},{"newText":"h","start":{"line":7,"offset":11},"end":{"line":7,"offset":11}}]}]
+event: [{"range":{"end":{"character":12,"line":6},"start":{"character":11,"line":6}},"rangeLength":1,"rangeOffset":259,"text":""}]
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"","start":{"line":7,"offset":13},"end":{"line":7,"offset":14}}]}]
+event: [{"range":{"end":{"character":11,"line":6},"start":{"character":10,"line":6}},"rangeLength":1,"rangeOffset":258,"text":""}]
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"","start":{"line":7,"offset":12},"end":{"line":7,"offset":13}}]}]
+event: [{"range":{"end":{"character":10,"line":6},"start":{"character":10,"line":6}},"rangeLength":1,"rangeOffset":258,"text":"h"}]
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"","start":{"line":7,"offset":11},"end":{"line":7,"offset":12}}]}]
+event: [{"range":{"end":{"character":11,"line":6},"start":{"character":11,"line":6}},"rangeLength":1,"rangeOffset":259,"text":"t"}]
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"h","start":{"line":7,"offset":11},"end":{"line":7,"offset":11}}]}]
+event: [{"range":{"end":{"character":12,"line":6},"start":{"character":12,"line":6}},"rangeLength":1,"rangeOffset":260,"text":"t"}]
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"t","start":{"line":7,"offset":12},"end":{"line":7,"offset":12}}]}]
+event: [{"range":{"end":{"character":13,"line":6},"start":{"character":13,"line":6}},"rangeLength":1,"rangeOffset":261,"text":"p"}]
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"t","start":{"line":7,"offset":13},"end":{"line":7,"offset":13}}]}]
+-------------------- onRequest language/fire_provideCompletionItems { position: { character: 14, line: 6 } }
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"p","start":{"line":7,"offset":14},"end":{"line":7,"offset":14}}]}]
+isIncomplete: false
+fromProvider: 1033
+firstItem: undefined
+event: [{"range":{"end":{"character":14,"line":6},"start":{"character":14,"line":6}},"rangeLength":1,"rangeOffset":262,"text":":"}]
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":":","start":{"line":7,"offset":15},"end":{"line":7,"offset":15}}]}]
+event: [{"range":{"end":{"character":15,"line":6},"start":{"character":15,"line":6}},"rangeLength":1,"rangeOffset":263,"text":"/"}]
+-------------------- onRequest language/fire_provideCompletionItems { position: { character: 16, line: 6 } }
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"/","start":{"line":7,"offset":16},"end":{"line":7,"offset":16}}]}]
+isIncomplete: false
+fromProvider: 1033
+firstItem: undefined
+event: [{"range":{"end":{"character":16,"line":6},"start":{"character":16,"line":6}},"rangeLength":1,"rangeOffset":264,"text":"/"}]
+-------------------- onRequest language/fire_provideCompletionItems { position: { character: 17, line: 6 } }
+buffer sync supports: [{"fileName":"e:/Dropbox/SaiLvan/shopyii/www.dressin.com/mobile_app/wxapp_uni/config.js","textChanges":[{"newText":"/","start":{"line":7,"offset":17},"end":{"line":7,"offset":17}}]}]
+isIncomplete: false
+fromProvider: 1033
+firstItem: undefined
+sendEvent willSaveTextDocument
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+buffer sync supports: []
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+event: [{"range":{"end":{"character":0,"line":0},"start":{"character":0,"line":0}},"rangeLength":5254,"rangeOffset":0,"text":"page {\n    /*height: 100%;*/\n}\n\n.container {\n    justify-content: initial;\n}\n\n.top-edit-btn {\n    position: fixed;\n    top: 70rpx;\n    z-index: 9999999;\n    left: 20rpx;\n    font-size: 30rpx;\n    color: #b5272d;\n}\n.iphoneCon .top-edit-btn {\n    top: 108rpx;\n}\n.title-box {\n    margin-top: 25%;\n    font-size: 28rpx;\n    text-align: center;\n    color: #999;\n    margin-bottom: 20%;\n}\n\n.box-none {\n    width: 200rpx;\n    height: 200rpx;\n    display: block;\n    margin: 0 auto;\n}\n\n.list-top {\n    width: 100%;\n    height: 88rpx;\n    line-height: 88rpx;\n    box-sizing: border-box;\n    display: flex;\n    justify-content: space-between;\n    padding: 0 30rpx;\n    font-size: 28rpx;\n    align-items: center;\n}\n\n.list-top .label {\n    color: #000;\n}\n\n.list-top .edit-btn {\n    color: #999;\n    height: 100%;\n}\n\n.goodsList {\n    width: 100%;\n    background-color: #fff;\n    margin-bottom: 20rpx;\n}\n\n.a-gooods {\n    width: 100%;\n    overflow: hidden;\n    border-bottom: 1px solid #fbfbfb;\n}\n\n.a-goods-conts {\n    display: flex;\n    justify-content: space-between;\n    padding-left: 30rpx;\n    width: 870rpx;\n    box-sizing: border-box;\n    transition: margin-left 0.2s ease-in-out;\n    background: url('https://cdn.it120.cc/apifactory/2018/03/07/8ecdab31cfc3ccda44edd7bebfbdd45f.png') no-repeat 30rpx center;\n    background-size: 34rpx auto;\n}\n\n.a-goods-conts.active {\n    background: url('https://cdn.it120.cc/apifactory/2018/03/07/d14e39b0a699114fe29c1a8614f6dbec.png') no-repeat 30rpx center;\n    background-size: 34rpx auto;\n}\n\n.goods-info {\n    display: flex;\n    justify-content: space-between;\n    padding: 30rpx 0 30rpx 70rpx;\n    width: 720rpx;\n    box-sizing: border-box;\n}\n\n.goods-info .img-box {\n    width: 160rpx;\n    height: 160rpx;\n    overflow: hidden;\n    margin-right: 20rpx;\n    background-color: #f5f5f5;\n}\n\n.goods-info .text-box {\n    width: 440rpx;\n    position: relative;\n}\n\n.goods-info .text-box .goods-title {\n    font-size: 28rpx;\n    color: #000;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden;\n    padding: 10rpx 20rpx 5rpx 0;\n}\n\n.goods-info .text-box .goods-label {\n    font-size: 26rpx;\n    color: #999;\n    height: 38rpx;\n    line-height: 38rpx;\n    margin: 8rpx 0 25rpx 0;\n}\n\n.goods-info .text-box .goods-price {\n    font-size: 26rpx;\n    color: #b5272d;\n}\n\n.goods-info .text-box .buy-num {\n    width: 164rpx;\n    height: 48rpx;\n    line-height: 48rpx;\n    position: absolute;\n    right: 30rpx;\n    bottom: 0;\n    display: flex;\n    /*justify-content: space-between;*/\n    font-size: 24rpx;\n    text-align: center;\n}\n\n.goods-info .text-box .buy-num .jian-btn {\n    width: 48rpx;\n    height: 100%;\n    border-left: 1rpx solid #ccc;\n    border-bottom: 1rpx solid #ccc;\n    border-top: 1rpx solid #ccc;\n    border-bottom-left-radius: 6rpx;\n    border-top-left-radius: 6rpx;\n}\n\n.goods-info .text-box .buy-num .jian-btn.disabled {\n    background-color: #f5f5f9;\n    border-left: 1rpx solid #eee;\n    border-bottom: 1rpx solid #eee;\n    border-top: 1rpx solid #eee;\n    color: #ccc;\n}\n\n.goods-info .text-box .buy-num .jia-btn {\n    width: 48rpx;\n    height: 100%;\n    border-right: 1rpx solid #ccc;\n    border-bottom: 1rpx solid #ccc;\n    border-top: 1rpx solid #ccc;\n    border-bottom-right-radius: 6rpx;\n    border-top-right-radius: 6rpx;\n}\n\n.goods-info .text-box .buy-num .jia-btn.disabled {\n    background-color: #f5f5f9;\n    border-right: 1rpx solid #eee;\n    border-bottom: 1rpx solid #eee;\n    border-top: 1rpx solid #eee;\n    color: #ccc;\n}\n\n.goods-info .text-box .buy-num input {\n    width: 68rpx;\n    height: 48rpx;\n    min-height: 48rpx;\n    text-align: center;\n    font-size: 24rpx;\n    border: 1rpx solid #ccc;\n}\n\n.goods-info .img-box .img {\n    width: 160rpx;\n    height: 160rpx;\n}\n\n.a-goods-conts .delete-btn {\n    width: 120rpx;\n    line-height: 220rpx;\n    text-align: center;\n    background: #b5272d;\n    font-size: 24rpx;\n    color: #fff;\n}\n\n.jiesuan-box {\n    display: flex;\n    justify-content: space-between;\n    width: 100%;\n    height: 100rpx;\n    position: fixed;\n    bottom: 0;\n    left: 0;\n    border-bottom: 1px solid #f5f5f5;\n    background-color: #fff;\n    z-index: 999999;\n    box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.1);\n}\n\n.jiesuan-box .to-pay-btn {\n    width: 240rpx;\n    text-align: center;\n    line-height: 100rpx;\n    background-color: #b5272d;\n    font-size: 32rpx;\n    color: #fff;\n}\n\n.jiesuan-box .to-pay-btn.no-select {\n    background-color: #ccc;\n}\n\n.jiesuan-box .left-price {\n    display: flex;\n    width: 510rpx;\n    justify-content: space-between;\n    line-height: 100rpx;\n    padding: 0 30rpx 0 0;\n    font-size: 28rpx;\n    box-sizing: border-box;\n}\n\n.jiesuan-box .all-selected {\n    padding-left: 90rpx;\n    color: #000;\n    background: url('https://cdn.it120.cc/apifactory/2018/03/07/8ecdab31cfc3ccda44edd7bebfbdd45f.png') no-repeat 30rpx center;\n    background-size: 34rpx auto;\n}\n\n.jiesuan-box .all-selected.active {\n    background: url('https://cdn.it120.cc/apifactory/2018/03/07/d14e39b0a699114fe29c1a8614f6dbec.png') no-repeat 30rpx center;\n    background-size: 34rpx auto;\n}\n\n.jiesuan-box .total {\n    color: #b5272d;\n}\n\n.tips {\n    width: 100%;\n    text-align: center;\n    margin-top: 15px;\n    font-size: 30rpx;\n    color: #bbb;\n    font-weight: 300;\n}"}]
+sendEvent willSaveTextDocument
+cancel last request:0
+cancel last request:0
+cancel last request:0
+event: [{"range":{"end":{"character":10,"line":584},"start":{"character":9,"line":584}},"rangeLength":1,"rangeOffset":20156,"text":""}]
+event: [{"range":{"end":{"character":9,"line":584},"start":{"character":9,"line":584}},"rangeLength":1,"rangeOffset":20156,"text":"@"}]
+-------------------- onRequest language/fire_provideCompletionItems { position: { character: 10, line: 584 } }
+isIncomplete: undefined
+fromProvider: 1000
+isIncomplete: true
+fromProvider: 1007
+firstItem: {"label":"@media screen {\n\t\n}","kind":"Snippet","detail":"Emmet Abbreviation","documentation":"@media screen {\n\t|\n}","filterText":"@","insertText":{"_tabstop":1,"value":"@media ${1:screen} {\n\t${0}\n}"}}
+isIncomplete: true
+fromProvider: 1058
+firstItem: {"label":"../../wxParse/","kind":"Property","sortText":"zz_../../wxParse/","insertText":"../../wxParse/"}
+cancel last request:0
+event: [{"range":{"end":{"character":27,"line":584},"start":{"character":11,"line":584}},"rangeLength":16,"rangeOffset":20158,"text":""}]
+event: [{"range":{"end":{"character":11,"line":584},"start":{"character":11,"line":584}},"rangeLength":1,"rangeOffset":20158,"text":"s"}]
+-------------------- onRequest language/fire_provideCompletionItems { position: { character: 12, line: 584 } }
+isIncomplete: undefined
+fromProvider: 1000
+isIncomplete: true
+fromProvider: 1007
+firstItem: undefined
+isIncomplete: false
+fromProvider: 1058
+firstItem: undefined
+event: [{"range":{"end":{"character":12,"line":584},"start":{"character":12,"line":584}},"rangeLength":1,"rangeOffset":20159,"text":"t"}]
+-------------------- onRequest language/fire_provideCompletionItems { position: { character: 13, line: 584 } }
+isIncomplete: undefined
+fromProvider: 1000
+isIncomplete: true
+fromProvider: 1007
+firstItem: undefined
+isIncomplete: false
+fromProvider: 1058
+firstItem: undefined
+event: [{"range":{"end":{"character":13,"line":584},"start":{"character":13,"line":584}},"rangeLength":1,"rangeOffset":20160,"text":"a"}]
+event: [{"range":{"end":{"character":14,"line":584},"start":{"character":14,"line":584}},"rangeLength":1,"rangeOffset":20161,"text":"t"}]
+-------------------- onRequest language/fire_provideCompletionItems { position: { character: 15, line: 584 } }
+isIncomplete: undefined
+fromProvider: 1000
+isIncomplete: true
+fromProvider: 1007
+firstItem: undefined
+isIncomplete: false
+fromProvider: 1058
+firstItem: undefined
+event: [{"range":{"end":{"character":15,"line":584},"start":{"character":15,"line":584}},"rangeLength":1,"rangeOffset":20162,"text":"i"}]
+-------------------- onRequest language/fire_provideCompletionItems { position: { character: 16, line: 584 } }
+isIncomplete: undefined
+fromProvider: 1000
+isIncomplete: true
+fromProvider: 1007
+firstItem: undefined
+isIncomplete: false
+fromProvider: 1058
+firstItem: undefined
+event: [{"range":{"end":{"character":16,"line":584},"start":{"character":16,"line":584}},"rangeLength":1,"rangeOffset":20163,"text":"c"}]
+-------------------- onRequest language/fire_provideCompletionItems { position: { character: 17, line: 584 } }
+isIncomplete: undefined
+fromProvider: 1000
+isIncomplete: true
+fromProvider: 1007
+firstItem: undefined
+isIncomplete: false
+fromProvider: 1058
+firstItem: undefined
+sendEvent willSaveTextDocument
+event: [{"range":{"end":{"character":34,"line":584},"start":{"character":33,"line":584}},"rangeLength":1,"rangeOffset":20180,"text":""}]
+event: [{"range":{"end":{"character":33,"line":584},"start":{"character":32,"line":584}},"rangeLength":1,"rangeOffset":20179,"text":""}]
+event: [{"range":{"end":{"character":32,"line":584},"start":{"character":31,"line":584}},"rangeLength":1,"rangeOffset":20178,"text":""}]
+sendEvent willSaveTextDocument
+event: [{"range":{"end":{"character":0,"line":135},"start":{"character":0,"line":135}},"rangeLength":37,"rangeOffset":4981,"text":"@import '@/static/template-cart.css';"}]
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+cancel last request:0
+call deactive uniapp-basic
+call deactive unicloud
+call deactive hbuilderx-language-services
+call deactive eslint-vue
+call deactive uni_modules
+call deactive launcher

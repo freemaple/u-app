@@ -1,0 +1,717 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/logs/logs",
+			"style": {
+				"navigationBarTitleText": "查看启动日志"
+				
+			}
+		}, {
+			"path": "pages/login/index",
+			"style": {
+				"app-plus": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/my/my",
+			"style": {
+				"navigationBarTitleText": "Account",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/cart/cart",
+			"style": {
+				"navigationBarTitleText": "Cart",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/goods-detail/index",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/template-cart/template-cart",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/coupon/my-coupons",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/fav-list/fav-list",
+			"style": {
+				"navigationBarTitleText": "Wishlist",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/address/list",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/address/add",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/order/order-list",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/cate/list",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/order/order-detail",
+			"style": {
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/order/shipping",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/cate/index",
+			"style": {
+				"disableScroll": true,
+				"enablePullDownRefresh" : true
+			}
+		},
+		{
+			"path": "pages/pay/success",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/pay/fail",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/checkout/index",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/pay/webview",
+			"style": {
+				
+			}
+		},
+		{
+			"path": "pages/search/search",
+			"style": {
+				
+			}
+		},{
+			"path": "pages/goods-detail/sizeguide",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/goods-detail/reviews-list",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/coupon/coupon-center",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/setting/setting",
+			"style": {
+				"disableScroll": true
+			}
+		},{
+			"path": "pages/setting/delete-account",
+			"style": {
+				"disableScroll": true
+			}
+		}, {
+			"path": "pages/language/language",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/currency/currency",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/change-password/change-password",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/contact/contact",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/error/404",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/faq/faq",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		},{
+			"path": "pages/forget-password/forget-password",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		}
+	    ,{
+            "path" : "pages/review/list",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+        }
+        ,{
+            "path" : "pages/vip/index",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        },
+		{
+		    "path" : "pages/vip/success",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "",
+		        "enablePullDownRefresh": false,
+				"disableScroll": true
+		    }
+		    
+		},
+		{
+		    "path" : "pages/vip/fail",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "",
+		        "enablePullDownRefresh": false
+		    }
+		    
+		},
+		{
+			"path" : "pages/vip/level",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"enablePullDownRefresh" : false
+			}
+		}
+		,{
+            "path" : "pages/recently-viewed/recently-viewed",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+		,{
+            "path" : "pages/investigation/investigation",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/vip/pay-vip",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/cms/article/article",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/review/add",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/order/order-product-review-list",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        },
+		{
+            "path" : "pages/flash-sale/flash-sale",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        },
+		{
+            "path" : "pages/whole-sale/whole-sale",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/point/index",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        },
+		{
+            "path" : "pages/return-track/return-track",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        },
+		{
+            "path" : "pages/return-records/return-records",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        },
+		{
+            "path" : "pages/cancel-items/cancel-items",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        },
+		{
+            "path" : "pages/order-aftersale/order-aftersale",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/distribute/index",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/distribute/child",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/distribute/generateurl",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/distribute/profit/index",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/distribute/profit/detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/my/wallet/index",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/my/wallet/cash",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/my/wallet/cash-records",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+		,{
+            "path" : "pages/my/wallet/cash-withdraw",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/point/source",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/my/profile/index",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/cart/cartPage",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": true
+            }
+            
+        }
+		,{
+            "path" : "pages/measurements/measurements",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+        }
+        ,{
+            "path" : "pages/my/wallet/wallet-source",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+        },
+		{
+		    "path" : "pages/my/checkin",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "",
+		        "enablePullDownRefresh": true
+		    }
+		}
+        ,{
+            "path" : "pages/my/drop-shipping/edit",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/my/drop-shipping/examine",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+		,{
+            "path" : "pages/my/drop-shipping/index",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+		,{
+            "path" : "pages/my/drop-shipping/download-goodsinfo",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        },
+        {
+        	"path" : "pages/my/wallet/top-up",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "",
+        		"enablePullDownRefresh" : false
+        	}
+        }
+        ,{
+            "path" : "pages/dropshipping-login/index",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        },
+        {
+        	"path" : "pages/distribute/sharestep",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "",
+        		"enablePullDownRefresh" : false
+        	}
+        },
+		{
+        	"path" : "pages/distribute/history",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "",
+        		"enablePullDownRefresh" : false
+        	}
+        },
+        {
+        	"path" : "pages/contact/web",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "Contact",
+        		"enablePullDownRefresh" : false,
+				"app-plus": {
+					"titleNView": {
+					  "backgroundColor": "#fff",
+					  "titleAlign": "center",
+					  "titleSize": "16px",
+					  "backButton": {
+						"fontSize": "20px",
+						"fontWeight": "bold"
+					  }
+					}
+				  }
+        	}
+        }
+        ,{
+            "path" : "pages/goods-detail/detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+
+        }
+        ,{
+            "path" : "pages/goods-detail/materials",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/goods-detail/shipping-return",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/goods-detail/shopping-security",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        },
+        {
+        	"path" : "pages/message/message",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "",
+        		"enablePullDownRefresh" : false
+        	}
+        },
+        {
+        	"path" : "pages/distribute/detail-rules",
+        	"style" :
+        	{
+        		"navigationBarTitleText" : ""
+        	}
+        },
+        {
+        	"path" : "pages/appupdatepupop/appupdatepupop",
+        	 "style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom",
+				"app-plus": {
+				"animationType": "fade-in",
+				"background": "transparent",
+				"backgroundColor": "transparent",
+				"webviewBGTransparent": true,
+				"mask": "none",
+				"popGesture": "none",
+				"bounce": "none" ,
+				"animationDuration": 200
+				}
+			}
+        },
+		{
+			"path": "pages/error/403",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		}
+    ],
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#000000",
+		"borderStyle": "white",
+		"backgroundColor": "#fff",
+		"list": [{
+				"pagePath": "pages/index/index",
+				"iconPath": "static/images/nav/home-off.png",
+				"selectedIconPath": "static/images/nav/home-on.png",
+				"text": "%tabbars.home%"
+			},
+			{
+				"pagePath": "pages/cate/index",
+				"iconPath": "static/images/nav/menu-off.png",
+				"selectedIconPath": "static/images/nav/menu-on.png",
+				"text": "%tabbars.cate%"
+			},
+			{
+				"pagePath": "pages/fav-list/fav-list",
+				"iconPath": "static/images/nav/wishlist-off.png",
+				"selectedIconPath": "static/images/nav/wishlist-on.png",
+				"text": "%tabbars.wishlist%"
+			},
+			{
+				"pagePath": "pages/cart/cart",
+				"iconPath": "static/images/nav/cart-off.png",
+				"selectedIconPath": "static/images/nav/cart-on.png",
+				"text": "%tabbars.cart%"
+			},
+			{
+				"pagePath": "pages/my/my",
+				"iconPath": "static/images/nav/my-off.png",
+				"selectedIconPath": "static/images/nav/my-on.png",
+				"text": "%tabbars.my%"
+			}
+		]
+	},
+	"sitemapLocation": "sitemap.json",
+	"globalStyle": {
+		"rpxCalcMaxDeviceWidth": 1024, 
+		"rpxCalcBaseDeviceWidth": 1024,
+		"maxWidth": 1024,
+		"navigationStyle": "custom",
+		"navigationBarBackgroundColor": "#ffffff",
+		"navigationBarTextStyle": "black"
+	},
+	"subPackages": []
+}

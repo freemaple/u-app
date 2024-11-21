@@ -1,0 +1,314 @@
+{
+    "name" : "Dressin",
+    "appid" : "__UNI__36DB11C",
+    "description" : "Retail Fashion at Wholesale Prices",
+    "versionName" : "1.0.51",
+    "versionCode" : 151,
+    "transformPx" : false,
+    "app-plus" : {
+        "compatible" : {
+            "ignoreVersion" : true //true表示忽略版本检查提示框
+        },
+        "statusbar" : {
+            "immersed" : false
+        },
+        "usingComponents" : true,
+        "nvueStyleCompiler" : "uni-app",
+        "compilerVersion" : 3,
+        "splashscreen" : {
+            "alwaysShowBeforeRender" : true,
+            "waiting" : true,
+            "autoclose" : true,
+            "delay" : 0
+        },
+        "modules" : {
+            "Payment" : {},
+            "Push" : {},
+            "Share" : {},
+            "OAuth" : {},
+            "Statistic" : {},
+            "Camera" : {}
+        },
+        "distribute" : {
+            "android" : {
+                "permissions" : [
+                    "<uses-feature android:name=\"android.hardware.camera\"/>",
+                    "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+                    "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
+                    "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
+                    "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/>",
+                    "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
+                    "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>",
+                    "<uses-permission android:name=\"android.permission.POST_NOTIFICATIONS\"/>"
+                ],
+                "packagename" : "com.dressin.mall", /*Android应用包名，如io.dcloud.HelloH5*/
+                "password" : "dressin@2023", /*Android应用打包使用密钥库中证书的密码*/
+                "aliasname" : "dressin", /*Android应用打包使用密钥库中证书的别名*/
+                "schemes" : "dressin,t9vlmb",
+                "abiFilters" : [ "armeabi-v7a", "arm64-v8a", "x86" ],
+                "targetSdkVersion" : 34,
+                "minSdkVersion" : 23
+            },
+            "ios" : {
+                "appid" : "com.dressin.mall",
+                "urlschemewhitelist" : "fb,instagram,twitter,pinterest",
+                "urltypes" : "dressin,t9vlmb",
+                "dSYMs" : false,
+                "privacyDescription" : {
+                    "NSUserTrackingUsageDescription" : "Don't worry, turning this permission on will not access your private information on other websites. This permission is only used to identify the device and ensure service security and a fast browsing experience.",
+                    "NSPhotoLibraryUsageDescription" : "Do you allow this app to access your photo album?",
+                    "NSCameraUsageDescription" : "Do you allow this app to access your camera permissions?",
+                    "NSPhotoLibraryAddUsageDescription" : "Do you allow this app to write access your photo album?"
+                },
+                "capabilities" : {
+                    "entitlements" : {
+                        "com.apple.developer.associated-domains" : [ "applinks:t9vlmb.oplinking.com" ]
+                    }
+                }
+            },
+            "sdkConfigs" : {
+                "payment" : {
+                    "paypal" : {
+                        "__platform__" : [ "ios", "android" ],
+                        "returnURL_ios" : "com.dressin.mall://paypalpay",
+                        "returnURL_android" : "com.dressin.mall://paypalpay"
+                    },
+                    "appleiap" : {},
+                    "stripe" : {
+                        "__platform__" : [ "ios", "android" ],
+                        "returnURL_ios" : "dressin://stripe"
+                    }
+                },
+                "push" : {
+                    "unipush" : {
+                        "icons" : {
+                            "push" : {
+                                "ldpi" : "unpackage/res/icons/48_48.png",
+                                "mdpi" : "unpackage/res/icons/72_72.png",
+                                "hdpi" : "unpackage/res/icons/96_96.png",
+                                "xhdpi" : "unpackage/res/icons/144_144.png",
+                                "xxhdpi" : "unpackage/res/icons/192_192.png"
+                            },
+                            "small" : {
+                                "ldpi" : "unpackage/res/drawable-ldpi/push_small_1.png",
+                                "mdpi" : "unpackage/res/drawable-mdpi/push_small_1.png",
+                                "hdpi" : "unpackage/res/drawable-hdpi/push_small_1.png",
+                                "xhdpi" : "unpackage/res/drawable-xhdpi/push_small_1.png",
+                                "xxhdpi" : "unpackage/res/drawable-xxhdpi/push_small_1.png"
+                            }
+                        }
+                    }
+                },
+                "share" : {},
+                "ad" : {},
+                "maps" : {},
+                "oauth" : {
+                    "google" : {
+                        "clientid" : "1012412542443-a41kv1lljm0tjesqstfltjj23b6nhdoj.apps.googleusercontent.com"
+                    },
+                    "apple" : {},
+                    "facebook" : {
+                        "appid" : "556715096530817",
+                        "client_token" : "f9c8d48a9aca62f8d310b8d77536d326"
+                    }
+                },
+                "statics" : {
+                    "google" : {
+                        "config_ios" : "E:/github/www.dressin.com/mobile_app/keystore/dressin/firebase/pro/GoogleService-Info.plist",
+                        "config_android" : "E:/github/www.dressin.com/mobile_app/keystore/dressin/firebase/pro/google-services.json"
+                    }
+                }
+            },
+            "icons" : {
+                "android" : {
+                    "hdpi" : "unpackage/res/icons/72x72.png",
+                    "xhdpi" : "unpackage/res/icons/96x96.png",
+                    "xxhdpi" : "unpackage/res/icons/144x144.png",
+                    "xxxhdpi" : "unpackage/res/icons/192x192.png"
+                },
+                "ios" : {
+                    "appstore" : "unpackage/res/icons/1024x1024.png",
+                    "ipad" : {
+                        "app" : "unpackage/res/icons/76x76.png",
+                        "app@2x" : "unpackage/res/icons/152x152.png",
+                        "notification" : "unpackage/res/icons/20x20.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png",
+                        "proapp@2x" : "unpackage/res/icons/167x167.png",
+                        "settings" : "unpackage/res/icons/29x29.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "spotlight" : "unpackage/res/icons/40x40.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png"
+                    },
+                    "iphone" : {
+                        "app@2x" : "unpackage/res/icons/120x120.png",
+                        "app@3x" : "unpackage/res/icons/180x180.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png",
+                        "notification@3x" : "unpackage/res/icons/60x60.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "settings@3x" : "unpackage/res/icons/87x87.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
+                        "spotlight@3x" : "unpackage/res/icons/120x120.png"
+                    }
+                }
+            },
+            "splashscreen" : {
+                "useOriginalMsgbox" : false
+            }
+        },
+        "uniStatistics" : {
+            "enable" : true
+        },
+        "nativePlugins" : {
+            "openinstall-plugin" : {
+                "APP_KEY" : "t9vlmb",
+                "__plugin_info__" : {
+                    "name" : "openinstall-App全渠道统计",
+                    "description" : "方便集成使用 openinstall 功能，实现了携带参数安装，渠道统计，一键拉起全部功能。如有问题，请联系QQ：800853853",
+                    "platforms" : "Android,iOS",
+                    "url" : "https://ext.dcloud.net.cn/plugin?id=692",
+                    "android_package_name" : "com.dressin.mall",
+                    "ios_bundle_id" : "com.dressin.mall",
+                    "isCloud" : true,
+                    "bought" : 1,
+                    "pid" : "692",
+                    "parameters" : {
+                        "APP_KEY" : {
+                            "des" : "openinstall平台为应用分配的AppKey",
+                            "key" : "com.openinstall.APP_KEY",
+                            "value" : ""
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "quickapp" : {},
+    "mp-weixin" : {
+        "appid" : "wxedc77529191bc54f",
+        "setting" : {
+            "urlCheck" : false
+        },
+        "usingComponents" : true,
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "你的位置信息将用于小程序位置接口的效果展示"
+            }
+        },
+        "plugins" : {},
+        "uniStatistics" : {
+            "enable" : false
+        }
+    },
+    "mp-alipay" : {
+        "usingComponents" : true,
+        "uniStatistics" : {
+            "enable" : false
+        }
+    },
+    "mp-baidu" : {
+        "usingComponents" : true,
+        "uniStatistics" : {
+            "enable" : false
+        }
+    },
+    "mp-toutiao" : {
+        "usingComponents" : true,
+        "uniStatistics" : {
+            "enable" : false
+        }
+    },
+    "uniStatistics" : {
+        "enable" : false,
+        "version" : "1"
+    },
+    "vueVersion" : "2",
+    "h5" : {
+        "router" : {
+            "mode" : "hash",
+            "base" : ""
+        },
+        "devServer" : {
+            "disableHostCheck" : true,
+            "proxy" : {
+                "/apis" : {
+                    "target" : "http://dev-appserver.dressin.com",
+                    "changeOrigin" : true,
+                    "pathRewrite" : {
+                        //使用代理； 告诉他你这个连接要用代理
+                        "^/apis" : "/"
+                    }
+                },
+                "/map" : {
+                    "target" : "https://maps.googleapis.com",
+                    "changeOrigin" : true,
+                    "pathRewrite" : {
+                        //使用代理； 告诉他你这个连接要用代理
+                        "^/map" : "/"
+                    }
+                },
+                "/googlePlace" : {
+                    "target" : "https://places.googleapis.com",
+                    "changeOrigin" : true,
+                    "pathRewrite" : {
+                        "^/googlePlace" : "/"
+                    }
+                },
+                "/matomoApis" : {
+                    "target" : "http://ga.dressin.com",
+                    "changeOrigin" : true,
+                    "pathRewrite" : {
+                        //使用代理； 告诉他你这个连接要用代理
+                        "^/matomoApis" : "/"
+                    }
+                }
+            },
+            "port" : 8080
+        },
+        "template" : "",
+        "uniStatistics" : {
+            "enable" : false
+        }
+    },
+    "locale" : "en",
+    "mp-jd" : {
+        "uniStatistics" : {
+            "enable" : false
+        }
+    },
+    "mp-kuaishou" : {
+        "uniStatistics" : {
+            "enable" : false
+        }
+    },
+    "mp-lark" : {
+        "uniStatistics" : {
+            "enable" : false
+        }
+    },
+    "mp-qq" : {
+        "uniStatistics" : {
+            "enable" : false
+        }
+    },
+    "quickapp-webview-huawei" : {
+        "uniStatistics" : {
+            "enable" : false
+        }
+    },
+    "quickapp-webview-union" : {
+        "uniStatistics" : {
+            "enable" : false
+        }
+    }
+}

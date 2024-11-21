@@ -1,0 +1,127 @@
+/* iconfont */
+@font-face {
+    font-family: "iconfont3"; /* Project id 4368391 */
+    src: url('~@/static/fonts-3/iconfont.woff2?t=1702560042002') format('woff2'),
+         url('~@/static/fonts-3/iconfont.woff?t=1702560042002') format('woff'),
+         url('~@/static/fonts-3/iconfont.ttf?t=1702560042002') format('truetype');
+  }
+  
+  .iconfont3 {
+    font-family: "iconfont3" !important;
+    font-size:46.5rpx;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+	.icon-employee-rewards:before {
+	  content: "\e659";
+	}
+
+	.icon-rights-and-interests:before {
+	  content: "\e62d";
+	}
+  .icon-closed-orders:before {
+    content: "\e605";
+  }
+  
+  .icon-refund-orders:before {
+    content: "\e606";
+  }
+  
+  .icon-unpaid-orders:before {
+    content: "\e603";
+  }
+  
+  .icon-processing-orders:before {
+    content: "\e604";
+  }
+  
+  .icon-all-orders:before {
+    content: "\e601";
+  }
+  
+  .icon-import-order:before {
+    content: "\e634";
+  }
+  
+  .icon-customerservice:before {
+    content: "\e617";
+  }
+  
+  .icon-my-size:before {
+    content: "\e667";
+  }
+  
+  .icon-my-rewards:before {
+    content: "\e67a";
+  }
+  
+  .icon-referral-account:before {
+    content: "\e607";
+  }
+  
+  .icon-my-points:before {
+    content: "\e676";
+  }
+  
+  .icon-recently-viewed:before {
+    content: "\e680";
+  }
+  
+  .icon-shipped-orders:before {
+    content: "\e620";
+  }
+  
+  .icon-review-orders:before {
+    content: "\e621";
+  }
+  
+  .icon-my-vip:before {
+    content: "\e714";
+  }
+  
+  .icon-my-reviews:before {
+    content: "\10187";
+  }
+  
+  .icon-my-address:before {
+    content: "\10188";
+  }
+  
+  .icon-download-goodsinfor:before {
+    content: "\e60e";
+  }
+  
+  .icon-my-preference:before {
+    content: "\e64b";
+  }
+  
+  .icon-my-coupons:before {
+    content: "\e64c";
+  }
+  
+  .icon-share:before {
+    content: "\e623";
+  }
+  
+  .icon-my-profile:before {
+    content: "\e630";
+  }
+  
+  .icon-personal-information:before {
+    content: "\e624";
+  }
+  
+  .icon-my-wishlist:before {
+    content: "\e616";
+  }
+  
+  .icon-my-wallet:before {
+    content: "\e62c";
+  }
+  
+  .icon-change-password:before {
+    content: "\e677";
+  }
+  
+  

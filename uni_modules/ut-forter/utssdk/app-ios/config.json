@@ -1,0 +1,8 @@
+{
+	"dependencies-pods": [{
+		"name": "ForterSDK",
+		"repo": {
+			"git": "https://bitbucket.org/forter-mobile/forter-ios-sdk.git"
+		}
+	}]
+}

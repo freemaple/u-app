@@ -1,0 +1,9 @@
+{
+	"dependencies-pods": [{
+		"name": "FBSDKCoreKit",
+		"version": "8.0.0"
+	},{
+		"name": "FBSDKShareKit",
+		"version": "8.0.0"
+	}]
+}

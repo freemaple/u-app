@@ -1,0 +1,21 @@
+import "FBSDKCoreKit"
+import "FBSDKShareKit"
+export function fbShare(url:string,description:string, hashtag: string){
+	DispatchQueue.main.async(execute = ():void => {
+		let contentURL = URL(string=url);
+		let content = ShareLinkContent();
+		content.contentURL = contentURL!;
+		content.quote = description;
+		content.hashtag = Hashtag(hashtag);
+		let currentController = UTSiOS.getCurrentViewController();
+		let dialog = ShareDialog(fromViewController=currentController,content=content,delegate=null);
+		dialog.show();
+	})
+}
+export function fbEvent(name:string, parm: string){
+	let event_name = AppEvents.Name(name);
+	let obj = JSON.parse(parm) as UTSJSONObject;
+	let parameters: Map<string, any> = new Map();
+	parameters = obj.toMap();
+	AppEvents.logEvent(event_name, parameters=parameters);
+}

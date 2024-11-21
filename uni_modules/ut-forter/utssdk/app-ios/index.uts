@@ -1,0 +1,23 @@
+import "ForterSDK"
+export class  ForterSDKProxy implements UTSiOSHookProxy {
+	// uts 插件创建时的回调。
+	onCreate() {
+	}
+	// 应用完全激活时的回调函数。
+	applicationDidBecomeActive(application: UIApplication | null) {
+		FTRSDKApplicationDelegate.sharedInstance().applicationDidBecomeActive(application)
+		console.log('applicationDidBecomeActive');
+	}   
+}
+export class ForterModule {
+	static mobileId() : string {
+		let forterMobileUID =  UIDevice.current.identifierForVendor?.uuidString as string;
+		return forterMobileUID;
+	}
+	static forterInitialize(siteId:string) : void {
+		let mobile_id = mobileId();
+		ForterSDK.sharedInstance().setDeviceUniqueIdentifier(mobile_id);
+		ForterSDK.setup(withSiteId=siteId);
+		ForterSDK.sharedInstance().trackAction(FTRSDKActionType.appActive, withMessage="AppActive");
+	}
+}

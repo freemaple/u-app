@@ -1,0 +1,31 @@
+import Build from 'android.os.Build'
+import { UTSAndroid } from "io.dcloud.uts";
+import ForterSDK from 'com.forter.mobile.fortersdk.ForterSDK';
+import ForterIntegrationUtils from "com.forter.mobile.fortersdk.integrationkit.ForterIntegrationUtils";
+import Application from 'android.app.Application';
+import TrackType from  'com.forter.mobile.fortersdk.models.TrackType';
+
+export class ForterModule {
+	static mobileId() : string {
+		let app = UTSAndroid.getAppContext() as Application;
+		let mobileId = ForterIntegrationUtils.getDeviceUID(app); 
+		return mobileId;
+	}
+	static forterInitialize(siteId:string) {
+		// Get ForterClient instance and initiate it with the application context
+		let ftr = ForterSDK.getInstance();
+		let app = UTSAndroid.getAppContext() as Application;
+		let mobileId = ForterIntegrationUtils.getDeviceUID(app); 
+		ftr.init(app,
+			siteId,
+			mobileId // Provide your mobile device Unique ID
+		);
+		// Start generic activity-based navigation tracking
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+		{
+			app.registerActivityLifecycleCallbacks(ftr.getActivityLifecycleCallbacks());
+		}
+		// Send the 'app active' event.
+		ftr.trackAction(TrackType.APP_ACTIVE);
+	}
+}
