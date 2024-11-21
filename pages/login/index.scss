@@ -1,0 +1,648 @@
+@import '@/common/mixins.scss';
+page {
+	background-color: #FFFFFF;
+	font-family: 'Montserrat-Medium';
+}
+#box {
+	flex-direction: column;
+	min-height: 100vh;
+	// 后退icon && 页面标题
+	.login_header {
+		height: 92.31rpx;
+		padding-left: 30.77rpx;
+		position: relative;
+		width: 100%;
+		&>.icon-close {
+			font-size: 28px;
+			margin-right: 20px;
+		}
+		.title {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			width: 207.69rpx;
+			height: 53.85rpx;
+			.img {
+				width: 100%;
+				height: 100%;
+			}
+		}
+		.img_box {
+			width: 46.15rpx;
+			height: 46.15rpx;
+			.img {
+				width: 100%;
+				height: 100%;
+			}
+		}
+	}
+	// ------------------- end -------------------------
+	
+	
+	.login_box {
+		padding: 0 46rpx 0upx 46rpx;
+		width: 100%;
+		position: relative;
+		// 标签切换页 REGISTER / SIGN IN
+		.top_tabs {
+			display: flex;
+			justify-content: space-around;
+			align-items: center;
+			font-family: "Montserrat-SemiBold";
+			// @include onepxBorder(#eee);
+			// border-bottom: 2rpx solid #EEEEEE;
+			.tab {
+				display: flex;
+				justify-content: center;
+				.text {
+					position: relative;
+					display: inline-block;
+					height: 100%;
+					font-size: 30.77rpx;
+					text-align: center;
+					line-height: 92.31rpx;
+					color: #999;
+				}
+				.active {
+					color: #000;
+					&::after {
+						content: "";
+						width: 50rpx;
+						height: 3.85rpx;
+						position: absolute;
+						bottom: 3.85rpx;
+						left: 50%;
+						transform: translateX(-50%);
+						background-color: #000;
+						z-index: 1;
+					}
+				}
+			}
+		}
+		.tabs_border {
+			position: relative;
+			right: 46rpx;
+			width: 100vw;
+			height: 2rpx;
+			background-color: #eee;
+		}
+		.tip_login_check {
+			font-size: 26rpx;
+			line-height: 42rpx;
+			color: #666666;
+			margin-top: 30rpx;
+		}
+		// ------------------- end -------------------------
+		
+		
+		// 顶部三栏优惠框（积分Points 打折Off 裂变奖励）
+		.tip_discount_box {
+			display: flex;
+			align-items: center;
+			flex-wrap: nowrap;
+			margin-top: 38.46rpx;
+			padding: 17.31rpx 16rpx 15.38rpx;
+			border-radius: 12rpx;
+			background: #F8F5FF;
+			position: relative;
+			.line {
+				width: 1rpx;
+				background: #EFB8D0;
+				height: 62rpx;
+			}
+			.tip {
+				width: calc((100% - 2rpx) / 2);
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-direction: column;
+				&-icon {
+					width: 48rpx;
+				}
+				&-title {
+					padding: 9.5rpx 0;
+					font-size: 23.08rpx;
+					color: #393939;
+					white-space: nowrap;
+				}
+				&-content {
+					@include font-MRegular($fs: 19.23rpx, $color: #393939)
+					white-space: nowrap;
+				}
+				&_img_box {
+					position: absolute;
+					right: 0rpx;
+					top: 0rpx;
+				}
+			}
+		}
+		// ------------------- end -------------------------
+		
+		
+		// 裂变 Get $6 Now CashGrab Rewards
+		.cash_banner_wrapper {
+			.cash_rewards_banner {
+				position: relative;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				height: 100rpx;
+				background-size: cover;
+				background-position: 100% 100%;
+				margin-top: 30.77rpx;
+				background-image: url("@/static/images/login/cashgrab_banner_side.png"), url("@/static/images/login/cashgrab_banner_bg.png");
+				.banner_text {
+					display: flex;
+					flex-wrap: nowrap;
+					font-size: 38rpx;
+					color: #222;
+					line-height: 42rpx;
+					position: relative;
+					left: 0;
+					.reward_count, .reward_count2 {
+						margin: 0 9.62rpx 0 7.69rpx;
+						font-weight: bold;
+						font-size: 46.15rpx;
+						color: #FFFFFF;
+						text-stroke: 1.15rpx #000;
+						-webkit-text-stroke: 1.15rpx #000;
+						font-family:'Montserrat-Bold';
+						z-index: 2;
+					}
+					.reward_count2 {
+						position: absolute;
+						left: 70rpx;
+						top: 3rpx;
+						z-index: 0;
+					}
+						
+					.small {
+						font-size: 23.08rpx;
+						color: #222;
+						margin-left: 11.54rpx;
+						padding-top: 3rpx;
+						justify-content: center;
+					}
+				}
+			}
+			.rules_box {
+				display: flex;
+				justify-content: flex-end;
+				align-items: center;
+				width: 100%;
+				height: 46.15rpx;
+				margin-top: 15.38rpx;
+				margin-bottom: 13.46rpx;
+				.rules_text {
+					@include font-MRegular($color: #666)
+					line-height: 31rpx;
+					text-decoration-line: underline;
+				}
+			}
+			.register_to_get {
+				font-size: 23rpx;
+				color: #333333;
+				line-height: 27rpx;
+				margin-bottom: 7.69rpx;
+				.content {
+					position: relative;
+					&::before {
+						content: '';
+						position: absolute;
+						left: -17.31rpx;
+						top: 50%;
+						transform: translate(-100%, -50%);
+						width: 138rpx;
+						height: 1rpx;
+						background: #999999;
+					}
+					&::after {
+						content: '';
+						position: absolute;
+						right: -17.31rpx;
+						top: 50%;
+						transform: translate(100%, -50%);
+						width: 138rpx;
+						height: 1rpx;
+						background: #999999;
+					}
+				}
+			}
+			.register_get_tips {
+				@include font-MRegular($fs: 19rpx, $color: #666)
+				line-height: 31rpx;
+				text-align: center;
+				padding: 0 30.77rpx;
+			}
+		}
+		// ------------------- end -------------------------
+		
+		//  注册 登录表格
+		.error_tip_form {
+			padding-top: 48.08rpx;
+			// 校验 
+			/deep/.uni-forms-item__error {
+				display: flex;
+				align-items: flex-start;
+				font-size: 27rpx;
+				color: #FF512B;
+				padding: 0;
+				margin-left: 23.08rpx;
+				margin-top: 15.38rpx;
+				line-height: 34.62rpx;
+				&::before {
+					content: "";
+					width: 34rpx;
+					height: 34rpx;
+					background-image: url('@/static/images/error.png');
+					margin-right: 3.85rpx;
+					background-size: 100%;
+					display: inline-flex;
+					flex-shrink: 0;
+					/* 确保图标不会缩小 */
+				}
+			}
+			// ------------------- end -------------------------
+			
+			.input_label {
+				margin: 0 0 13.46rpx 23.08rpx;
+				color: #666;
+				font-size: 26.92rpx;
+			}
+			// .uni-forms-item {
+			// 	margin-bottom: 80rpx;
+			// }
+			.tip_email_hadregistered, .tip_psw_signin {
+				display: inline-flex;
+				font-size: 27rpx;
+				color: #FF512B;
+				padding: 0;
+				margin-left: 23.08rpx;
+				margin-top: 15.38rpx;
+				line-height: 34.62rpx;
+				// 注册 （跳转到SignIn）Sign in or change email address
+				.register_link_tosignin {
+					color: #0071E3;
+					text-decoration: underline;
+					padding: 0px 6rpx;
+				}
+				.tip_icons {}
+			}
+			
+			
+			// 登录 Foget Password按钮
+			.signin_forgot_psw {
+				@include font-MRegular($color: #666)
+				text-align: right;
+				margin: 0 23.08rpx 46.15rpx 0;
+				line-height: 27rpx;
+				text-decoration-line: underline;
+			}
+			// ------------------- end -------------------------
+			
+			
+			// captcha
+			.captcha-form-item {
+				position: relative;
+				/deep/.captcha_input {
+					width: 360rpx;
+				}
+				/deep/.uni-checkbox-input-checked {
+					box-sizing: border-box;
+					background: #000;
+					border: 0;
+					&::before {
+						color: #fff;
+					}
+				}
+				/deep/.uni-checkbox-input {
+					box-sizing: border-box;
+					border-radius: 50%;
+				}
+				.privacy-text {
+					display: inline-block;
+					font-size: 24rpx;
+					text {
+						padding-left: 3px;
+					}
+				}
+				.captcha {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					height: 104rpx;
+					width: 358rpx;
+					position: absolute;
+					right: 0;
+					top: 0;
+					.captcha-img {
+						width: 277rpx;
+						height: 64rpx;
+					}
+				}
+				.uni-forms-item {
+					// margin-top: 50rpx;
+					margin-bottom: 50rpx;
+					// height: 104rpx;
+					// @include onepxBorder(#ccc);
+					// &:last-child {
+					// 	background: pink;
+					// 	&::after{
+					// 		content: '';
+					// 	}
+					// }
+					/deep/.uni-input-placeholder {
+						font-size: 28rpx;
+						color: rgba(0, 0, 0, 0.3);
+						height: 32rpx;
+						line-height: 32rpx;
+					}
+					/deep/.uni-input-input {
+						font-size: 30.77rpx;
+						color: #000000;
+						line-height: 36rpx;
+						background-color: #fff;
+					}
+				}
+				&.error_tip_form .uni-forms-item {
+					margin-bottom: 80rpx;
+				}
+			}
+			// ------------------- end -------------------------
+			
+			
+			// 注册 - 检验密码是否符合格式 - 不符合边框显红
+			.register_psw_error {
+				/deep/.uni-easyinput__content {
+					border-color: #FF512B !important;
+				}
+			}
+			// 注册 - 密码校验规则
+			.register_psw_check_box {
+				display: flex;
+				flex-direction: column;
+				margin-left: 23.08rpx;
+				font-size: 23.08rpx;
+				color: #393939;
+				.check_text {
+					height: 42.31rpx;
+				}
+				.check_item {
+					display: flex;
+					image {
+						width: 34.62rpx;
+						margin-right: 4rpx;
+					}
+				}
+			}
+			// 注册-邮箱确认协议
+			.register_protocol {
+				position: relative;
+				display: flex;
+				margin-bottom: 46.15rpx;
+				.check_box {
+					width: 46.15rpx;
+					height: 46.15rpx;
+					margin: 0 3.85rpx 0 23.08rpx; 
+					flex-shrink: 0;
+					image{
+						width: 100%;
+						height: 100%;
+					}
+				}
+				.protocol_text {
+					margin-right: 21.15rpx;
+					font-size: 26.92rpx;
+					color: #393939;
+					line-height: 42.31rpx;
+				}
+			}
+			// ------------------- end -------------------------
+		}
+		// ------------------- end -------------------------
+		
+		
+		
+		/deep/.is-input-error-border {
+			border-color: #FF512B !important;
+		}
+		/deep/.uni-forms {
+			position: relative;
+		}
+		/deep/.uni-easyinput__content-input {
+			height: 92.31rpx !important;
+			font-size: 28rpx;
+			padding-left: 30.77rpx !important;
+		}
+		/deep/.uni-input-wrapper {
+			height: 92.31rpx;
+			.uni-input-placeholder {
+				font-size: 28rpx !important;
+			}
+		}
+	}
+	
+	
+	
+	// 第三方登录
+	.login_auth {
+		// 分割线
+		.separator_or {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 38rpx;
+			line-height: 32rpx;
+			color: #999;
+			font-size: 27rpx;
+			position: relative;
+			&:before {
+				content: '';
+				width: 69rpx;
+				height: 1rpx;
+				position: absolute;
+				right: 35%;
+				bottom: 50%;
+				background: #CCCCCC;
+				transform: translateY(-50%);
+			}
+			&:after {
+				content: '';
+				width: 69rpx;
+				height: 1rpx;
+				position: absolute;
+				left: 35%;
+				bottom: 50%;
+				transform: translateY(-50%);
+				background: #CCCCCC;
+			}
+		}
+		// 登录方式列表
+		.auth_list {
+			padding: 0 46rpx 1rpx;
+			margin: 30.77rpx 0;
+			.auth_item {
+				border: 2rpx solid #999;
+				border-radius: 46rpx;
+				height: 80upx;
+				font-size: 33rpx;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				text-align: center;
+				color: #333;
+				background-color: #fff;
+				margin-bottom: 23.08rpx;
+				&:last-child {
+					margin-bottom: 0;
+				}
+				width: 100%;
+				&.apple {
+					color: #000;
+					.auth_icon {
+						width: 32.69rpx;
+						height: 32.69rpx;
+						margin-right: 19.23rpx;
+					}
+				}
+				.auth_icon {
+					width: 30rpx;
+					height: 30rpx;
+					margin-right: 10rpx;
+				}
+			}
+		}
+	}
+	// ------------------- end -------------------------
+	
+	
+	// 底部协议 Term&Conditions  Privacy Policy
+	.fix_crt {
+		/deep/.text_under_fix {
+			font-size: 23.08rpx;
+			span {
+				font-size: 23.08rpx;
+			}
+		}
+		.under_line {
+			font-size: 23.08rpx;
+		}
+	}
+	.policy_box {
+		@include font-MRegular($color: #666)
+		position: relative;
+		margin: 0 69.23rpx;
+		.under_line {
+			text-decoration: underline;
+			color: #0071E3;
+		}
+		.img_box {
+			width: 34.62rpx;
+			height: 34.62rpx;
+			margin-right: 15.38rpx;
+			flex-shrink: 0;
+			.img {
+				width: 100%;
+				height: 100%;
+			}
+	
+			.img_check {
+				width: 46.15rpx;
+				height: 46.15rpx;
+				position: absolute;
+				top: 0;
+			}
+		}
+		.subscribed_tip {
+			width: 563rpx;
+			height: 85rpx;
+			font-weight: 500;
+			font-size: 26.92rpx;
+			color: #393939;
+			line-height: 42.31rpx;
+			letter-spacing: 0;
+		}
+	}
+	// ------------------- end -------------------------
+	
+	
+	// 推荐码填写页面
+	.referral_code_box {
+		padding-top: 60rpx;
+		padding: 72rpx 46rpx 0;
+		.tip-box {
+			font-size: 32rpx;
+			font-weight: 500;
+		}
+		.uni-forms {
+			padding: 38.46rpx 0px;
+			.form-label {
+				font-size: 27rpx;
+				color: #666666;
+				margin-bottom: 15.38rpx;
+				margin-left: 23.08rpx;
+			}
+			/deep/.aicode-input {
+				.uni-easyinput__content-input {
+					padding-left: 46.15rpx !important;
+				}
+				input{
+					height: 96rpx;
+					color: #222;
+					font-size: 30.77rpx;
+				}
+			}
+			.func_btn {
+				margin-top: 123.08rpx;
+				margin-bottom: 23.08rpx;
+			}
+			.skip-box {
+				border: 1px solid #222;
+				height: 96rpx;
+				line-height: 96rpx;
+				text-align: center;
+				border-radius: 46rpx;
+				font-size: 32rpx;
+				font-weight: 600;
+			}
+		}
+	}
+	// ------------------- end -------------------------
+	
+	// 按钮
+	.func_btn {
+		height: 92.31rpx;
+		margin-bottom: 30.77rpx;
+		font-family: 'Montserrat-SemiBold';
+		font-size: 30.77rpx;
+		color: #fff;
+		/deep/uni-button {
+			height: 100%;
+			background: #000;
+			line-height: 92.31rpx;
+			border-radius: 46.15rpx;
+			&::after {
+				display: -webkit-flex;
+				display: flex;
+				text-align: center;
+				align-items: center;
+			}
+		}
+	}
+	// ------------------- end -------------------------
+	
+	
+	.code_view {
+		height: 400rpx;
+		width: 650rpx;
+	}
+	/deep/.rule-content {
+		font-size: 24.5rpx !important;
+	}
+	/deep/ .uni-easyinput__content .content-clear-icon {
+		font-size: 48rpx !important;
+	}
+}
+	
