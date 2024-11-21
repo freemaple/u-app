@@ -64,7 +64,7 @@ methodToPatch.map(item => {
     const original = uni[item]
     let isViewRecordsRunning = false; // 添加标志位
     uni[item] = function (opt = {}) {
-        const origin_path = opt.url&&opt.url.split('?')[0];
+        const origin_path = opt.url&&opt.url.split('?')[0]
         const needAuth = needAuthRoute.indexOf(origin_path) > -1;
 		
 		// 点击个人中心埋点
@@ -84,14 +84,14 @@ methodToPatch.map(item => {
 			uni.removeStorageSync('shareDetailRules') // 当路由不是个人中心裂变主页时，移除shareDetailRules
 		}
         if (needAuth && !store.getters.token) { // 需要登录且未登录
-			let url = '/pages/login/index?redirectUrl=' + escape(opt.url);
+            let url = '/pages/login/index?redirectUrl=' + escape(opt.url);
 			if(opt.url == '/pages/my/my') {
 				// 站内来源，埋点使用
 				url = '/pages/login/index?in_site_source=account&redirectUrl=' + escape(opt.url);
 			}
-            uni.navigateTo({
-                url: url
-            })
+			uni.navigateTo({
+				url: url
+			})
         } else {
             const { url } = opt;
             if (url !== '/pages/recently-viewed/recently-viewed' && !isViewRecordsRunning) {

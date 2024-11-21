@@ -28,16 +28,16 @@
 	align-items: center;
 	position: absolute;
 	bottom: 7.69rpx;
-	left: 7.69rpx;
-	right: 7.69rpx;
+	left: 16rpx;
+	right: 16rpx;
 	font-size: 19.23rpx;
-	background: #FFF9EFFF;
+	background: #EDE5FF;
 	.img {
 		width: 30.77rpx;
 	}
 	.text {
 		padding-left: 7.69rpx;
-		color: #FF5C00FF;
+		color: #814EFF;
 	}
 }
 </style>

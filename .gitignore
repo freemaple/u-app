@@ -12,9 +12,4 @@ $RECYCLE.BIN/
 
 # Node.js
 node_modules/
-unpackage/cache
-unpackage/debug
-unpackage/dist
-unpackage/resources
-unpackage/release
-unpackage/uts-error
+unpackage/

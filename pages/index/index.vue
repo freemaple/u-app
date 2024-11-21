@@ -1,196 +1,254 @@
 <template>
-    <view id="box">
+    <view :class="categoriesHome.length > 1 ? 'mt164r' : 'mt93r'">
 		<page-meta :page-style="'overflow:'+(pageMetaShow?'hidden':'visible')"></page-meta>
-		<view class="fixed-header page-max-width">
+		<view class="fixed-header page-max-width" :style="{'padding-bottom': !isAllPage && !tabBanner ? '28.92rpx' : '1px', 'border-bottom': '2rpx solid #f1f1f1' }">
 			<view class="top_search_header flex justify-content-between align-items-center">
-				<view class="fake_input flex justify-content-between align-items-center ma-search-box" @tap="handleToSearch">
-					<view class="search_placeholder">{{ $t('category.search_by_di', {site_name: $store.state.site_name_upper}) }}</view>
-					<view class="search_icon">
-						<image
-							class="img"
-							:src="getImgPathFunc('/static/images/category_top_search')"
-							mode="aspectFill"
-						/>
-					</view>
-				</view>
-				<view style="position: relative;" class="sign_in_icon is_message_icon" @tap="navBuriedPoint('message');$public.handleNavTo('/pages/message/message')">
-					<image
-						class="img"
-						src="@/static/images/icon/message3.png"
-						mode="aspectFill"
-					/>
-					<view class="message-icon" v-show="isShowMessageIcon"></view>
-				</view>
-				<view class="sign_in_icon" @tap="handleCheckIn">
-					<image
-						class="img"
-						:src="getImgPathFunc('/static/images/category_sign_in')"
-						mode="aspectFill"
-					/>
-				</view>
-				<!-- #ifdef APP-PLUS -->
-				<view class="sign_in_icon" v-if="serviceWebviewSrc" @tap="handleCeckWebView">
-					<i class="iconfont2 iconfont3 icon-customerservice" style="color:#333;"></i>
-				</view>
-                <!-- #endif -->
-				<!-- #ifdef H5 -->
-				<view class="sign_in_icon" @tap="handleDialog">
-					<i class="iconfont2 iconfont3 icon-customerservice" style="color:#333;"></i>
-				</view>
-                <!-- #endif -->
+			    <view class="fake_input flex justify-content-between align-items-center" @tap="handleToSearch">
+			        <view class="search_placeholder">{{ $t('category.search_by_di', {site_name: $store.state.site_name}) }}</view>
+			        <view class="search_icon">
+			            <image class="img" :src="getImgPathFunc('/static/images/category_top_search')" mode="aspectFill" />
+			        </view>
+			    </view>
+			    <view class="sign_in_icon" @tap="handleCheckIn">
+			        <image class="img" :src="getImgPathFunc('/static/images/category_sign_in2')" mode="aspectFill" />
+			    </view>
 			</view>
-			<view class="home-tabs-box flex justify-content-between">
-				<scroll-view scroll-x="true" class="home-tabs-scroll-view" show-scrollbar="false">
-					<view class="flex" style="flex-wrap: nowrap;">
-						<!-- <view id="navItemsAll" class="home-tabs-item active flex" :class="categories.length == 1 ? 'item-half' : ''" @click="toCategory(-1,'ALL')">
-							<view class="home-tabs-item-content">
-								{{$t('category.all')}}
-							</view>
-						</view> -->
-						<view :id="'navItems' + item.id" :class="'home-tabs-item flex ' + (categories.length == 3 ? ' home-tabs-item-double ' : '') + (index == 0 ? ' active' : '') + (categories.length == 2 ? ' item-half ' : '')"  @click="toCategory(item.id,item.name)" v-for="(item,index) in categories" :key="item.id">
-							<view class="home-tabs-item-content">
-								{{item.name}}
-							</view>
+			<scroll-view scroll-x="true" show-scrollbar="false" v-if="categoriesHome.length > 1">	
+				<view class="home-tabs-box">
+					<view class="home-tabs-item" @tap="handleSwitchToAll">
+						<view :class="'flex-cc'+(isAllPage ? ' home-tabs-item-content-active' : ' home-tabs-item-content')">
+							<text>{{ $t('category.all') }}</text>
 						</view>
 					</view>
-				</scroll-view>    
-			</view>				
+					<view class="home-tabs-item" @tap="handleSwitchTab(item)"
+						v-for="(item, index) in categoriesHome" :id="'navItems' + item.id" :key="index">
+						<view :class="'flex-cc'+(!isAllPage && homeTab === item.name ? ' home-tabs-item-content-active' : ' home-tabs-item-content')">
+							<text>{{item.name}}</text>
+						</view>
+					</view>
+				</view>
+			</scroll-view>    
 		</view>
-        <view :class="'global-top-btn flex align-items-center justify-content-center '+ (!showBtn?'global-btn-none':'')" @click="backTop">
-            <image class="img"
-                src="~/static/images/icon/back_top_icon@2x.png"
-            />
-        </view>
-        <view class="container">
+		
+        <back-top v-if="showBtn" :showBtn="showBtn" />
+        <view class="container" v-if="isAllPage">
 			<!-- 首页轮播 图片比例 750:400-->
 			<view class="home-swiper-banner-box" v-if="staticblock['app-home-top-banner'].data">
-				<swiper style="height:400rpx" class="swiper" circular :indicator-dots="true" :autoplay="true" :interval="5000"
-					:duration="500" indicator-active-color="#999" indicator-color="#000" @change="startBannerObserver">
-					<swiper-item v-for="(item,index) in staticblock['app-home-top-banner'].data" :key="index" :id="'bannerItems' + index">
-						<view class="swiper-item" @click="checkRoute(item);bannerClick(item,index)">
+				<swiper class="swiper" circular 
+					:autoplay="true" :interval="5000" :duration="500"
+					:indicator-dots="staticblock['app-home-top-banner'].data.length > 1" 
+					indicator-color="#000"
+					indicator-active-color="#865614" 
+					@change="startBannerObserver">
+					<swiper-item v-for="(item,index) in staticblock['app-home-top-banner'].data" :key="index">
+						<view class="swiper-item" @click="checkRoute(item); bannerClick(item,index)">
 							<image v-if="item.inviter_money" :src="item.image_new" mode="widthFix" style="width: 100%;"></image>
 							<image v-else :src="item.image" mode="widthFix" style="width: 100%;"></image>
 							<view class="dynamic-price" :class="[
 								getBannerPriceClass(item.inviter_money)
 							]" v-if="item.inviter_money">
-								<text class="dynamic-price-get">{{$t('cashgrab_rewards.get')}}</text>
+								<!-- <text class="dynamic-price-get">{{$t('cashgrab_rewards.get')}}</text> -->
 								<text class="dynamic-price-unit">{{item.symbol || '$'}}</text>
 								<text class="dynamic-price-number">{{ item.inviter_money }}</text>
 							</view>
+							<block v-if="item.inviter_money">
+								<text class="dynamic-discount">{{item.discount}}%</text>
+								<text class="phone-price">GET {{(item.symbol || '$') + item.inviter_money}}</text>
+							</block>
 						</view>
 					</swiper-item>
 				</swiper>
 			</view>
-			<!-- 首页轮播顶部文字 -->
-			<view class="home-top-text-box flex" v-if="staticblock['app-home-top-text'].data">
-				<view :id="'topTextItems' + index" class="text-item" v-for="(item,index) in staticblock['app-home-top-text'].data" :key="index" @click="textBuriedPoint(item);$public.staticBlockJump(item)">
-					<view class="text-item-txt">{{item.text}}</view>
-					<image class="text-item-img" :src="item.imgUrl" />
-				</view>
-			</view>
-			<!-- 首页优惠券banner -->
-			<view class="static-banner-box mt-24" v-if="staticblock['app-home-coupon-discount'].data">
-				<image v-for="(item,index) in staticblock['app-home-coupon-discount'].data" @click="$public.staticBlockJump(item)" mode="widthFix" :src="item.image" :key="index" alt=""/>
-			</view>
-			<!-- 首页8个styles -->
-			<view class="home-styles-box" v-if="staticblock['app-home-styles'].data">
-				<view class="home-styles-title">{{staticblock['app-home-styles'].title}}</view>
-				<view class="styles-box">
-					<view @click="styleBuriedPoint(item,index);$public.staticBlockJump(item)" :id="'stylesItems' + index" class="style-item" v-for="(item,index) in staticblock['app-home-styles'].data" :key="index">
-						<view class="style-img-box">
-							<!-- 268:357 -->
-							<image style="width: 100%;" mode="widthFix" :src="item.image" />
-						</view>
-						<view class="title text-overflow-ellipsis" v-if="item.text">{{item.text}}</view>
+			
+			<!-- <view class="home-top-text-box flex">
+				<view class="flex"
+					v-if="staticblock['app-home-top-text'].data"
+					v-for="(item,index) in staticblock['app-home-top-text'].data"
+					:key="index">
+					<view class="text-item" 
+						@click="$public.staticBlockJump(item)">
+						<view class="text-item-top">BUY 3 GET 1 FREE</view>
+						<view class="text-item-bottom">[Add 4 pairs to cart]</view>
 					</view>
+					<view class="line" v-if="![staticblock['app-home-top-text'].data.length - 1].includes(index)"></view>
 				</view>
+			</view> -->
+			
+			<!-- SHOP BY COLOR -->
+			<view>
+				<view v-if="colorTags.length > 0">
+					<homeHeader :title="$t('home.shopByColor')"></homeHeader>
+					<tag-list :tagArray="colorTags" :tagId="colorTag.id" 
+						@emitTag="setTag('color', $event)"
+						:activedColor="'#FFFFFF'"
+						:activedBackgroundColor="'#222'"
+						:unActivedColor="'#393939'"
+						:unActivedBackgroundColor="'#F5F5F5'"
+						:boxMargin="'0 30.77rpx 30.77rpx'">
+					</tag-list>
+				</view>
+				<!-- 有special_price_off但是is_special是0，仍不显示左上角off标签 -->
+				<good-scroll-list v-if="goodsSortByColor.length > 0"
+					ref='goodsSortByColor'
+					:tagName="colorTag"
+					:listData="goodsSortByColor"
+					@popupChange="(value)=>{ pageMetaShow=value; $public.isPullDown(!pageMetaShow) }"
+					:navRoute="`/pages/cate/list?id=${colorTag.id}&type=${colorTag.type}`"/>
 			</view>
-			<!-- 特价产品 -->
-			<view class="position-relative" v-if="saleData&&saleData.length">
-				<view class="home-styles-title sale_block_title" v-if="saleData&&saleData.length">{{saleDataTitle}}</view>
-				<view class="sale_rules_wrapper flex no-wrap align-items-center" id="sale_rules_btn" @tap="handleClickRules">
-					<text class="text_underline">{{$t('lower_price.rules')}}</text>
-					<view class="sale_rules_image_box">
-						<image src="~/static/images/fission_sharing/prompt.png" style="width: 100%;" mode="widthFix" />
+			
+			<!-- SHOP BY REPLACEMENT -->
+			<view>
+				<homeHeader :title="staticblock['app-unicoeye-replacement'].title" :mt="colorTags.length > 0 && goodsSortByColor.length > 0 ? 161.54 : 69.23" :mb="34.62"></homeHeader>
+				<view class="replacement-box" v-if="staticblock['app-unicoeye-replacement'] && staticblock['app-unicoeye-replacement'].Pics">
+					<view class="left-images">
+						<image v-for="(i,idx) in staticblock['app-unicoeye-replacement'].Pics.leftPart" 
+							:src="i.imageSrc"
+							@click="checkRoute(i)" 
+							mode="heightFix" />
+					</view>
+					<view class="right-image">
+						<image v-for="i in staticblock['app-unicoeye-replacement'].Pics.rightPart" 
+							:src="i.imageSrc"
+							@click="checkRoute(i)" 
+							mode="heightFix" />
 					</view>
 				</view>
 			</view>
 			
-			<view class="sale-product-box" v-if="saleData&&saleData.length">
-				<view class="sale-tab-box flex font-bold" v-show="showMore">
-					<view @click="saleCurrentIndex = index;lineLeft=0;selectSaleTab(item, index)" class="sale-tab" :id="`sale-tab-${index}`" :class="saleCurrentIndex == index?'on':''" v-for="(item,index) in saleData" :key="index">
-						{{item.symbol}}{{item.label}}
-					</view>
+			<!-- CHOOSE YOUR BUDGET -->
+			<view>
+				<view v-if="priceTags.length > 0">
+					<homeHeader :title="priceRangeTitle" :mt="101.92"></homeHeader>
+					<tag-list :tagArray="priceTags" :tagId="priceTag.id"
+						@emitTag="setTag('price', $event)"
+						:activedColor="'#FFFFFF'"
+						:activedBackgroundColor="'#814EFF'"
+						:unActivedColor="'#393939'"
+						:unActivedBackgroundColor="'#EFEAF4'"
+						:boxMargin="'0 30.77rpx 30.77rpx'">
+					</tag-list>
 				</view>
-				<view class="sale-content-box">
-					<block v-for="(item,index) in saleData" :key="index">
-						<view class="sale-item-box" :class="saleCurrentIndex == index ? 'active-sale-item-box' : ''" :key="index" v-show="saleCurrentIndex == index">
-							<view class="sale-list-box">
-								<scroll-view scroll-x="true" @scroll="setSwiperLine" show-scrollbar="false">
-									<view :class="['flex swiper-shop', showMore ? 'swiper-shop-show-more' : '']" :style="item.products.length > 4 && showMore ? swiperShopStyle : ''">
-										<view class="swiper-shop-item position-relative" v-for="(p_item,p_index) in item.products" @click="toSaleProduct(p_item, p_index)" :key="p_index" :id="'saleTtemBox-' + p_item.id">
-											<view class="image-box">
-												<image :src="p_item.image" style="width: 100%;" mode="widthFix" />
-											</view>
-											<specialOfferDiscountTab :discount="p_item.special_price_off"></specialOfferDiscountTab>
-											<saleRemaining v-if="p_item.schedule&&p_item.schedule.is_show == '1'" :percent="p_item.schedule.spu_stock_percent" :remaining_count="p_item.schedule.spu_stock_text"></saleRemaining>
-											<view class="p_name text-overflow-ellipsis">{{p_item.name}}</view>
-											<view class="s_price flex" v-if="p_item.special_price">
-												<view class="s_price_num font-bold">{{p_item.special_price.symbol}}{{p_item.special_price.value}}</view>
-												<view class="s_price_val">{{p_item.special_price.symbol}}{{p_item.price.value}}</view>
-											</view>
-										</view>										
-									</view>
-								</scroll-view>
+				<good-scroll-list v-if="priceRangeList.length > 0" 
+					ref="goodsSortByPrice"
+					:tagName="priceTag"
+					itemIdName="saleTtemBox-"
+					:listData="priceRangeList"
+					@popupChange="(value)=>{ pageMetaShow=value; $public.isPullDown(!pageMetaShow) }"
+					:showStockRemaining="showStockRemaining"
+					:tagType="showStockRemaining ? '1' : '2'"
+					:navRoute="setPriceRangePath()"
+					:setDotColor="'#9795D6'"
+					:spacingOfImage="23.08" />
+			</view>
+			
+			<!-- SERIES -->
+			<view v-if="staticblock['app-unicoeye-series']">
+				<homeHeader :title="staticblock['app-unicoeye-series'].title" :mt="priceTags.length > 0 ? 161.54 : 24" :mb="53.85"></homeHeader>
+				<view class="series-scroll">
+					<scroll-view scroll-x="true" show-scrollbar="false" @scroll="SeriesScroll">
+						<view class="flex">
+							<view class="flex series-images">
+								<image v-for="(i, idx) in staticblock['app-unicoeye-series'].SeriesPics" :key="idx"
+									:src="i.imageSrc" mode="heightFix"
+									@click="checkRoute(i)">
+								</image>
 							</view>
 						</view>
-					</block>
-					<view class="swiper-shop-line-box" v-show="saleData[saleCurrentIndex].products.length > 4">
-						<view class="swiper-shop-line" :style="{'left': lineLeft}"></view>
-					</view>
-				</view>
-			</view>
-			<!-- 首页vip 裂变分享banner -->
-			<view style="padding: 0;" class="static-banner-box" v-if="staticblock['app-home-point-and-vip'].data">
-				<image :id="'pointAndVipItems' + index" v-for="(item,index) in staticblock['app-home-point-and-vip'].data" @click="activeBuriedPoint(item, index);" mode="widthFix" :src="item.image" :key="index" alt=""/>
-			</view>
-			<!-- 首页TRENDING -->
-			<view class="trending-box" v-if="staticblock['app-home-trending'].data">
-				<view class="home-styles-title">{{staticblock['app-home-trending'].title}}</view>
-				<view class="trending-items">
-					<view :id="'trendingItems' + index" @click="trendingTopBuriedPoint(item,index);" class="item" v-for="(item,index) in staticblock['app-home-trending'].data" :key="index">
-						<image :src="item.image" style="width: 100%;" mode="widthFix" />
-					</view>
-				</view>
-			</view>
-			<!-- 红人图模块 -->
-			<view class="redperson-box" v-if="redpersonData.red_person_product_list.length">
-				<view class="home-styles-title">{{redpersonData.title}}</view>
-				<scroll-view scroll-x="true" show-scrollbar="false" @scroll="redpersonScroll">
-					<view class="flex redperson-img">
-						<view @tap="toRedpersonDetail(item, ind)" class="redperson-img-item" :id="'redperson-img-item-' + item.product_id" v-for="(item,ind) in redpersonData.red_person_product_list" :key="ind">
-							<image :src="item.red_person_image_url" style="width: 100%;" mode="widthFix" />
-						</view>										
-					</view>
-				</scroll-view>
-				<view class="flex redperson-share justify-content-between" id="home_media_list">
-					<view @click="redpersonDataMediaClick(item)" class="redperson-share-item" :id="`redperson-share-item-${ind}`" v-for="(item,ind) in redpersonData.media_list" :key="ind">
-						<image :src="item.media_img_url" style="width: 100%;height: 100%;" mode="widthFix" />
-					</view>		
+					</scroll-view>
+					<scroll-bar
+						:scrollLeft="SeriesScrollLeft"
+						:scrollWidth="SeriesScrollWidth"
+						:dotNum="setDotNum(staticblock['app-unicoeye-series'].SeriesPics.length)"
+						:distanceFromList="'30.77rpx'">
+					</scroll-bar>
 				</view>
 			</view>
 			
-            <view v-if="goods.length" class="goods-container">
-				<view class="home-styles-title">
-					{{$t('recommend.header1')}}
+			<!-- PRE-SALE -->
+			<view v-if="staticblock['app-pre-sale-banner']">
+				<view class="pre-sale">
+					<homeHeader :title="$t('home.pre_sale')" :mt="0" :mb="30.77"></homeHeader>
+					<view class="pre-sale-img flex-cc" v-if="staticblock['app-pre-sale-banner'].preSaleImgSrc"
+						@tap="checkRoute(staticblock['app-pre-sale-banner'])">
+						<image :src="staticblock['app-pre-sale-banner'].preSaleImgSrc" mode="widthFix"></image>
+					</view>
+					<good-scroll-list
+						style="padding-bottom: 80.77rpx"
+						:hiddenViewMore="false"
+						:listData="preSaleData"
+						@popupChange="(value)=>{ pageMetaShow=value; $public.isPullDown(!pageMetaShow) }"
+						:setDotColor="'#D6C495'" />
 				</view>
-                <!-- 推荐页商品列表 -->
-                <good-list ref='goods_list' :module_name="'home_rfy'" :item_list_type="'recommended_product'" :item_list_id="'recommended_product'" :item_list_name="'related_products'"  @popupChange="(value)=>{pageMetaShow=value;$public.isPullDown(!pageMetaShow)}" :goods="goods" :showLoading="goodsHasNext"></good-list>
-				<view class="is-over-tip" v-show="!goodsHasNext">
-					{{$t('home.lis_over_tip')}}
+			</view>
+			
+			<!-- ABOUT US -->
+			<view class="aboutUS" v-if="staticblock['app-unicoeye-about-us'] && staticblock['app-unicoeye-about-us'].topImage">
+				<homeHeader v-if="staticblock['app-unicoeye-about-us'].title"
+					:title="staticblock['app-unicoeye-about-us'].title" :mb="34.62"></homeHeader>
+				<view class="image_box">
+					<image class="image_pic" :src="staticblock['app-unicoeye-about-us'].topImage.imageSrc" mode="widthFix"></image>
+					<text class="font-MBold image_text">{{ staticblock['app-unicoeye-about-us'].topImage.imageText }}</text>
+					<view class="image_tap font-MS flex-cc" 
+						 @tap="$public.handleNavTo('/pages/cms/article/article?url_key=app-about-us')">
+						{{ staticblock['app-unicoeye-about-us'].topImage.buttonText }}
+					</view>
 				</view>
-            </view>
+				<advantages-list v-if="staticblock['app-unicoeye-about-us'] && staticblock['app-unicoeye-about-us'].advantages"
+					:list="staticblock['app-unicoeye-about-us'].advantages"></advantages-list>
+			</view>
+			
+			<!-- FOLLOW OUR STORY@UNICOEYE -->
+			<view class="redperson-box" v-if="redpersonData.red_person_product_list && redpersonData.red_person_product_list.length">
+				<homeHeader :title="redpersonData.title" :mt="100" :mb="34.62"></homeHeader>
+				<scroll-view scroll-x="true" show-scrollbar="false" @scroll="redpersonScroll">
+					<view :class="redpersonData.red_person_product_list.length <= 4 ? 'flex-cc' : 'flex' ">
+						<view class="redperson-img">
+							<view class="redperson-img-item" 
+								v-for="(item,ind) in redpersonData.red_person_product_list" :key="ind"
+								:id="'redperson-img-item-' + item.product_id"
+								@tap="toDetailsTap(item)">
+								<image :src="item.red_person_image_url" class="redperson-realImage"></image>
+							</view>										
+						</view>
+					</view>
+				</scroll-view>
+				<scroll-bar
+					:scrollLeft="barScrollLeft"
+					:scrollWidth="barScrollWidth"
+					:dotNum="setDotNum(redpersonData.red_person_product_list.length, 4.5)"
+					:distanceFromList="'30.77rpx'">
+				</scroll-bar>
+				<view class="redperson-share" id="home_media_list">
+					<view class="redperson-share-item"
+						v-for="(item,ind) in redpersonData.media_list" :key="ind"
+						:id="`redperson-share-item-${ind}`"
+						@tap="redpersonDataMediaClick(item)" >
+						<image :src="item.media_img_url" mode="widthFix" />
+					</view>
+				</view>
+			</view>
         </view>
+		
+		<!-- 落地页 -->
+		<view v-else>
+			<tabPage ref="tabPage" :homeTab="homeTab" :homeTabId="homeTabId" :tabBanner="tabBanner" />
+		</view>
+		
+		<!-- RECOMMEND FOR YOU -->
+		<view class="Recommend" v-if="goods && goods.length > 0 && isAllPage">
+			<homeHeader :title="$t('recommend.header1')" :mb="46.15" :mt="0"></homeHeader>
+			<good-list ref='goods_list' 
+				:item_list_type="'recommended_product'" 
+				:item_list_id="'recommended_product'" 
+				:item_list_name="'related_products'"  
+				@popupChange="(value)=>{pageMetaShow=value;$public.isPullDown(!pageMetaShow)}" 
+				:goods="goods" 
+				:showLoading="goodsHasNext">
+			</good-list>
+			<view class="is-over-tip" v-show="!goodsHasNext">
+				{{$t('home.lis_over_tip')}}
+			</view>
+		</view>
 		
 		<!-- 获取优惠券弹窗 -->
 		<uni-popup ref="popupCoupon" @change="(e)=>{pageMetaShow = e.show;$public.isPullDown(!pageMetaShow)}">
@@ -230,6 +288,8 @@ import footerTip from "@/components/footer-tip/footer-tip.vue"
 import ToastTip from "@/components/toast-tip/toast-tip.vue"
 import specialOfferDiscountTab from '@/components/special-offer-discount-tag/special-offer-discount-tag.vue'
 import saleRemaining from '@/components/sale-remaining/sale-remaining.vue'
+import backTop from '@/components/back-top/back-top.vue';
+import tabPage from './components/tabPage.vue'
 
 //获取应用实例
 const app = getApp();
@@ -242,25 +302,51 @@ export default {
 		footerTip,
 		ToastTip,
 		specialOfferDiscountTab,
-		saleRemaining
+		saleRemaining,
+		backTop,
+		tabPage
     },
     data() {
         return {
 			pageMetaShow:false,
 			// 静态特价数据
 			saleSwiperHeight:'470rpx',
-			saleData:[],
-			saleDataTitle: '',
 			//当前显示特价index
 			saleCurrentIndex:0,
+			// 是否处理ALL页
+			isAllPage: true,
 			// 静态块数据
 			staticblock:{
-				'app-home-top-text':{},
-				'app-home-top-banner':{},
+				'app-home-top-banner':{
+					"data": []
+				},
 				'app-home-coupon-discount':{},
 				'app-home-styles':{},
 				'app-home-point-and-vip':{},
-				'app-home-trending':{}
+				'app-home-trending':{},
+				'app-unicoeye-about-us': {
+					"title": "",
+					"topImage": {
+						"imageText": "",
+						"imageSrc": "",
+						"buttonText": ""
+					},
+					"advantages": []
+				},
+				'app-unicoeye-replacement': {
+					"title": "",
+					"Pics": {
+						"leftPart": [],
+						"rightPart": []
+					}
+				},
+				'app-unicoeye-series': {
+					"title": "",
+					"SeriesPics": []
+				},
+				'app-pre-sale-banner': {
+					"preSaleImgSrc": ""
+				}
 			},
 			// 新人券
 			newcomerCouponData:{},
@@ -281,17 +367,18 @@ export default {
             refName: 'popupIndex',
             showBtn: false,
 			categories: [], // 分类信息
-			
+			categoriesHome: [], // 分类信息
+			categorieslist: [],
 			lineLeft: '0', // 特价商品滚动条距离
 			showMore: true,
 			swiperShopStyle: {flexFlow: 'column wrap'},
 			redpersonData: {
-				red_person_product_list: []
+				red_person_product_list: [],
+				title: ""
 			}, // 红人图数据
 			isShowMessageIcon: false,
 			popupTipType: 1,
 			saleRules: '',
-			isSearchBoxImpression:false,
 			observerElements: [{
 				elementSelector:  '#sale_rules_btn',
 				event_category: 'home',
@@ -302,7 +389,27 @@ export default {
 				},
 				module: "sale_tag"
 			}],
-			module: 'home_rfy'
+			// 顶部tab
+			homeTab: "ALL",
+			homeTabId: '',
+			tabBanner: '',
+			preHomeTab: '',
+			showStockRemaining: false, 
+			colorTag: {},
+			colorTags: [],
+			colorGoodsStorage: {},
+			isAllowedToLoadColorData: true,
+			priceTag: {},
+			priceTags: [],
+			priceRangeTitle: '',
+			priceRangeList: [],
+			AllSaleData: [],
+			barScrollLeft: 0,
+			barScrollWidth: 0,
+			SeriesScrollLeft: 0,
+			SeriesScrollWidth: 0,
+			goodsSortByColor: [],
+			preSaleData: []
         };
     },
 	computed: {
@@ -313,17 +420,6 @@ export default {
     },
 	watch: {
 	  
-	},
-	onTabItemTap(item) {
-		this.$maEvent.custom_event({
-			event_category: 'tabBar',
-			event_action: 'tabBar_button',
-			event_name: 'tabBar_button',
-			module: 'tabBar',
-			event_data: {
-				event_value: 'home'
-			},
-		});
 	},
     onShow() {
         //获取购物车商品数量
@@ -342,16 +438,28 @@ export default {
 			event_name: 'home_visit'
 		})
     },
+	onTabItemTap({index, pagePath, text}) {
+		const pages = getCurrentPages()
+		const currentPage = pages[pages.length - 1]; // 获取当前页面实例
+		const currentRoute = currentPage.route; // 当前页面的路径
+		if(pagePath === currentRoute && !this.isAllPage) {
+			this.isAllPage = true
+		}
+		this.$maEvent.custom_event({
+			event_category: 'tabBar',
+			event_action: 'tabBar_button',
+			event_name: 'tabBar_button',
+			module: 'tabBar',
+			event_data: {
+				event_value: 'home'
+			},
+		});
+	},
 	onUnload(){
 		if(this.observer){
 			this.observer.disconnect();
 			this.observer = null;
 		}
-	},
-	mounted() {
-		this.$nextTick(()=>{
-			this.startSearchBoxObserver();
-		})
 	},
     onLoad() {
         var that = this; // 语言
@@ -394,7 +502,6 @@ export default {
 				action_name: 'Home'
 			});
 		}, 1000);
-		uni.$emit('appDateLog');
     },
     onPageScroll: function (t) {
 		this.$refs['goods_list']&&this.$refs['goods_list'].pageScrollFunc(t.scrollTop)
@@ -416,21 +523,90 @@ export default {
 		this.$debounce(() => {
 			this.$refs['goods_list']&&this.$refs['goods_list'].startObserver();
 			this.startObserver(); // 列表更新后重新设置观察器
-			this.startRedpersonObserver();
-			this.pageScrollObserver();
+		// 	this.startRedpersonObserver();
+		// 	this.pageScrollObserver();
 		}, 200)
     },
 	// 滚动到底部
 	onReachBottom(){
-		this.recommendProduct();
+		if(this.isAllPage) {
+			this.recommendProduct();
+		} else {
+			this.$nextTick(() => {
+				if (this.$refs['tabPage'] && !this.$refs.tabPage.isFirstQuery && this.$refs.tabPage.goodsHasNext) {
+					this.$refs['tabPage'].loadProduct()
+				}
+			})
+		}
 	},
     //下拉刷新
     onPullDownRefresh() {
-		this.loadHomeData();
+		if(this.isAllPage) {
+			this.loadHomeData();
+			// 页面刷新后让横滚列表回到最左边
+			if(this.$refs['goodsSortByColor']) {
+				this.$refs['goodsSortByColor'].scrollViewLeft = 0
+				this.$refs['goodsSortByColor'].tagScrollLeft = {}
+			}
+			if(this.$refs['goodsSortByPrice']) {
+				this.$refs['goodsSortByPrice'].scrollViewLeft = 0
+				this.$refs['goodsSortByPrice'].tagScrollLeft = {}
+			}
+		} else {
+			this.$refs['tabPage'] && this.$refs['tabPage'].refresh(this.homeTabId)
+		}
     },
     methods: {
+		handleSwitchToAll() {
+			this.isAllPage = true
+			this.loadHomeData()
+			uni.pageScrollTo({
+			    scrollTop: 0,
+			    duration: 100
+			}) 
+		},
+		handleSwitchTab({id, name, level, image}) {
+			this.$maEvent.custom_event({
+				event_category: 'home',
+				event_action: 'navigation_button',
+				event_name: 'navigation_button',
+				module: 'home_navigation',
+				event_data: {
+					event_value: name
+				},
+			});
+		    this.homeTab = name;
+			this.homeTabId = id
+			this.tabBanner = image || ""
+			if(this.homeTab !== this.preHomeTab || this.isAllPage) {
+				this.isAllPage = false
+				this.preHomeTab = this.homeTab
+				this.$nextTick(() => {
+					this.$refs.tabPage.goods = []
+					this.$refs.tabPage.isFirstQuery = true
+					this.$refs.tabPage.goodsHasNext = false
+					this.$refs.tabPage.fetchCategory(id, true);
+				})
+			} else {
+				this.isAllPage = false
+			}
+			uni.pageScrollTo({
+			    scrollTop: 0,
+			    duration: 100
+			}) 
+			
+		},
 		handleCheckIn() {
-			this.navBuriedPoint('check_in');
+			this.$maEvent.custom_event({
+				event_category: 'menu_box',
+				event_action: 'menu_box_button',
+				event_name: 'menu_box_button',
+				module: 'menu_box',
+				event_data: {
+					checkin_type: 'home',
+					event_value: 'check_in'
+				}
+			});
 			if(this.$store.getters.hasLogin) {
 				this.$public.handleNavTo('/pages/my/checkin')
 			} else {
@@ -439,36 +615,15 @@ export default {
 				});	
 			}
 		},
-		startSearchBoxObserver() {
-			if(!this.searchObserver){
-				this.searchObserver = this.$public.createIntersectionObserver();
-			}
-			let elementSelector = ".ma-search-box";
-			this.$public.observeVisibility(this.searchObserver, elementSelector, () => {
-				if(this.isSearchBoxImpression){
-					return false;
-				}
-				this.isSearchBoxImpression = true;
-				this.$maEvent.impression_event({
-					event_category: 'search',
-					event_action: 'search_box_page',
-					event_name: 'home',
-					module: 'search_box',
-					event_data: {
-						page_in: 'home'
-					}
-				})
-			});
-		},
 		// 开始观察产品曝光
 		startObserver() {
-			if(this.saleData.length == 0){
+			if(this.AllSaleData.length == 0){
 				return false;
 			}
 			if(!this.observer){
 				this.observer = this.$public.createIntersectionObserver();
 			}
-			this.saleData.forEach((item, s_index) => {
+			this.AllSaleData.forEach((item, s_index) => {
 				if(item.products){
 					item.products.forEach((p_item, p_index) => {
 						if(!p_item.observer){
@@ -477,22 +632,13 @@ export default {
 								if(p_item.observer){
 									return false;
 								}
-								this.saleProductImpression(p_item, p_index);
+								p_item.observer = true;
+								this.$trackEvent.impression_product_item(p_item, p_index);
 							});
 						}
 					})
 				}
 			});
-		},
-		saleProductImpression(p_item, p_index){
-			if(p_item.observer){
-				return false;
-			}
-			if(!p_item.module){
-				p_item.module = 'home_ds';
-			}
-			this.$trackEvent.impression_product_item(p_item, p_index);
-			p_item.observer = true;
 		},
 		// 开始观察红人曝光
 		startRedpersonObserver() {
@@ -509,33 +655,34 @@ export default {
 						if(p_item.observer){
 							return false;
 						}
-						this.redpersonProductImpression(p_item, p_index);
+						p_item.observer = true;
+						if(p_item.red_person_image_url){
+							p_item.event_data = {
+								kol_pic: p_item.red_person_image_url
+							}
+						}
+						this.$trackEvent.impression_product_item(p_item, p_index);
 					});
 				}
 			})
 		},
-		//红人产品曝光
-		redpersonProductImpression(p_item, p_index){
-			if(p_item.observer){
-				return false;
-			}
-			p_item.observer = true;
-			if(p_item.red_person_image_url){
-				p_item.event_data = {
-					kol_pic: p_item.red_person_image_url
-				}
-			}
-			this.$trackEvent.impression_product_item(p_item, p_index);
+		SeriesScroll(e) {
+			const { scrollLeft, scrollWidth } = e.detail
+			this.SeriesScrollLeft = scrollLeft
+			this.SeriesScrollWidth = scrollWidth - 390
 		},
-		redpersonScroll(){ 
+		redpersonScroll(e){ 
+			const { scrollLeft, scrollWidth } = e.detail
+			this.barScrollLeft = scrollLeft
+			this.barScrollWidth = scrollWidth - 390
 			if(this.redpersonScrollObserver){
 				return false;
 			}
 			this.redpersonScrollObserver = false;
-			setTimeout(() => {
-				this.startRedpersonObserver();
-				this.redpersonScrollObserver = false;
-			}, 100);
+			// setTimeout(() => {
+			// 	this.startRedpersonObserver();
+			// 	this.redpersonScrollObserver = false;
+			// }, 100);
 		},
 		pageScrollObserver(){
 			if(!this.scrollObserver){
@@ -561,7 +708,7 @@ export default {
 					this.observerElements[index].observer = true;
 				});
 			});
-			this.saleData.forEach((item, index) => {
+			this.AllSaleData.forEach((item, index) => {
 				if(item.observer){
 					return true;
 				}
@@ -580,7 +727,7 @@ export default {
 						module: 'home_sale_tag'
 					});
 					item.observer = true;
-					this.saleData[index].observer = true;
+					this.AllSaleData[index].observer = true;
 				});
 			});
 			this.redpersonData.media_list && this.redpersonData.media_list.forEach((item, index) => {
@@ -605,12 +752,6 @@ export default {
 					this.redpersonData.media_list[index].observer = true;
 				});
 			});
-			if(JSON.stringify(this.staticblock['app-home-top-banner']) != '{}') {
-				this.staticblock['app-home-top-text'].data.length && this.startTopTextObserver();
-				this.staticblock['app-home-styles'].data.length && this.startStyleObserver();
-				this.staticblock['app-home-point-and-vip'].data.length && this.startPointAndVipObserver();
-				this.staticblock['app-home-trending'].data.length && this.startTrendingObserver();
-			}
 		},
 		async checkRoute(item){
 			if(item.type == 'sale') {
@@ -629,7 +770,6 @@ export default {
 				}
 				
 			}else{
-				item.module = 'home_top_banner';
 				this.$public.staticBlockJump(item)
 			}
 		},
@@ -682,29 +822,42 @@ export default {
 			this.getCateGoryList();
 			this.getRedpersonData();
 			this.getMessageNum();
+			this.getPreSaleData()
 		},
 		// 获取首页特价内容
 		getSaleProduct() {
-			this.saleData = [];
-			let saleData = [];
-			this.$apis.getSaleStaticblock({is_need_all: true}).then(res=>{
-				this.saleDataTitle = res.data.title;
-				res.data.dressin_sale.map(item=>{
-					if(item.products&&item.products.length) {
-						saleData.push(item)
-					}
-				});
-				this.saleData = saleData;
+			const that = this;
+			this.$apis.getSaleStaticblock({is_need_all: true}).then(res => {
+				const { title, dressin_sale } = res.data || {}
+				that.priceRangeTitle = title;
+				if(dressin_sale && Array.isArray(dressin_sale)) {
+					that.AllSaleData = dressin_sale
+					const tagsHasProducts = dressin_sale.filter(pI => pI?.products?.length > 0)
+					const priceTags = tagsHasProducts.map((i, idx) => ({
+						id: idx,
+						name: i?.type
+					}));
+					const initTag = priceTags[0] || {}
+					that.setData({
+						priceTags,
+						priceTag: initTag
+					})
+					that.setTag('price', initTag)
+				}
 				this.$nextTick(() => {
 					this.startObserver();
 				});
 			})
 		},
-		toSaleProduct(item, index){
-			let url = '/pages/goods-detail/index?id=' + item.id;
-			if(!item.module){
-				item.module = 'home_ds';
+		setPriceRangePath() {
+			let priceTagName = this.priceTag.name
+			if(priceTagName && priceTagName.toString().includes("+")) {
+				priceTagName = encodeURIComponent(priceTagName)
 			}
+			return `/pages/cate/list?type=${this.priceRangeTitle}&tag=${priceTagName}&isPriceRangePart=true`
+		},
+		toSaleProduct(item){
+			let url = '/pages/goods-detail/index?id=' + item.id;
 			if(item.module){
 				url +='&module=' + item.module;
 			}
@@ -717,41 +870,19 @@ export default {
 			if(item.ab_key){
 				url +='&ab_key=' + item.ab_key;
 			}
-			url +='&goods_location=' + (index + 1);
 			this.$public.handleNavTo(url);
 			this.selectItem(item);
-			this.saleProductImpression(item, index);
-			let product_track_data = item;
-			this.$maEvent.product_click(product_track_data, index);
-		},
-		selectSaleTab(item, index){
-			setTimeout(() => {
-				this.startObserver();
-			}, 200);
-			this.$maEvent.custom_event({
-				event_category: 'home',
-				event_action: 'sale_tag_button',
-				event_name: item.type,
-				event_data: {
-					event_value: item.type
-				},
-				module: 'home_sale_tag'
-			});
 		},
 		// 获取静态块
 		getStaticblock() {
-			this.$apis.getStaticblock({identify:'app-home-top-text,app-home-top-banner,app-home-coupon-discount,app-home-styles,app-home-point-and-vip,app-home-trending'}).then(res=>{
+			this.$apis.getStaticblock({identify:'app-home-top-text,app-home-top-banner,app-home-coupon-discount,app-home-styles,app-home-point-and-vip,app-home-trending,app-unicoeye-about-us,app-unicoeye-series,app-unicoeye-replacement,app-pre-sale-banner'}).then(res=>{
 				var data = res.data || {};
 				var filterData = Object.fromEntries(
 					Object.entries(data).filter(([key, value]) => value !== null && value !== '')
 				);
-				this.staticblock = {...this.staticblock,...filterData};
+				this.staticblock = {...this.staticblock,...filterData}
 				this.$nextTick(()=>{
 					this.sendBannerObserver(0);
-					this.startTopTextObserver();
-					this.startStyleObserver();
-					this.startPointAndVipObserver();
-					this.startTrendingObserver();
 				})
 			})
 		},
@@ -792,19 +923,17 @@ export default {
 				}
 			})
 		},
-        backTop() {
-			this.$maEvent.custom_event({
-				event_category: 'to_top',
-				event_action: 'to_top_button',
-				event_name: 'to_top_button',
-				module: 'to_top',
-				event_data: {}
-			});
-            uni.pageScrollTo({
-				scrollTop: 0,
-				duration: 100
-			})         
-        },
+		// 获取预售PRE-SALE产品列表
+		getPreSaleData() {
+			const that = this
+			that.$apis.getPreSaleProducts().then(res => {
+				const { code, data } = res || {}
+				if(code == 200) {
+					const { products } = data
+					this.preSaleData = products
+				}
+			})
+		},
         scrollToTop() {
             const selectorQuery = uni.createSelectorQuery().in(this)
             selectorQuery.select('#box').boundingClientRect(data=>{
@@ -814,7 +943,7 @@ export default {
                 } else{ 
                     this.showBtn = false
                 }
-            }).exec()
+            }).exec()  
         },
 		bannerClick(item, index){
 			this.$maEvent.custom_event({
@@ -842,34 +971,14 @@ export default {
             return `${path}${imageName}`
         },
         handleToSearch(){
-            this.$public.handleNavTo('/pages/search/search');
-			this.$maEvent.custom_event({
-				event_category: 'search',
-				event_action: 'search_box_button',
-				event_name: 'home',
-				module: 'search_box',
-				event_data: {
-					page_in: 'home'
-				}
-			})
+            this.$public.handleNavTo('/pages/search/search')
         },
 		// 跳转分类页
-        toCategory(id,name){
-			this.$maEvent.custom_event({
-				event_category: 'home',
-				event_action: 'navigation_button',
-				event_name: 'navigation_button',
-				module: 'home_navigation',
-				event_data: {
-					event_value: name
-				},
-			});
-			if(id != 'ALL') {
-				this.$store.commit('SET_CATEGORYSHOWID', id);
-				uni.switchTab({
-					url: '/pages/cate/index'
-				});				
-			}
+        toCategory(id){
+			this.$store.commit('SET_CATEGORYSHOWID', id);
+            uni.switchTab({
+            	url: '/pages/cate/index'
+            });
         },
 		// 获取分类信息
 		getCateGoryList() {
@@ -877,11 +986,14 @@ export default {
 			that.$apis.initCate().then(res =>{
 				uni.hideLoading()
 				if(res.code == 200) {
-					const { categories } = res.data;
-					categories.unshift({id: this.$t('category.all'), name: this.$t('category.all')});
+					let { categories, categoriesHome, categoriesHomeColor, categorieslist } = res.data;
 					that.setData({
-						categories
-					}); 
+						categories,
+						categoriesHome: categoriesHome,
+						colorTags: categoriesHomeColor,
+						colorTag: categoriesHomeColor[0]
+					});
+					this.setTag('color', this.colorTag);
 					this.$nextTick(()=>{
 						this.startNavObserver();
 					})
@@ -901,22 +1013,22 @@ export default {
 					}).exec();
 				}).exec();
 			}).exec();
-			if(this.startObserverFlag){
-				return false;
-			}
-			this.startObserverFlag = true;
-			setTimeout(() => {
-				this.startObserver();
-				this.startObserverFlag = false;
-			}, 100);
+			// if(this.startObserverFlag){
+			// 	return false;
+			// }
+			// this.startObserverFlag = true;
+			// setTimeout(() => {
+			// 	this.startObserver();
+			// 	this.startObserverFlag = false;
+			// }, 100);
 		},
 		// 获取红人数据
 		getRedpersonData() {
 			this.$apis.getRedperson().then(res => {
 				this.redpersonData = res.data.red_person_img;
-				this.$nextTick(() => {
-					this.startRedpersonObserver();
-				});
+				// this.$nextTick(() => {
+				// 	this.startRedpersonObserver();
+				// });
 			})
 		},
 		// 跳转主页
@@ -945,11 +1057,7 @@ export default {
 				module: 'home_media'
 			});
 		},
-		toRedpersonDetail(item, index){
-			this.toDetailsTap(item, index);
-			this.redpersonProductImpression(item, index);
-		},
-        toDetailsTap(item, index){
+        toDetailsTap(item){
 			let url = '/pages/goods-detail/index?id=' + item.product_id;
 			if(item.rec_code){
 				url +='&rec_code=' + item.rec_code;
@@ -963,11 +1071,8 @@ export default {
 			if(item.ab_key){
 				url +='&ab_key=' + item.ab_key;
 			}
-			url +='&goods_location=' + (index + 1);
 			this.$public.handleNavTo(url);
 			this.selectItem(item);
-			let product_track_data = item;
-			this.$maEvent.product_click(product_track_data, index);
         },
 		selectItem(item){
 			let trackData = {
@@ -988,21 +1093,12 @@ export default {
 				})
 			});
 		},
-		showSaleMore(item){
-			if(!item){
-				let saleItem = this.saleData[this.saleCurrentIndex];
-				item = saleItem;
-			}
-			this.$public.handleNavTo('/pages/search/search?saleProduct='+encodeURIComponent(JSON.stringify({type:item.type,is_all:'all'})));
-		},
 		handleDialog(){
-			// this.navBuriedPoint('contact');
 			if(this.serviceScriptUrl){
 				chatPlugin.openTidioChat(this.serviceScriptUrl);
 			}
 		},
 		handleCeckWebView() {
-			this.navBuriedPoint('contact');
 			if (this.serviceWebviewSrc) {
 				uni.navigateTo({
 					url:"/pages/contact/web"
@@ -1013,98 +1109,72 @@ export default {
 		showFooterTips(type) {
 			this.$refs.footer_tip.showFooterTip(type);
 		},
-		// 顶部签到/客服/消息中心按钮埋点
-		navBuriedPoint(type) {
-			const eventData = {
-				event_value: type
-			}
-			if(type == 'check_in') {
-				eventData.checkin_type = 'home'
-			}
-			this.$maEvent.custom_event({
-				event_category: 'menu_box',
-				event_action: 'menu_box_button',
-				event_name: 'menu_box_button',
-				module: 'menu_box',
-				event_data: eventData
-			});
-		},
-		// 顶部的文字埋点
-		textBuriedPoint(item) {
-			this.$maEvent.custom_event({
-				event_category: 'home',
-				event_action: 'top_text_botton',
-				event_name: 'top_text_botton',
-				module: 'home_top_text',
-				event_data: {
-					event_value: item.name
+		setTag(type, tag) {
+			if(type == 'color') {
+				const colorTag = this.colorGoodsStorage[tag.id];
+				if(colorTag) {
+					this.colorTag = tag
+					this.goodsSortByColor = colorTag
+					return
 				}
-			});
-		},
-		// style埋点
-		styleBuriedPoint(item,index) {
-			if(!item.module){
-				item.module = "home_styles";
-			}
-			this.$public.staticBlockJump(item);
-			this.$maEvent.custom_event({
-				event_category: 'home',
-				event_action: 'styles_button',
-				event_name: 'styles_button',
-				module: 'home_styles',
-				event_data: {
-					event_value: item.name,
-					location: index + 1,
-					image_url: item.image,
-					banner_link: item.route
+				if(this.isAllowedToLoadColorData) {
+					this.isAllowedToLoadColorData = false
+					const params = {
+						categoryId: tag.id,
+						p: 1,
+						price: "",
+						sort: "",				
+						v: '1.0'
+					}
+					this.$apis.queryCatelist(params).then(res=> {
+						if(res.code === 200) {
+							const { products } = res.data || {}
+							const filter_products = products.filter(i=>i.item_type !== 'banner')
+							this.goodsSortByColor = filter_products
+							this.colorGoodsStorage[tag.id] = filter_products
+							this.colorTag = tag
+						}
+					}).catch(err => {
+						// console.log(err);
+					}).finally(() => {
+						this.isAllowedToLoadColorData = true
+						this.colorTag = tag
+					})
 				}
-			});
-		},
-		// 主题活动埋点
-		activeBuriedPoint(item) {
-			this.$maEvent.custom_event({
-				event_category: 'home',
-				event_action: 'activity_button',
-				event_name: 'activity_button',
-				module: 'home_activity',
-				event_data: {
-					image_url: item.image,
-					banner_link: item.route
-				}
-			});
-			if(!item.module){
-				item.module = 'home_activity';
 			}
-			this.$public.staticBlockJump(item);
-		},
-		// trending活动埋点
-		trendingTopBuriedPoint(item,index) {
-			this.$maEvent.custom_event({
-				event_category: 'home',
-				event_action: 'trending_button',
-				event_name: 'trending_button',
-				module: 'home_trending',
-				event_data: {
-					location: index + 1,
-					image_url: item.image,
-					banner_link: item.route
-				}
-			});
-			if(!item.module){
-				item.module = 'home_trending';
+			if(type == 'price') {
+				const { products, end_time } = this.AllSaleData.find(i => i.type == tag.name || i.label == tag.name) || {}
+				this.priceRangeList = products?.length ? products : [],
+				this.showStockRemaining = Boolean(end_time)  // 存在end_time商品的显示秒杀条
+				setTimeout(() => {
+					this.startObserver();
+				}, 200);
+				this.$maEvent.custom_event({
+					event_category: 'home',
+					event_action: 'sale_tag_button',
+					event_name: tag.name,
+					event_data: {
+						event_value: tag.name
+					},
+					module: 'home_sale_tag'
+				});
+				this.priceTag = tag
 			}
-			this.$public.staticBlockJump(item);
+		},
+		setDotNum(listLen, picsNumInOneScreen = 1.3) {
+			const dotNum = Math.ceil(listLen / picsNumInOneScreen)
+			return dotNum == 1 ? 0 : dotNum
 		},
 		// 导航栏曝光
 		startNavObserver() {	
-			if(this.categories.length == 0){
+			if(this.categoriesHome.length == 0){
 				return;
 			}
 			if(!this.observer){
 				this.observer = this.$public.createIntersectionObserver();
 			}
 			if(this.observer){
-				this.categories.forEach((item, index) => {
+				this.categoriesHome.forEach((item, index) => {
 					if(!item.observer){
 						const elementSelector = "#navItems" + item.id;
 						this.$public.observeVisibility(this.observer, elementSelector, () => {
@@ -1118,7 +1188,7 @@ export default {
 			if(item.observer){
 				return false;
 			}
-			this.categories[index].observer = true;
+			this.categoriesHome[index].observer = true;
 			item.observer = true;
 			// 记录曝光数据或进行其他操作
 			this.$maEvent.impression_event({
@@ -1155,1166 +1225,10 @@ export default {
 			});
 			this.staticblock['app-home-top-banner'].data[ind].observer = true;
 		},
-		// 顶部文字曝光
-		startTopTextObserver() {
-			if(this.staticblock['app-home-top-text'].data.length == 0){
-				return;
-			}
-			if(!this.observer){
-				this.observer = this.$public.createIntersectionObserver();
-			}
-			if(this.observer){
-				this.staticblock['app-home-top-text'].data.forEach((item, index) => {
-					if(!item.observer){
-						const elementSelector = "#topTextItems" + index;
-						this.$public.observeVisibility(this.observer, elementSelector, () => {
-							if(item.observer){
-								return false;
-							}
-							this.staticblock['app-home-top-text'].data[index].observer = true;
-							item.observer = true;
-							// 记录曝光数据或进行其他操作
-							this.$maEvent.impression_event({
-								event_category: 'home',
-								event_action: 'top_text_page',
-								event_name: 'top_text_page',
-								event_data: {
-									event_value: item.name
-								},
-								module: 'home_top_text'
-							});
-						});
-					}
-				});
-			}
-		},
-    	// style曝光
-    	startStyleObserver() {
-    		if(this.staticblock['app-home-styles'].data.length == 0){
-    			return;
-    		}
-    		if(!this.observe){
-    			this.observer = this.$public.createIntersectionObserver();
-    		}
-    		if(this.observer){
-    			this.staticblock['app-home-styles'].data.forEach((item, index) => {
-    				if(!item.observer){
-    					const elementSelector = "#stylesItems" + index;
-    					this.$public.observeVisibility(this.observer, elementSelector, () => {
-    						if(item.observer){
-    							return false;
-    						}
-    						this.staticblock['app-home-styles'].data[index].observer = true;
-    						item.observer = true;
-    						// 记录曝光数据或进行其他操作
-    						this.$maEvent.impression_event({
-    							event_category: 'home',
-    							event_action: 'styles_page',
-    							event_name: 'styles_page',
-    							event_data: {
-									location: index + 1,
-									event_value: item.name,
-    								image_url: item.image,
-    								banner_link: item.route
-    							},
-    							module: 'home_styles'
-    						});
-    					});
-    				}
-    			});
-    		}
-    	},
-		// 主题活动曝光
-    	startPointAndVipObserver() {
-    		if(this.staticblock['app-home-point-and-vip'].data.length == 0){
-    			return;
-    		}
-    		if(!this.observer){
-    			this.observer = this.$public.createIntersectionObserver();
-    		}
-    		if(this.observer){
-    			this.staticblock['app-home-point-and-vip'].data.forEach((item, index) => {
-    				if(!item.observer){
-    					const elementSelector = "#pointAndVipItems" + index;
-    					this.$public.observeVisibility(this.observer, elementSelector, () => {
-    						if(item.observer){
-    							return false;
-    						}
-    						this.staticblock['app-home-point-and-vip'].data[index].observer = true;
-    						item.observer = true;
-    						// 记录曝光数据或进行其他操作
-    						this.$maEvent.impression_event({
-    							event_category: 'home',
-    							event_action: 'activity_page',
-    							event_name: 'activity_page',
-    							event_data: {
-    								image_url: item.image,
-    								banner_link: item.route
-    							},
-    							module: 'home_activity'
-    						});
-    					});
-    				}
-    			});
-    		}
-    	},
-    	// trending 曝光
-    	startTrendingObserver() {
-    		if(this.staticblock['app-home-trending'].data.length == 0){
-    			return;
-    		}
-    		if(!this.observer){
-    			this.observer = this.$public.createIntersectionObserver();
-    		}
-    		if(this.observer){
-    			this.staticblock['app-home-trending'].data.forEach((item, index) => {
-    				if(!item.observer){
-    					const elementSelector = "#trendingItems" + index;
-    					this.$public.observeVisibility(this.observer, elementSelector, () => {
-    						if(item.observer){
-    							return false;
-    						}
-    						this.staticblock['app-home-trending'].data[index].observer = true;
-    						item.observer = true;
-    						// 记录曝光数据或进行其他操作
-    						this.$maEvent.impression_event({
-    							event_category: 'home',
-    							event_action: 'trending_page',
-    							event_name: 'trending_page',
-    							event_data: {
-									location: index + 1,
-    								image_url: item.image,
-    								banner_link: item.route
-    							},
-    							module: 'home_trending'
-    						});
-    					});
-    				}
-    			});
-    		}
-    	},
-    },
-	
+    }
 }
 
 </script>
 <style lang="scss" scoped>
-/**index.wxss**/
-.special_toast_tip_box{
-/deep/.popup-content{
-	width: 646rpx!important;
-	padding: 34.62rpx 38.46rpx 38.46rpx;
-}
-}
-/deep/.dressin_sale_tips{
-	text-align: left;
-	font-weight: 400;
-	font-size: 31rpx;
-	color: #333333;
-	line-height: 46rpx;
-	
-	.img{
-		width: 30.77rpx;
-		height: 30.77rpx;
-		flex-shrink: 0;
-		margin-top: 8rpx;
-	}
-	.text{
-		margin-left: 17.31rpx;
-		line-height: 46rpx;
-	}
-}
-.sale_rules_wrapper{
-	position: absolute;
-	right: 30.77rpx;
-	top: 0;
-	.text_underline{
-		font-size: 27rpx;
-		color: #333333;
-		text-decoration: underline;
-	}
-}
-.sale_rules_image_box{
-	width: 46.15rpx;
-	height: 46.15rpx;
-}
-page {
-    background: #f2f2f2;
-}
-#box{
-    margin-top: 166rpx;
-}
-.btn {
-    display: block;
-    width: 100%;
-    height: 200rpx;
-    background-color: pink;
-}
-.fixed-header {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	background: #fff;
-	z-index: 99;
-}
-.container {
-    position: relative;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-    background-color: #fff;
-
-    .global-top-img {
-        position: fixed;
-        right: 0;
-        bottom: 100rpx;
-        z-index: 11;
-
-        img {
-            width: 58rpx;
-            height: 58rpx;
-        }
-
-    }
-}
-
-
-.scrollTop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: block;
-    z-index: 99999;
-    width: 100%;
-    height: 130rpx;
-    background-color: #fff;
-    box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.scrollTop image {
-    width: 66rpx;
-    height: 66rpx;
-    border-radius: 50%;
-    display: block;
-    margin: 0 auto;
-    margin-top: 46rpx;
-}
-
-.iphneTop {
-    height: 180rpx;
-}
-
-.iphneTop image {
-    width: 80rpx;
-    height: 80rpx;
-    margin-top: 80rpx;
-}
-
-.swiper-container .swiper_box {
-    margin-top: 80rpx;
-    margin-bottom: 80rpx;
-    width: 750rpx;
-    height: 400rpx;
-    border-bottom-right-radius: 20rpx;
-    border-bottom-left-radius: 20rpx;
-    overflow: hidden;
-}
-
-.swiper-container .slide-image {
-    width: 750rpx;
-    height: 750rpx;
-}
-
-.swiper-container .dots {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    top: 680rpx;
-    height: 10rpx;
-}
-
-.swiper-container .dots .dot {
-    margin: 0 5rpx;
-    width: 12rpx;
-    height: 8rpx;
-    background: #fff;
-    border-radius: 20rpx;
-    transition: all 0.6s;
-    opacity: 0.5;
-}
-
-.swiper-container .dots .dot.active {
-    width: 22rpx;
-    opacity: 1;
-}
-
-.index-menu-bg {
-    position: relative;
-    box-sizing: border-box;
-    width: 750rpx;
-    height: 391.04rpx;
-    padding: 0 8rpx 32rpx 8rpx;
-}
-
-.index-menu .menu-list {
-    width: 177.5rpx;
-    height: 100%;
-    text-align: center;
-}
-
-.index-menu .menu-list image {
-    height: 80rpx;
-    width: 80rpx;
-    display: inline-block;
-}
-
-.index-menu-bg .index-adv image {
-    width: 100%;
-    height: 178rpx;
-}
-
-.index-menu .menu-list .text {
-    font-size: 28rpx;
-    color: #333333;
-}
-
-.index-hot {
-    width: 100%;
-    height: 359.04rpx;
-    background-color: #fff;
-}
-
-.index-hot .hot-item {
-    width: 25%;
-    height: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-sizing: border-box;
-    padding: 0 28rpx 24rpx 28rpx;
-
-}
-
-.item-text {
-    text-align: center;
-    color: #333;
-    font-size: 24rpx;
-    display: block;
-    width: 100%;
-    margin-top: 8rpx;
-}
-
-.index-hot .hot-item image {
-    width: 127rpx;
-    height: 127rpx;
-    ;
-    border-radius: 50%;
-}
-
-.customer-banner {
-    width: 750rpx;
-    height: 212rpx;
-    background-color: #fff;
-}
-
-.customer-banner>.banner-img {
-    width: calc(100% - 58rpx);
-    margin-left: 29rpx;
-    height: 180rpx;
-    box-sizing: border-box;
-}
-
-.category-container {
-    width: 750rpx;
-    height: 465rpx;
-    background-color: #fff;
-
-}
-
-.category-inner {
-    box-sizing: border-box;
-    padding: 0 24rpx;
-    width: 100%;
-    height: 100%;
-    padding-top: 16rpx;
-}
-
-.good-list {
-    width: 100%;
-    height: 193rpx;
-    display: flex;
-    justify-content: center;
-
-}
-
-.good-item {
-    width: 185rpx;
-    height: 193rpx;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-
-}
-
-.good-item>.img {
-    margin-top: 16rpx;
-    margin-bottom: 16rpx;
-    width: 128rpx;
-    height: 128rpx;
-}
-
-.good-item-text {
-    height: 33.59rpx;
-    font-size: 24rpx;
-    width: 100%;
-    text-align: center;
-    line-height: 33.59rpx;
-}
-
-.separating-banner {
-    width: 100%;
-    height: 224rpx;
-
-    background-image: url('~@/static/images/buy_now_shoes.png');
-}
-
-.banner-msgs {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    color: rgb(214, 91, 71);
-    box-sizing: border-box;
-    padding: 0 32rpx;
-
-    .discount-off {
-        width: 638rpx;
-        margin-top: 40rpx;
-        height: 36.4rpx;
-        line-height: 36.4rpx;
-        font-size: 26rpx;
-    }
-
-    .discount-good {
-        font-size: 36rpx;
-        font-weight: 700;
-    }
-
-    .buy-it {
-        margin-top: 24rpx;
-        width: 123rpx;
-        height: 40rpx;
-        background-color: #333;
-        color: #fff;
-        font-size: 20rpx;
-        text-align: center;
-        line-height: 40rpx;
-    }
-}
-
-.goods-container {
-    width: 100%;
-    margin-bottom: 20rpx;
-    background: #fff;
-
-    .goods-lists {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 0 15rpx;
-        display: flex;
-        flex-wrap: wrap;
-
-        .goods-list {
-            width: 360rpx;
-            height: 495rpx;
-            box-sizing: border-box;
-            padding: 0 9rpx 18rpx 9rpx;
-
-            >image {
-                width: 342rpx;
-                height: 389rpx;
-                border-radius: 6rpx;
-            }
-        }
-    }
-}
-
-.languages-container {
-    width: 100%;
-    float: left;
-    margin-bottom: 20rpx;
-    background: #fff;
-    padding: 10rpx;
-    font-size: 30rpx;
-    text-align: center;
-}
-
-.goods-container .goods-title {
-    text-align: center;
-    height: 90rpx;
-    line-height: 90rpx;
-    color: #333;
-    font-size: 32rpx;
-    display: flex;
-    justify-content: center;
-}
-
-.goods-container .goods-title .text {
-    display: inline-block;
-    margin-left: 10rpx;
-    margin-right: 10rpx;
-}
-
-.goods-container .goods-title .line {
-    width: 20rpx;
-    border-top: 1rpx solid #b4282d;
-    margin-top: 45rpx;
-    height: 1rpx;
-}
-
-.goods-container .goods-title image {
-    width: 36rpx;
-    height: 36rpx;
-    margin-bottom: -6rpx;
-    margin-left: 10rpx;
-}
-
-
-.goods-list-title {
-    font-size: 30rpx;
-    color: #333;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-.goods-list-text {
-    font-size: 24rpx;
-    color: #999;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-.goods-list-money {
-    font-size: 30rpx;
-    color: #ab2b2b;
-}
-
-.show-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.3);
-    z-index: 99999999999;
-}
-
-.show-container .show-box {
-    width: 70%;
-    margin: 0 auto;
-    height: 600rpx;
-    background-color: #fff;
-    margin-top: 40%;
-    border-radius: 10rpx;
-}
-
-.show-logo-box {
-    box-sizing: border-box;
-    text-align: center;
-    width: 80%;
-    border-bottom: 1px solid #f5f5f5;
-    margin: 0 auto;
-    padding-top: 20px;
-}
-
-.show-logo-box image {
-    box-sizing: border-box;
-    width: 120rpx;
-    height: 120rpx;
-    border-radius: 50%;
-    display: block;
-    margin: 0 auto;
-}
-
-.show-mall-name {
-    font-size: 32rpx;
-    margin-top: 20rpx;
-    margin-bottom: 20rpx;
-    color: #333;
-}
-
-.show-text-box {
-    margin-top: 20rpx;
-    margin-bottom: 40rpx;
-}
-
-.show-text-name {
-    font-size: 30rpx;
-    color: #333;
-    width: 80%;
-    margin: 0 auto;
-}
-
-.show-text-info {
-    width: 80%;
-    margin: 0 auto;
-    font-size: 24rpx;
-    color: #999;
-    margin-top: 10rpx;
-}
-
-.show-text-info text {
-    margin-right: 10rpx;
-    font-size: 26rpx;
-}
-
-.show-box button::after {
-    border-radius: 4rpx;
-    border: 0;
-}
-
-.show-box button {
-    width: 80%;
-    height: 70rpx;
-    line-height: 70rpx;
-    font-size: 30rpx;
-    background-color: #04be01;
-    color: #fff;
-}
-
-.newcoupons-hover {
-    position: fixed;
-    bottom: 20rpx;
-    right: 20rpx;
-    width: 150rpx;
-    height: 150rpx;
-    transition: all 0.6s;
-}
-
-.modal-box {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    background: rgba(255, 255, 255, 0.8);
-    overflow: hidden;
-    z-index: 9999999;
-}
-
-.modal-body {
-    width: 100%;
-    height: 100%;
-    text-align: center;
-}
-
-.modal-content {
-    z-index: 999;
-    margin-top: 40%;
-}
-
-.fenxiang {
-    width: 70%;
-    border-radius: 4px;
-    transition: all 0.6s;
-}
-
-.knowBtnImg {
-    width: 30px;
-    height: 30px;
-    display: block;
-    margin: auto;
-    margin-top: 10px;
-}
-
-.goods-originalPrice {
-    padding-left: 20rpx;
-    font-size: 30rpx;
-    color: #999;
-    text-decoration: line-through;
-    line-height: 52rpx;
-    display: inline-block;
-}
-
-.goods-price {
-    padding-left: 30rpx;
-    color: #b5272d;
-    font-size: 30rpx;
-    padding-top: 10rpx;
-    display: inline-block;
-}
-.static-banner-box {
-	padding: 0 24rpx;
-	margin-top: 32rpx;
-	image {
-		width: 100%;
-		display: block;
-	}
-}
-.static-banner-box.mt-24{
-	margin-top: 24rpx;
-}
-.home-top-text-box {
-	flex-wrap: nowrap;
-	margin: 32rpx;
-	.text-item {
-		width: calc(100% / 3);
-		margin-right: 16rpx;
-		background: #FFEFD9;
-		padding: 24rpx 30rpx 24rpx 16rpx;
-		position: relative;
-		.text-item-img {
-			width: 48rpx;
-			height: 48rpx;
-			position: absolute;
-			right: 0;
-			bottom: 0;
-		}
-		.text-item-txt {
-			font-size: 23.08rpx;
-			color: #7B4300;
-			// font-weight: bold;
-			text-wrap: nowrap;
-		}
-	}
-	.text-item:last-child {
-		margin-right: 0;
-	}
-}
-.home-styles-title {
-	font-size: 30.77rpx;
-	color: #000;
-	font-weight: bold;
-	text-align: center;
-	margin: 54rpx 0 20rpx;
-	line-height: 38rpx;
-}
-.home-styles-box {
-	padding: 0 24rpx;
-	margin-top: 24rpx;
-	.styles-box {
-		display: flex;
-		flex-wrap: wrap;
-		.style-item {
-			width: calc((100% - 18rpx) / 4);
-			margin-right: 6rpx;
-			margin-top: 22rpx;
-			.style-img-box {
-				position: relative;
-				padding-bottom: calc(100% * 357 / 268);
-				image {
-					position: absolute;
-					left: 0;
-					top: 0;
-				}
-			}
-			.title {
-				font-size: 23.08rpx;
-				text-align: center;
-				margin-top: 16rpx;
-				color: #000000;
-			}
-		}
-		.style-item:nth-of-type(4n) {
-			margin-right: 0;
-		}
-		.style-item:nth-child(-n+4) {
-			margin-top: 0;
-		}
-	}
-}
-.trending-box {
-	padding: 0 24rpx;
-	margin-top: 24rpx;
-	.trending-items {
-		.item {
-			width: 100%;
-		}
-		.style-item:nth-of-type(3n) {
-			margin-right: 0;
-		}
-	}
-}
-.sale-product-box {
-	margin-top: 28rpx;
-	background: #FFFCF8;
-	.sale-tab-box {
-		background: #fff;
-		flex-wrap: nowrap;
-		overflow: auto;
-		margin-bottom: 30.77rpx;
-		margin-top: 30.77rpx;
-		padding-left: 30.77rpx;
-		.sale-tab {
-			font-size: 28rpx;
-			position: relative;
-			width: 138rpx;
-			height: 62rpx;
-			background: #F5F5F5;
-			border-radius: 35rpx 35rpx 35rpx 35rpx;
-			font-size: 27rpx;
-			color: #000000;
-			line-height: 62rpx;
-			text-align: center;
-			margin-right: 15.38rpx;
-			&:last-child{
-				margin-right: 0;
-			}
-			.line {
-				position: absolute;
-				right: 0;
-				top: 50%;
-				transform: translate(0, -50%);
-				width: 1px;
-				height: 32rpx;
-				background: #ddd;
-			}
-		}
-		.sale-tab.on {
-			background: #FFA80A;
-			color: #fff;
-			.line {
-				display: none;
-			}
-		}
-	}
-	.sale-tab-box::-webkit-scrollbar {
-	  display: none;
-	}
-	.sale-content-box {
-		font-size: 26rpx;
-		padding-bottom: 32rpx;
-		.sale-item-box {
-			.sale-countdown-box {
-				padding: 10rpx 32rpx;
-				.ends-in {
-					font-size: 26.92rpx;
-					margin-right: 16rpx;
-					font-weight: bold;
-					color: #333333;
-				}
-				.icon-goto {
-					color: #000;
-				}
-				::v-deep .uni-countdown__number{
-					font-weight: bold;
-					background: #FF005D !important;
-					color: #fff !important;
-					border-radius: 4rpx;
-				}
-			}
-			.sale-list-box {
-				margin-top: 12rpx;
-				padding-left: 32rpx;
-				.swiper-item {
-					padding: 0 8rpx;
-					height: 100%;
-					.image-box {
-						// padding-bottom: calc(100% * 4 / 3);
-						// position: relative;
-						// image {
-						// 	position: absolute;
-						// 	top: 0;
-						// 	left: 0;
-						// }
-					}
-					.s_price{
-						color: #FF005D;
-					}
-					.price {
-						color: #999;
-						text-decoration: line-through;
-					}
-					.p_name {
-						padding: 16rpx 0 12rpx;
-						font-size: 27rpx;
-						color: #333;
-						font-weight: 400;
-					}
-				}
-				::v-deep uni-swiper .uni-swiper-dot {
-					margin-right: 0;
-					border-radius: 0;
-				}
-			}
-		}
-	}
-}
-.home-swiper-banner-box ::v-deep {
-	.uni-swiper-dot {
-		background: rgba(255,255,255,0.4) !important;
-		border: 1px solid rgba(123,67,0,0.6);
-		width: 12rpx;
-		height: 12rpx;
-		box-sizing: border-box;
-		margin-right: 12rpx;
-	}
-	.uni-swiper-dot.uni-swiper-dot-active {
-		width: 36rpx;
-		border-radius: 16rpx;
-		background: rgba(255, 255, 255, 0.8) !important;
-		border: 1px solid #7B4300;
-	}
-	uni-swiper .uni-swiper-dots-horizontal {
-		left: auto;
-		right: 32rpx;
-	}
- .dynamic-price {
-  position: absolute;
-  font-family: KronaOne;
-  font-weight: 400;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  top: 0;
-  letter-spacing: 4rpx;
-  margin-bottom: 60rpx;
-  &-get {
-   font-size: 104rpx;
-   color: #000;
-   margin-right: 8rpx;
-  }
-  &-unit {
-   font-size: 104rpx;
-   color: #fff;
-   -webkit-text-stroke: 4rpx #000000;
-
-  }
-  &-number {
-   font-size: 104rpx;
-   color: #fff;
-   -webkit-text-stroke: 4rpx #000000;
-  }
-  &.dynamic-price-1 {
-   .dynamic-price-get {
-    font-size: 104rpx;
-   }
-   .dynamic-price-unit {
-    font-size: 104rpx;
-   }
-   .dynamic-price-number {
-    font-size: 104rpx;
-   }
-  }
-  &.dynamic-price-2 {
-   .dynamic-price-get {
-    font-size: 69rpx;
-    letter-spacing: normal;
-   }
-   .dynamic-price-unit {
-    font-size: 104rpx;
-    letter-spacing: normal;
-   }
-   .dynamic-price-number {
-    font-size: 104rpx;
-    letter-spacing: normal;
-   }
-  }
-  &.dynamic-price-3 {
-   .dynamic-price-get {
-    font-size: 69rpx;
-    letter-spacing: normal;
-   }
-   .dynamic-price-unit {
-    font-size: 104rpx;
-    letter-spacing: normal;
-   }
-   .dynamic-price-number {
-    font-size: 104rpx;
-    letter-spacing: normal;
-   }
-  }
- }
-}
-.top_search_header{
-    width: 100%;
-    height: 92rpx;
-    padding: 0 31rpx;
-	flex-wrap: nowrap;
-	background: #fff;
-    .fake_input{
-        padding: 0 34.62rpx;
-        // width: 615rpx;
-		// width: 568.85rpx;
-		flex: 1;
-        height: 69rpx;
-        background: #EEEEEE;
-        border-radius: 58rpx 58rpx 58rpx 58rpx;
-        .search_placeholder{
-            color: #999999;
-            font-size: 29.77rpx;
-        }
-        .search_icon{
-            width: 46.15rpx;
-            height: 46.15rpx;
-            .img{
-                width: 46.15rpx;
-                height: 46.15rpx;
-            }
-        }
-    }
-    .sign_in_icon{
-        width: 46.15rpx;
-		height: 46.15rpx;
-		margin-left: 15rpx;
-        .img{
-            width: 46.15rpx;
-            height: 46.15rpx;
-        }
-    }
-	.is_message_icon {
-		width: 46rpx;
-		height: 46rpx;
-        .img{
-			width: 46rpx;
-			height: 46rpx;
-        }
-	}
-}
-.home-tabs-box {
-	background: #fff;
-	box-sizing: border-box;
-	.home-tabs-item {
-		color: #999;
-		width: 25%;
-		flex-shrink: 0;
-		justify-content: center;
-		align-items: center;
-		.home-tabs-item-content {
-			height: 74rpx;
-			box-sizing: border-box;
-			padding: 8rpx 10rpx 0;
-			font-size: 30.77rpx;
-		}
-		&.home-tabs-item-double{
-			width: calc(100% / 3);
-		}
-	}
-	.item-half {
-		width: 50%;
-	}
-	.home-tabs-item.active .home-tabs-item-content{
-		border-bottom: 6rpx solid #000;
-		color: #000;
-		font-weight: bold;
-	}
-}
-// 特价商品
-.swiper-shop {
-	flex-wrap: nowrap;
-	width: 100%;
-	white-space: nowrap;
-	.swiper-shop-item {
-		width: 304rpx;
-		flex-shrink: 0;
-		padding-right: 16rpx;
-		
-		.p_name {
-			font-size: 26.92rpx;
-			color: #333333;
-			padding: 16rpx 0 12rpx;
-		}
-		.s_price {
-			color: #FF005D;
-			align-items: center;
-			padding-bottom: 16rpx;
-			.s_price_num {
-				// font-weight: 500;
-				font-size: 30.77rpx;
-				color: #FF5C00;
-			}
-			.s_price_val {
-				border-radius: 6rpx;
-				font-size: 23rpx;
-				padding: 0 8rpx;
-				margin-left: 10rpx;
-				line-height: 28rpx;
-				text-decoration: line-through;
-				color: #999999;
-			}
-		}
-		.image-box {
-			max-height: 396rpx;
-		}
-	}
-}
-::v-deep .uni-scroll-view::-webkit-scrollbar {
-  display: none;
-}
-.swiper-shop-show-more {
-	flex-wrap: wrap;
-	max-height: 1200rpx;
-	.swiper-shop-item {
-		margin-bottom: 20rpx;
-	}
-}
-.swiper-shop-line-box {
-	width: 72rpx;
-	height: 4rpx;
-	background: #D9D9D9;
-	border-radius: 14rpx;
-	margin: 0 auto;
-	position: relative;
-	.swiper-shop-line {
-		background: #000;
-		width: 24rpx;
-		height: 4rpx;
-		border-radius: 14rpx;
-		position: absolute;
-		top: 0;
-	}
-}
-.swiper-shop-more {
-	background: #000;
-	color: #fff;
-	font-size: 26.92rpx;
-	width: 384rpx;
-	height: 64rpx;
-	margin: 0 auto;
-	.money {
-		margin-left: 10rpx;
-	}
-	.filter_img {
-		width: 36rpx;
-		height: 36rpx;
-		margin-left: 12rpx;
-	}
-}
-.redperson-img {
-	padding-left: 32rpx;
-	flex-wrap: nowrap;
-	.redperson-img-item {
-		width: 288rpx;
-		flex-shrink: 0;
-		margin-right: 16rpx;
-	}
-}
-.redperson-share {
-	margin: 32rpx 32rpx 0;
-	.redperson-share-item {
-		width: 70rpx;
-		height: 70rpx;
-	}
-}
-.is-over-tip {
-	text-align: center;
-	color: #999;
-	padding: 20rpx 0;
-	font-size: 26.92rpx;
-}
-.message-icon {
-	position: absolute;
-	right: 0;
-	top: 6rpx;
-	width: 12rpx;
-	height: 12rpx;
-	border-radius: 50%;
-	background: #ff0000;
-}
+@import './index.scss'
 </style>

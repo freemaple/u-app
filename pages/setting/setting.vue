@@ -78,11 +78,11 @@ export default {
 						type: 'privacy',
 						url:'/pages/cms/article/article?url_key=app-privacy-policy',
 					},
-					{
-						text: this.$t('setting.faq'),
-						type: 'faq',
-						url: '/pages/faq/faq'
-					},
+					// {
+					// 	text: this.$t('setting.faq'),
+					// 	type: 'faq',
+					// 	url: '/pages/faq/faq'
+					// },
 				]
 			}
 		]

@@ -11,7 +11,7 @@
 						{{ $t('pay.payment_success') }}	
                     </view>
 					<view class="btn-box">
-						<button type="primary" class="primary" @tap="toVipView">{{ $t('pay.view_my_vip',{site_name: $store.state.site_name_upper}) }}</button>
+						<button type="primary" class="primary" @tap="toVipView">{{ $t('pay.view_my_vip') }}</button>
 						<button class="btn btn-default" @tap="toHome">{{ $t('pay.continue_shopping') }}</button>
 					</view>
                 </view>
@@ -70,7 +70,7 @@ export default {
 }
 .font-bold {
 	color: #000;
-	font-weight: bold;
+	font-family: Montserrat-SemiBold;
 }
 .order-box .order-info {
 	padding: 20rpx 20rpx;

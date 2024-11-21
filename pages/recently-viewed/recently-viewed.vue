@@ -6,7 +6,6 @@
 			<good-list module_name="recently_viewed" ref="good_list_ref_re" @popupChange="(value)=>{pageMetaShow=value}" :showLoading="!isLastPage&&products.length>0" :goods="products" :isViewedRecord="true" @toDeleteViewed="toDeleteViewed">
 			</good-list>
             <block v-if="showEmpty">
-                
                 <view class="no_result flex align-items-center justify-content-center">
                     <view>
                         <image src="@/static/images/empty_goods.png" class="no-order-img" style="display: block; margin: 0 auto;"></image>
@@ -38,7 +37,7 @@ export default {
         }
     },
     onLoad() {
-        this.getStorageIds();
+        this.getStorageIds() 
     },
 	onShow() {
 		this.$maEvent.visit_event({

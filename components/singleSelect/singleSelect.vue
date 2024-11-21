@@ -31,7 +31,7 @@
 				default: ''
 			},
 			currentIndex: {
-				type: Number,
+				type: Number | String,
 				default: -1
 			},
 			options: {

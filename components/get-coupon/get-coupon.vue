@@ -1,7 +1,7 @@
 <template>
 	<!-- 新人优惠券 -->
 	<uni-popup class="newcomer-dialog" ref="popupNewcomerCoupon" :mask-click="false" @change="(e)=>{pageMetaShow = e.show;$public.isPullDown(!pageMetaShow)}">
-		<popupContentTemplate style="width:90vw;background:#fff;min-height: 516rpx;" :title="newcomerCouponData.login_status?$t('my_coupons.newComer.title2'):$t('my_coupons.newComer.title1')" @close="handleCloseNewcomer()">
+		<popupContentTemplate style="width:90vw;background:#fff;" :title="newcomerCouponData.login_status?$t('my_coupons.newComer.title2'):$t('my_coupons.newComer.title1')" @close="handleCloseNewcomer()">
 			<template v-slot:content>
 				<view class="coupon-list-box">
 					<block v-for="(item,index) in newcomerCouponData.coupons" :key="index">
@@ -154,6 +154,7 @@ import { mapGetters } from 'vuex'
 </script>
 <style scoped lang="scss">
 ::v-deep .popup-content-template-box {
+	border-radius: 24rpx;
 	.header-box {
 		position: relative;
 		.title {
@@ -185,6 +186,7 @@ import { mapGetters } from 'vuex'
 		}
 		.dui-primary-btn {
 			margin-top: 40rpx;
+			border-radius: 40rpx;
 		}
 	}
 } 

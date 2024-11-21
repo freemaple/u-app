@@ -243,7 +243,7 @@
 		.empty_work {
 			text-align: center;
 			margin: 80rpx 0;
-			color: #959595;
+			color: #666;
 		}
 	}
 }

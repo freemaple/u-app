@@ -37,6 +37,7 @@ export default {
     flex-wrap: nowrap;
 }
 .remaining_box{
+	height: 34.6154rpx;
     margin-top: 11.54rpx;
     .img_box{
         width: 30.77rpx;
@@ -51,8 +52,8 @@ export default {
         flex: 1;
         flex-wrap: wrap;
         .content_text{
-            font-size: 19rpx;
-            color: #FF5C00;
+            font-size: 19.24rpx;
+            color: #8A61E7;
             text-align: left;
             height: 27rpx;
             margin-bottom: 1.92rpx;
@@ -61,12 +62,14 @@ export default {
         .remaining_process_wrapper{
             background: #F3EDE2;
             height: 6rpx;
+            border-radius: 5.77rpx;
+            overflow: hidden;
             width: 100%;
             .remaining_process{
                 height: 100%;
-                background: linear-gradient( 90deg, #FF5C00 0%, #FFA80A 100%), linear-gradient( 90deg, #FF5C00 0%, #FFA80A 100%), #FFA80A;
+                background: linear-gradient( 90deg, #87B7FD 0%, #DA49D6 47%, #FF6EA7 100%);
             }
         }
     }
 }
-</style>>
+</style>

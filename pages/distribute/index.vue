@@ -43,7 +43,7 @@ export default {
 	},
 	onLoad(){
 		this.queryAcountMsg();
-		this.handleShareInfo();
+		this.handleShareInfo()
 	},
 	onShow() {
 		if(this.$store.getters.hasLogin && this.isLoad){
@@ -169,8 +169,9 @@ export default {
 		width: 100%;
 		height: 400rpx;
 		filter: blur(1px);
-		background: url("~@/static/images/user_center_info_bg.png");
+		background: url("~@/static/images/new-cashgrab-rewards/distribute_bg@2x.png");
 		background-size: 100% 100%;
+		width: 100%;
 	}
 }
 

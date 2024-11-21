@@ -10,12 +10,12 @@
                             mode="scaleToFill"
                         />
                     </view>
-                    <view class="filter_tittle font-bold">{{ $t('popupright.filter') }}</view>
-                </view>
+                    <view class="filter_tittle font-bold font-MS">{{ $t('popupright.filter') }}</view>
+                </view> 
                 <scroll-view scroll-y="true" id="pop-lists" class="pop-lists flex flex-column justify-content-between"
 					>					
 					<view class="pop-attrs">
-                        <view class="attr_item">
+                        <!-- <view class="attr_item">
                             <view :class="'attr_tittle font-bold flex justify-content-between align-items-center ' + (!showPrice ? 'opened' : '')" @tap="()=>{showPrice=!showPrice}">
                                 <view class="text">{{ $t('popupright.price') }}</view>
                                 <view class="icon flex align-items-center">
@@ -37,29 +37,43 @@
                                     <input class="price_input" type="number" v-model="price2" @input="(e)=>{handleInputPrice(e,'2')}">
                                 </view>
                             </view>
-                        </view>
+                        </view> -->
 						<view class="attr_item" v-for="(v, k) in filter_info" :key="k">
-                            <view :class="'attr_tittle font-bold flex justify-content-between align-items-center ' + (v.opened ? '' : 'opened')" @tap="()=>{v.opened=!v.opened}">
+                            <view :class="'attr_tittle flex justify-content-between align-items-center ' + (v.opened ? 'unopened' : 'opened')" @tap="()=>{v.opened=!v.opened}">
                                 <view class="text">{{ v.label }}</view>
                                 <view class="icon flex align-items-center">
                                     <image
+                                        v-if="v.opened"
                                         class="img"
-                                        src="@/static/images/header_back_icon@2x.png"
+                                        src="@/static/images/icon/icon-up@2x.png"
+                                        mode="scaleToFill"
+                                    />
+                                    <image
+                                        v-else
+                                        class="img"
+                                        src="@/static/images/icon/icon-down@2x.png"
                                         mode="scaleToFill"
                                     />
                                 </view>
                             </view>
-                            <view :class="'attr_vals flex ' + (v.opened ? '' : 'opened')" v-show="v.opened">
-                                <view @tap="()=>{v_child.selected = !v_child.selected;}" :class="'items ' + (v_child.selected ? 'checked' : '') " v-for="(v_child,k_child) in v.items" :key="k_child">{{ v_child.label }}</view>
+                            <view :class="'attr_vals ' + (v.opened ? 'unopened' : 'opened')" v-show="v.opened">
+                                <!-- <view @tap="()=>{v_.selected = !v_.selected}" :class="'items ' + (v_.selected ? 'checked' : '') " v-for="(v_,k_) in v.items" :key="k_">{{ v_.label }}</view> -->
+                                <view v-for="(v,k) in v.items" :key="k" @tap="()=>{v.selected = !v.selected}" :class="'items flex justify-content-between align-items-center ' + (v.selected ? 'checked' : '') ">
+                                    <view>
+                                        <text class="label">{{ v.label }}</text>
+                                        <text class="count">（{{v.count}}）</text>
+                                    </view>
+                                    <view class="checkbox"></view>
+                                </view>
                             </view>
                         </view>
 					</view>
 					
 				</scroll-view>
-                <view class="pop_btns">
+                <view class="pop_btns flex align-items-center justify-content-end">
                     <view class="flex wrapper justify-content-end">
-                        <view class="clear flex align-items-center justify-content-center" @tap="handleClear">{{ $t('popupright.clear') }}</view>    
-                        <view class="done flex align-items-center justify-content-center" @tap="handleDone">{{ $t('popupright.done') }}</view>    
+                        <view class="com_btn clear flex align-items-center justify-content-center" @tap="handleClear">{{ $t('popupright.clear') }}</view>    
+                        <view class="com_btn done flex align-items-center justify-content-center" @tap="handleDone">{{ $t('popupright.done') }}</view>    
                     </view>
                 </view>
             </view>
@@ -145,6 +159,8 @@ export default {
                     this.price2 = String(Number(regVal))
                 }
             }
+            
+            
         },
         getAttrs(){
             const filterAttrs ={}
@@ -268,12 +284,12 @@ export default {
             left: 28.85rpx;
             top: 105.77rpx;
             .img{
-                width: 46.15rpx;
-                height: 46.15rpx;
+                width: 100%;
+                height: 100%;
             }
         }
         .filter_tittle{
-            font-size: 30.77rpx;
+            font-size: 38.47rpx;
             color: #000000;
         }
     }
@@ -284,7 +300,8 @@ export default {
     flex: 1;
     overflow-y: auto;
     .pop-attrs{
-        padding: 48.08rpx 30.77rpx;
+        padding: 42.31rpx;
+        @include onepxBorderTop(#eee);
         .inputs_wrapper{
             .price_input{
                 width: 123rpx;
@@ -306,76 +323,97 @@ export default {
             }
         }
         .attr_item{
-            margin-bottom: 40rpx;
+            margin-bottom: 38.47rpx;
+            padding-bottom: 38.47rpx;
+            @include onepxBorder(#eee);
+            &:last-child{
+                border-bottom:none;
+                padding-bottom: 0;
+                margin-bottom: 0;
+                &::after{
+                    height:0;
+                }
+            }
         }
     }
-        .attr_tittle{
-            color: #000000;
-            font-size: 30.77rpx;
-            line-height: 36rpx;
-            height: 44rpx;
-            margin-bottom: 20rpx;
-            .icon{
-                width: 23rpx;
-                height: 23rpx;
-                .img{
-                    width: 23rpx;
-                    height: 23rpx;
-					transform: rotate(90deg);
-                    transition: all 200ms;
-                }
-            }
-            &.opened .img{
-                width: 23rpx;
-                height: 23rpx;
-                transform: rotate(-90deg);
+    .attr_tittle{
+        color: #393939;
+        font-size: 30.77rpx;
+        line-height: 36rpx;
+        height: 44rpx;
+        .icon{
+            width: 34.62rpx;
+            height: 34.62rpx;
+            .img{
+                width: 34.62rpx;
+                height: 34.62rpx;
             }
         }
-        .attr_vals{            
-            overflow: hidden;
+        &.unopened{
+            margin-bottom: 38.47rpx;
+        }
+    }
+    .attr_vals{            
+        overflow: hidden;
+        transition: all 200ms;
+        .items{
+            color: #393939;
+            margin-bottom: 25rpx;
+            font-size: 26.93rpx;
+            white-space: nowrap;
             transition: all 200ms;
-            .items{
+            &:last-child{
+                margin-bottom: 0;
+            }
+            .count{
                 color: #999;
-                padding: 6rpx 20rpx;
-                background: #eee;
-                margin-right: 20rpx;
-                border-radius: 8rpx;
-                margin-bottom: 20rpx;
-                font-size: 26.92rpx;
-                white-space: nowrap;
-                transition: all 200ms;
-                &.checked{
-                    color: #fff;
-                    background: #333;
+            }
+            &.checked{
+                .checkbox{
+                    border-color: #393939;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    &::after{
+                        content: '';
+                        width: 15.39rpx;
+                        height: 15.39rpx;
+                        background-color: #393939;
+                    }
                 }
             }
-            
+            .checkbox{
+                width: 28.85rpx;
+                height: 28.85rpx;
+                border-radius: 4rpx;
+                border: 2px solid #999;
+                margin: 1px;
+            }
         }
+    }
 }
 .pop_btns{
     width: 100%;
-    height: 163.46rpx;
+    height: 153.8462rpx;
     @include onepxBorderTop(#eee);
     .wrapper{
-        margin-top: 31rpx;
-        margin-right: 31rpx;
+        margin-right: 42.3077rpx;
+    }
+    .com_btn{
+        width: 138.46rpx;
+        height: 69.24rpx;
+        font-size:26.93rpx;
+        border-radius: 34.62rpx;
     }
     .clear{
-        width: 121rpx;
-        height: 62rpx;
         background: #FFFFFF;
         color: #000;
         border: 2rpx solid #CCCCCC;
-        font-size:26.92rpx;
     }
     .done{
-        width: 121rpx;
         color: #fff;
-        // font-size: 27rpx;
-        height: 62rpx;
         background: #000000;
-        margin-left: 23.08rpx;
-        font-size:26.92rpx;
+        margin-left: 30.77rpx;
     }
 }
 </style>

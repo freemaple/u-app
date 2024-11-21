@@ -1,19 +1,25 @@
 <template>
-	<view class="container flex align-items-center flex-column justify-content-between">
+	<view class="container flex align-items-center flex-column justify-content-between" style="background-color: #fff; margin-bottom: 0; padding-bottom: 116rpx">
 		<page-meta :page-style="'overflow:'+(pageMetaShow?'hidden':'visible')"></page-meta>
 		<view class="my-setting" @tap="goToSetting">
 			<i class="iconfont"></i>
+			<image src="@/static/images/my/settings.png" mode="widthFix">
 		</view>
 		<view class="user-section">
 			<view class="bg"></view>
 			<view class="user-info-box">
 				<view class="portrait-box" @click="navTo('/pages/user/userInfo')">
-					<i class="iconfont"></i>
+					<image src="@/static/images/my/portrait.png" mode="widthFix">
 				</view>
 				<view class="nickname" @click="navTo('/pages/user/userInfo')">
-					<text class="username">{{ personInfo.email || 'account' }}</text>
-					<text v-if="personInfo.email && !personInfo.has_active">
-						<button class="sendBtn" :loading="sendActive" @click="sendActiveEmail">{{ $t('my.verify_button')}}</button>
+					<text class="username font-MM">
+						{{ personInfo.email || 'account' }}
+						<button v-if="personInfo.email && !personInfo.has_active"
+							class="verify_btn font-MR" 
+							:loading="sendActive" 
+							@click="sendActiveEmail">
+							{{ $t('my.verify_button')}}
+						</button>
 					</text>
 				</view>
 				<view v-if="showVip" :class="'flex align-items-center'">
@@ -23,7 +29,11 @@
 						<text>{{$t('my.vip_title', {site_name: $store.state.site_name_upper})}}</text>
 						<i class="iconfont"></i>
 					</view> -->
-					<text @click="navTo('/pages/vip/level')" class="jump-vip current-vip-tag" v-if="personInfo.customer_vip_info && personInfo.customer_vip_info.name">{{ personInfo.customer_vip_info.name}}</text>
+					<text v-if="personInfo.customer_vip_info && personInfo.customer_vip_info.name"
+						@click="navTo('/pages/vip/level')" 
+						class="jump-vip current-vip-tag font-MR" >
+							{{ personInfo.customer_vip_info.name}}
+					</text>
 				</view>
 			</view>
 			<view :class="'tj-sction ' + (!showVip ? 'tj_mt' : '')">
@@ -45,11 +55,10 @@
 					<text class="tj-desc">{{$t('my.wallet')}}</text>
 				</view>
 			</view>
-
 		</view>
 		
-		<!-- 非会员展示 -->
-		<view class="paid-vip-ctn-wrapper" v-if="showVip && personInfo.isVip === false">
+		<!-- 非会员展示  v-if="showVip && personInfo.isVip === false" -->
+		<!-- <view class="paid-vip-ctn-wrapper" v-if="showVip && personInfo.isVip === false">
 			<view class="atmosphere-bg">
 				<view class="paid-vip-ctn">
 					<view class="paid-vip-frame">
@@ -67,7 +76,7 @@
 										{{$t('vip.limited_time')}}
 										<image mode="aspectFill" class="tips-img" src="../../static/images/vip/renew_discount_bg_tips.png" />
 									</view>
-								</view>-->
+								</view>
 							</view>
 						</view>
 						<view class="paid-vip-content">
@@ -89,9 +98,12 @@
 					</view>
 				</view>
 			</view>
-		</view>
+		</view> -->
+		
 		<!-- my orders -->
-		<my-order-box :style="showVip && personInfo.isVip===false?'':'margin-top:-170rpx'" :orderEntrances="orderEntrances"></my-order-box>
+		<my-order-box :style="showVip && personInfo.isVip===false ? '' : 'margin-top:0rpx'" 
+			:orderEntrances="orderEntrances">
+		</my-order-box>
 		<view class="bottom-wrapper">
 			<card-list-mine :cardListData="cardListData" @emitClick="handleEmitClick"></card-list-mine>
 		</view>
@@ -101,9 +113,10 @@
 			<recommendHeader :title="$t('recommend.header2')"></recommendHeader>
 			<good-list ref="good_list_ref_re" @popupChange="(value)=>{pageMetaShow=value}" :goods="recommendList"></good-list>
 		</view>
+		<!-- LOG OUT -->
 		<view class="btn-wrapper" v-if="logged">
 			<view class="uni-btn-v">
-				<button @tap="handleLogout">{{$t('my.logout')}}</button>
+				<button @tap="handleLogout">{{$t('unicoeye_my.logout')}}</button>
 			</view>
 		</view>
 
@@ -148,99 +161,112 @@ export default {
 			orderEntrances: [],
 			cardListData: [
 				{
-					language:'my.vip',
-					type: 'iconfont3 icon-rights-and-interests',
-					url: '/pages/vip/index'
+					language:'unicoeye_my.vip',
+					// type: 'iconfont3 icon-rights-and-interests',
+					url: '/pages/vip/level',
+					src: '../../static/images/my/UnicoeyeVip.png'
+				},
+				// {
+				// 	language:'my.vip_level',
+				// 	type: 'iconfont3 icon-my-vip',
+				// 	url: '/pages/vip/index'
+				// },
+				{
+					language:'unicoeye_my.cashgrab_rewards',
+					// type: 'iconfont3 icon-employee-rewards',
+					url: '/pages/distribute/index',
+					src: '../../static/images/my/CashgrabRewards.png'
 				},
 				{
-					language:'my.vip_level',
-					type: 'iconfont3 icon-my-vip',
-					url: '/pages/vip/level'
+					language:'unicoeye_my.my_address',
+					// type: 'iconfont3 icon-my-address',
+					url: '/pages/address/list',
+					src: '../../static/images/my/MyAddress.png'
 				},
 				{
-					language:'my.distribute',
-					type: 'iconfont3 icon-employee-rewards',
-					url: '/pages/distribute/index'
-				},
-				{
-					language:'my.my_address',
-					type: 'iconfont3 icon-my-address',
-					url: '/pages/address/list'
-				},
-				{
-					language:'my.my_wishlist',
-					type: 'iconfont3 icon-my-wishlist',
+					language:'unicoeye_my.my_wishlist',
+					// type: 'iconfont3 icon-my-wishlist',
 					url: '/pages/fav-list/fav-list',
+					src: '../../static/images/my/MyWishlist.png',
 					wishlist: true
 				},
 				{
-					language:'my.my_coupon',
-					type: 'iconfont3 icon-my-coupons',
-					url: '/pages/coupon/my-coupons'
+					language:'unicoeye_my.my_coupons',
+					// type: 'iconfont3 icon-my-coupons',
+					url: '/pages/coupon/my-coupons',
+					src: '../../static/images/my/MyCoupons.png'
 				},
 				{
-					language:'my.my_points',
-					type: 'iconfont3 icon-my-points',
-					url: '/pages/point/index'
+					language:'unicoeye_my.my_points',
+					// type: 'iconfont3 icon-my-points',
+					url: '/pages/point/index',
+					src: '../../static/images/my/MyPoints.png'
 				},
 				{
-					language:'my.my_wallet',
-					type: 'iconfont3 icon-my-wallet',
-					url: '/pages/my/wallet/index'
+					language:'unicoeye_my.my_wallet',
+					// type: 'iconfont3 icon-my-wallet',
+					url: '/pages/my/wallet/index',
+					src: '../../static/images/my/MyWallet.png'
 				},
 				{
-					language:'my.my_profile.title',
-					type: 'iconfont3 icon-my-profile',
-					url: '/pages/my/profile/index'
+					language:'unicoeye_my.my_profile',
+					// type: 'iconfont3 icon-my-profile',
+					url: '/pages/my/profile/index',
+					src: '../../static/images/my/MyProfile.png'
+				},
+				// {
+				// 	language:'investigation.my_profile',
+				// 	type: 'iconfont3 icon-my-preference',
+				// 	url: '/pages/investigation/investigation'
+				// },
+				// {
+				// 	language:'my.my_measurements',
+				// 	type: 'iconfont3 icon-my-size',
+				// 	url: '/pages/measurements/measurements'
+				// },
+				{
+					language:'unicoeye_my.my_reviews',
+					// type: 'iconfont3 icon-my-reviews',
+					url: '/pages/review/list',
+					src: '../../static/images/my/MyReviews.png'
 				},
 				{
-					language:'investigation.my_profile',
-					type: 'iconfont3 icon-my-preference',
-					url: '/pages/investigation/investigation'
+					language:'unicoeye_my.check_in',
+					// type: 'iconfont icon-date',
+					url: '/pages/my/checkin',
+					src: '../../static/images/my/CheckIn.png'
 				},
 				{
-					language:'my.my_measurements',
-					type: 'iconfont3 icon-my-size',
-					url: '/pages/measurements/measurements'
+					language:'unicoeye_my.recently_viewed',
+					// type: 'iconfont3 icon-recently-viewed',
+					url: '/pages/recently-viewed/recently-viewed',
+					src: '../../static/images/my/RecentlyViewed.png'
 				},
 				{
-					language:'my.my_review',
-					type: 'iconfont3 icon-my-reviews',
-					url: '/pages/review/list'
+					language:'unicoeye_my.change_password',
+					// type: 'iconfont3 icon-change-password',
+					url: '/pages/change-password/change-password',
+					src: '../../static/images/my/ChangePassword.png'
 				},
 				{
-					language:'my.my_checkin',
-					type: 'iconfont icon-date',
-					url: '/pages/my/checkin'
-				},
-				{
-					language:'my.recently_viewed',
-					type: 'iconfont3 icon-recently-viewed',
-					url: '/pages/recently-viewed/recently-viewed'
-				},
-				{
-					language:'my.modify_password',
-					type: 'iconfont3 icon-change-password',
-					url: '/pages/change-password/change-password'
-				},
-				{
-					language:'my.my_message',
-					type: '',
+					language:'unicoeye_my.my_message',
+					// type: '',
 					img: require('@/static/images/icon/message.png'),
 					url: '/pages/message/message',
-					style: 'width: 48rpx;height: 48rpx;margin-right: 10rpx;'
+					src: '../../static/images/my/MyMessage.png'
 				},
 				{
-					language:'my.services_and_contacts',
-					type: 'iconfont3 icon-customerservice',
-					url: '/pages/contact/web'
+					language:'unicoeye_my.customer_service',
+					// type: 'iconfont3 icon-customerservice',
+					url: '/pages/contact/web',
+					src: '../../static/images/my/CustomerService.png'
 				},
-				{
-					language:'my.drop_shipping',
-					type: 'iconfont3 icon-personal-information',
-					url: '/pages/my/drop-shipping/index',
-					show: 'false'
-				},	
+				// {
+				// 	language:'my.drop_shipping',
+				// 	type: 'iconfont3 icon-personal-information',
+				// 	url: '/pages/my/drop-shipping/index',
+				// 	show: 'false'
+				// },	
 			],
 		};
 	},
@@ -257,28 +283,31 @@ export default {
 		}
 		getApp().globalData.getShopCartNum();
 		this.logged = this.hasLogin;
-		this.orderEntrances =  [{
-			type: this.$t('my.unpaid'),
-			code: 'waiting_payment',
-			desc: 'fecmall',
-			count: this.personInfo.unpaid_num,
-			icon: 'iconfont3 icon-unpaid-orders'
-		},
-		{
-			type: this.$t('my.processing'),
-			code: 'waiting_shipping',
-			desc: 'fecmall',
-			count: this.personInfo.processing_num,
-			icon: 'iconfont3 icon-processing-orders'
-		},
-		{
-			type: this.$t('my.shipped'),
-			code: 'waiting_receive',
-			desc: 'fecmall',
-			count: this.personInfo.shipped_num,
-			icon: 'iconfont3 icon-shipped-orders'
-		},
-
+		this.orderEntrances =  [
+			{
+				type: this.$t('my.unpaid'),
+				code: 'waiting_payment',
+				desc: 'fecmall',
+				count: this.personInfo.unpaid_num,
+				// icon: 'iconfont3 icon-unpaid-orders'
+				src: '../../static/images/my/Unpaid.png'
+			},
+			{
+				type: this.$t('my.processing'),
+				code: 'waiting_shipping',
+				desc: 'fecmall',
+				count: this.personInfo.processing_num,
+				// icon: 'iconfont3 icon-processing-orders'
+				src: '../../static/images/my/Processing.png'
+			},
+			{
+				type: this.$t('my.shipped'),
+				code: 'waiting_receive',
+				desc: 'fecmall',
+				count: this.personInfo.shipped_num,
+				//icon: 'iconfont3 icon-shipped-orders'
+				src: '../../static/images/my/Shipped.png'
+			},
 		]
 		uni.$emit('appDateLog');
 		this.$maEvent.visit_event({
@@ -485,20 +514,21 @@ page {
 	justify-content: space-between;
 	box-sizing: border-box;
 	position: relative;
-
 	.my-setting {
 		position: absolute;
 		top: 22rpx;
 		right: 25rpx;
 		z-index: 999999;
+		image {
+			width: 46.15rpx;
+		}
 	}
-
-	.my-setting>i::before {
-		content: '\E6A1';
-		font-size: 46.5rpx;
-		z-index: 999999;
-		color: #fff;
-	}
+	// .my-setting>i::before {
+	// 	content: '\E6A1';
+	// 	font-size: 46.5rpx;
+	// 	z-index: 999999;
+	// 	color: #fff;
+	// }
 }
 
 .userinfo {
@@ -730,7 +760,6 @@ page {
 
 .user-section {
 	// height: 350upx;
-	height: 627.99rpx;
 	width: 100%;
 	box-sizing: border-box;
 	padding-top: 87.99rpx;
@@ -741,10 +770,9 @@ page {
 		top: 0;
 		width: 100%;
 		// height: 330upx;
-		height: 627.99rpx;
-		filter: blur(1px);
-		// background-color: #fd385c;
-		background: url("~@/static/images/user_center_info_bg.png");
+		height: 483rpx;
+		// filter: blur(1px);
+		background: url("~@/static/images/my/InfoBg.png");
 		background-size: 100% 100%;
 	}
 }
@@ -761,7 +789,7 @@ page {
 
 .user-info-box {
 	// height: 130rpx;
-	padding: 10rpx 30rpx;
+	padding: 10rpx 30rpx 0;
 	display: flex;
 	align-items: center;
 	position: relative;
@@ -772,66 +800,65 @@ page {
 		width: 104rpx;
 		height: 104rpx;
 		background-color: #fff;
-		/* border:5upx solid #fff; */
 		border-radius: 50%;
-		text-align: center;
-		line-height: 104rpx;
+		padding: 28.85rpx;
 		image {
-			width: 100%;
-			height: 100%;
+			width: 46.15rpx;
+			height: 46.15rpx;
 		}
-
-		i{			
-			color: #ccc;
-			&:before {
-			content: "\E607";
-			font-size: 55.99rpx;
-		}
-		}
+		// i{			
+		// 	color: #ccc;
+		// 	&:before {
+		// 		content: "\E607";
+		// 		font-size: 55.99rpx;
+		// 	}
+		// }
 	}
 
 	.nickname {
-		padding: 0 10upx;
-		margin-top: 16rpx;
-		font-size: 30rpx;
+		margin-top: 23.08rpx;
+		font-size: 34.62rpx;
 	}
 
 	.username {
-		font-size: $font-sm + 6upx;
-		color: #FDECEF;
-		margin-left: 10upx;
+		font-size: 34.62rpx;
+		color: #fff;
+		word-break: break-all;
 	}
 
 	.icomoon {
 		color: #FAB9C6;
 		margin-left: 10upx;
 	}
-	.sendBtn {
+	.verify_btn {
 		display: inline-block;
 		vertical-align: middle;
 		width: auto;
 		height: auto;
-		line-height: 1;
+		line-height: 42.31rpx;
 		background-color: unset;
-		border: 1px solid #e2e2e2;
-		border-radius: 5px;
+		border: 2rpx solid #FFFFFF;
+		border-radius: 37rpx;
 		color: #fff;
-		padding: 5rpx 10rpx;
-		font-size: 24rpx;
-		margin: 0px 10rpx;
+		padding: 0 15.38rpx;
+		font-size: 23.08rpx;
+		font-weight: 400;
+		margin: 0px 15.38rpx;
 	}
 }
 
 .tj-sction {
-	width: 702rpx;
-	margin-left: 24rpx;
 	display: flex;
 	justify-content: space-around;
 	align-content: center;
-	border-radius: 10upx;
+	border-radius: 15rpx;
 	z-index: 1;
 	position: relative;
-	margin-top: 10rpx;
+	font-family: 'Montserrat-Regular';
+	background-color: #fff;
+	box-shadow: 0rpx 4rpx 8rpx 0rpx rgba(0,0,0,0.1);
+	padding: 42.31rpx 0 38.46rpx;
+	margin: 53.85rpx 30.77rpx 30.77rpx;
 	// margin-top: 108rpx;
 	&.tj_mt{
 		margin-top: 60rpx;
@@ -841,26 +868,21 @@ page {
 		flex-direction: column;
 		height: 89.2rpx;
 		width: 234rpx;
-		font-size: $font-sm;
-		color: #75787d;
-		font-family: SF UI Text, Roboto, Helvetica, Arial, sans-serif;
+		font-size:3 4.62rpx;
 	}
-
 	.num {
-		font-size: $font-sm;
-		color: $font-color-white;
-		margin-bottom: 8rpx;
-		font-size: 40rpx;
-		width: 100%;
-		text-align: center;
 		display: block;
-		height: 42rpx;
+		text-align: center;
+		width: 100%;
+		margin-bottom: 9.62rpx;
+		line-height: 40.56rpx;
+		font-size: 34.62rpx;
+		color: #000;
 	}
-
 	.tj-desc {
-		font-size: $font-sm;
-		color: $font-color-white;
-		opacity: 0.6;
+		line-height: 27.04rpx;
+		font-size: 23.08rpx;
+		color: #666;
 	}
 }
 
@@ -874,50 +896,30 @@ page {
 	background: #fff;
 	display: flex;
 	justify-content: center;
-	padding-bottom: 28rpx;
-	
-}
+	.uni-btn-v {
+		width: 534.62rpx;
+		height: 80.77rpx;
+		margin-top: 75rpx;
+		/deep/uni-button {
+			background: #222;
+			font-size: 30.77rpx;
+			color: #fff;
+			border-radius: 40rpx;
+			&::after {
+				display: flex;
+				text-align: center;
+				align-items: center;
 
-.uni-btn-v {
-	width: 645rpx;
-	height: 72rpx;
-	margin-top: 61.5rpx;
-	margin-bottom: 0rpx;
-	padding: 0 48rpx;
-
-	/deep/uni-button {
-
-		height: 100%;
-		background: #000;
-		font-size: 28rpx;
-		line-height: 72rpx;
-		color: #fff;
-		border-radius: 0;
-
-		&::after {
-			display: flex;
-			text-align: center;
-			align-items: center;
-
+			}
 		}
 	}
 }
-.jump-vip {
-	font-size: 24rpx;
-	color: #fff;
-	// text-decoration: underline;
-	margin-top: 16rpx;
-	image {
-		width: 40rpx;
-		height: 40rpx;
-	}
-}
+
 
 // vip卡片
 .paid-vip-ctn-wrapper {
-	
 	width: 702rpx;
-	margin-top: -148rpx;
+	// margin-top: -148rpx;
 	z-index: 1;
 	margin-bottom: 24rpx;
 	box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.08);
@@ -1068,15 +1070,21 @@ page {
 .vip_tag.gray i:before{
 	color: #ccc;
 }
+.jump-vip {
+	margin-top: 23.08rpx;
+	image {
+		width: 40rpx;
+		height: 40rpx;
+	}
+}
 .current-vip-tag {
-    border: 1px solid #e2e2e2;
-    border-radius: 10rpx;
-    padding: 0px 20rpx;
-	height: 40rpx;
-	line-height: 40rpx;
+    border: 2rpx solid #fff;
+    border-radius: 37rpx;
+    padding: 0 15.38rpx;
+	line-height: 42.31rpx;
 	display: flex;
 	align-items: center;
-    font-size: 24rpx;
+    font-size: 26.92rpx;
     margin-left: 10rpx;
 	color: #fff;
 }

@@ -18,7 +18,7 @@
                     <view class="left_check_box flex" @tap="checkedItem(item)">
                         <i :class=" 'iconfont ' +'check_product_item ' + (item.checked ?'checked' : '')"></i>
                     </view>
-                    <view class="right_product_item flex">
+                    <view class="right_product_item flex align-items-center">
                         <view class="product_img_box">
                             <image :src="item.image" class="image" mode="widthFix" :lazy-load="true" />
                         </view>
@@ -60,7 +60,7 @@
                 <view class="cancel_reason_box">
                     <view class="cancel_title font-bold">{{$t('cancelItems.cancellation_reason')}}</view>
                     <view class="cancel_select flex" @tap="clickSelect">
-                        <view :class="(cancel_reason.title ? '' : 'fakeInputPlaceholder ')">{{ cancel_reason.title ? cancel_reason.title : '* ' + $t('cancelItems.please_choose_cancellation')}}</view>
+                        <view :class="'cancel_select_value '+ (cancel_reason.title ? '' : 'fakeInputPlaceholder ')">{{ cancel_reason.title ? cancel_reason.title : '* ' + $t('cancelItems.please_choose_cancellation')}}</view>
                         <!-- <input type="text"  placeholder="Please choose a cancellation reason" :value="cancel_reason.title"> -->
                         <i class="iconfont"></i>
                     </view>
@@ -477,8 +477,8 @@ export default {
     .product_img_box{
         margin-right: 10px;
         width: 180rpx;
-        min-height: 240rpx;
-        height: 240rpx;
+        min-height: 180rpx;
+        height: 180rpx;
         margin-right: 40rpx;
         .image{
             width: 100%;
@@ -599,6 +599,12 @@ export default {
     width: 100%;
     margin-top: 12px;
     position: relative;
+    .cancel_select_value{
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        padding-right: 40rpx;
+    }
     input{
         width: 100%;
     }
@@ -656,7 +662,7 @@ export default {
         width: 100%;
         justify-content: space-between;
         align-items: center;
-        height: 80rpx;
+        min-height: 80rpx;
         padding: 0 30rpx;
         @include onepxBorder(#e0e0e0);
         .select_option_text{

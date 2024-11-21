@@ -1,6 +1,6 @@
 <template>
 	<view v-if="showTip">
-		<view class="fission_footer_tips_mask"></view>
+		<view class="fission_footer_tips_mask" @click="closeFooterTip()"></view>
 		<view class="fission_footer_tips">
 			<view class="fission_footer_tips_bg"></view>
 			<!-- 底部的提示信息指引 -->
@@ -78,8 +78,11 @@ export default {
 <style lang="scss" scoped>
 	.fission_footer_tips {
 		position: fixed;
-		bottom: 20rpx;
-		right: 22rpx;
+		bottom: 11px;
+		/* #ifdef H5 */
+		bottom: 50px;
+		/* #endif */
+		right: 23.077rpx;
 		background: rgba(0,0,0,0.75);
 		border-radius: 8rpx;
 		z-index: 11;
@@ -89,7 +92,7 @@ export default {
 		font-size: 24rpx;
 		height: 72rpx;
 		padding: 14rpx 14rpx 14rpx 20rpx;
-		
+		font-family: Montserrat, Montserrat;
 		.close_icon {
 			width: 36rpx;
 			height: 36rpx;
@@ -111,9 +114,9 @@ export default {
 			line-height: 44rpx;
 			text-align: center;
 			color: #fff;
-			border-radius: 6rpx;
+			border-radius: 21.1539rpx;
 			margin: 0 6rpx 0 22rpx;
-			background: linear-gradient( 90deg, #FD4992 0%, #FE7370 49%, #FF9A49 100%), #D9D9D9;
+			background: linear-gradient( 90deg, #780EFF 0%, #DA49D6 54%, #FF6EA7 100%);		
 		}
 	}
 	.fission_footer_tips_mask {

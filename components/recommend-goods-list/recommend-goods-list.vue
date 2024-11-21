@@ -6,49 +6,63 @@
 					<view style="margin-bottom: 10rpx;">
 						<image :src="item.pic" class="image" mode="aspectFill" :lazy-load="true" />
 					</view>
-					<specialOfferDiscountTab :discount="item.special_price_off" v-if="(item.special_data&&item.special_data.is_special=='1')"></specialOfferDiscountTab>
-					<view class="flex justify-content-between">
-						<saleRemaining :percent="item.special_data&&item.special_data.spu_stock_percent" :remaining_count="item.special_data&&item.special_data.spu_stock_text" v-show="item.special_data&&item.special_data.is_show=='1'&&item.special_data.is_special=='1'"></saleRemaining>
+					<!-- <specialOfferDiscountTab :discount="item.special_price_off" 
+						v-if="(item.special_data&&item.special_data.is_special=='1')">
+					</specialOfferDiscountTab> -->
+					<!-- item.special_data && item.special_data.is_special == '1' -->
+					<off-tag v-if="item.special_price"  
+						class="off-tag"
+						:offPrecent="item.special_price_off" 
+						:tagType="setTagType(item)"></off-tag>
+					<!-- <saleRemaining
+						v-show="item.special_data&&item.special_data.is_show=='1'&&item.special_data.is_special=='1'"
+						:percent="item.special_data&&item.special_data.spu_stock_percent" 
+						:remaining_count="item.special_data&&item.special_data.spu_stock_text" >
+					</saleRemaining> -->
+					<stock-remaining 
+						v-show="item.special_data&&item.special_data.is_show=='1'&&item.special_data.is_special=='1'"
+						:supStock="item.special_data&&item.special_data.spu_stock_text" 
+						:precent="item.special_data&&item.special_data.spu_stock_percent">
+					</stock-remaining>
+					<view class="goods-name">{{item.name}}</view>
+					<view>
 						<block v-if="item.special_price && item.special_price.value">
-                            <block v-if="item.special_data&&item.special_data.is_special =='1'">
-                                <view class="price-box flex align-items-baseline flex-1 no-wrap lower_price_text">
-                                    <view class="goods-price font-bold">{{ item.special_price.symbol }}{{ item.special_price.value }}</view>
-                                    <view class="goods-originalPrice goods-originalPrice-specialPrice" v-if="item.special_price_off">
-                                        {{item.price.symbol}}{{item.price.value}}
-                                    </view>
-                                    <view v-else class="goods-originalPrice">{{ item.price.symbol }}{{ item.price.value }}</view>
+                            <block v-if="item.special_data && item.special_data.is_special =='1'">
+                                <view class="price-box">
+                                    <view class="price-special text-overflow-ellipsis">{{ item.special_price.symbol }}{{ item.special_price.value }}</view>
+                                    <!-- <view v-if="item.special_price_off" class="price-special-discount-tab">{{item.price.symbol}}{{item.price.value}} </view> -->
+                                    <view class="price-special-origin">{{ item.price.symbol }}{{ item.price.value }}</view>
                                 </view>
                             </block>
                             <block v-else>
-                                <view class="price-box flex align-items-baseline flex-1 no-wrap">
-                                    <view class="goods-price font-bold">{{ item.special_price.symbol }}{{ item.special_price.value }}</view>
-                                    <view class="goods-originalPrice goods-originalPrice-specialPrice" v-if="item.special_price_off">
+                                <view class="price-box">
+                                    <view class="price-special text-overflow-ellipsis">{{ item.special_price.symbol }}{{ item.special_price.value }}</view>
+                                    <!-- <view v-if="item.special_price_off" class="price-special-discount-tab">
                                         -{{item.special_price_off}}%
-                                    </view>
-                                    <view v-else class="goods-originalPrice">{{ item.price.symbol }}{{ item.price.value }}</view>
+                                    </view> -->
+                                    <view class="price-special-origin text-overflow-ellipsis">{{ item.price.symbol }}{{ item.price.value }}</view>
                                 </view>
                             </block>
                         </block>
                         <block v-else>
                             <block v-if="showVip && item.isVip && item.member_product">
-                                <view class="member-price price-box flex align-items-center text-overflow-ellipsis flex-1 no-wrap">
+                                <view class="member-price price-box text-overflow-ellipsis">
                                     <image class="vip-tag-img" src="@/static/images/vip/vip_icon.png"/>
-                                    <view class="goods-price font-bold">{{ item.member_price.symbol }}{{ item.member_price.value }}</view>
+                                    <view class="goods-price">{{ item.member_price.symbol }}{{ item.member_price.value }}</view>
                                     <view class="goods-originalPrice text-overflow-ellipsis">{{ item.price.symbol }}{{ item.price.value }}</view>
                                 </view>
                             </block>
                             <block v-else>
-                                <view class="goods-list-money font-bold flex-1 no-wrap align-items-center flex">{{ item.price.symbol }}{{ item.price.value }}</view>
+                                <view class="goods-list-money flex-1 no-wrap align-items-center flex">{{ item.price.symbol }}{{ item.price.value }}</view>
                             </block>
                         </block>
-						<image
+						<!-- <image
 							@tap.stop="(e) => { $debounce(addCart, 300, [e, item, index])}"
 							class="add-to-cart-icon"
 							src="@/static/images/icon/cart_icon@2x.png"
 							mode="scaleToFill"
-						/>
+						/> -->
 					</view>
-					<view class="goods-name">{{item.name}}</view>
 				</view>
 			</view>
 		</scroll-view>
@@ -248,97 +262,158 @@ import { mapState } from 'vuex'
 					product_track_data['module'] = this.module_name;
 				}
 				this.$maEvent.product_click(product_track_data, index);
-			}
+			},
+			setTagType(good) {
+				const {schedule, special_data} = good || {}
+				// 首页接口返回的数据有两套格式，第1套通过schedule判断， 第二套通过special_data判断
+				// 这是设置off标签是渐变色的还是普通紫色。 tagType是true(1)是渐变色，其他则是普通紫色
+				if(schedule && schedule.is_special) {
+					return schedule.is_special
+				} else if(special_data && special_data.is_special) {
+					return special_data.is_special
+				}
+			},
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
+%font_normalFont {
+    font-weight: 600;
+    letter-spacing: 0rpx;
+	text-align: center;
+	font-style: normal;
+	text-transform: none;
+}
 /deep/.remaining_box{
     width: 100%;
     margin-bottom: 11.54rpx;
 }
-.lower_price_text .goods-price{
-    font-size: 31rpx;
-    color: #FF5C00;
-    line-height: 36rpx;
-    text-align: left;
-}
+// .lower_price_text .goods-price{
+//     font-size: 31rpx;
+//     color: #8A61E7;
+//     line-height: 36rpx;
+//     text-align: left;
+// }
 
-.member-price {
-	.goods-price {
-		color: #873c00;
-	}
-	.vip-tag-img {
-		width: 24rpx;
-		height: 24rpx;
-		margin-right: 4rpx;
-	}
-}
-.lower_price_text .goods-originalPrice-specialPrice{
-    border: 0;
-    font-weight: 400;
-    font-size: 19rpx;
-    color: #999999;
-    line-height: 23rpx;
-    text-align: center;
-    font-style: normal;
-    text-decoration: line-through;
-    margin-left: 7.69rpx;
-}
-.goods-originalPrice {
-	padding-left: 10rpx;
-	font-size: 24.77rpx;
-	color: #999;
-	text-decoration: line-through;
-	display: inline-block;
-}
-	.recommend-goods-list-box {
-		padding-left: 32rpx;
-		background: #fff;
-		padding-bottom: 60rpx;
-		.goods-box {
-			display: flex;
-			flex-wrap: nowrap;
-			.goods-item-box {
-				width: 288rpx;
-				margin-right: 16rpx;
-				.image {
-					width: 288rpx;
-					height: 384rpx;
+// .member-price {
+// 	.goods-price {
+// 		color: #873c00;
+// 	}
+// 	.vip-tag-img {
+// 		width: 24rpx;
+// 		height: 24rpx;
+// 		margin-right: 4rpx;
+// 	}
+// }
+// .lower_price_text .goods-originalPrice-specialPrice{
+//     border: 0;
+//     font-weight: 400;
+//     font-size: 19rpx;
+//     color: #999;
+//     line-height: 23rpx;
+//     text-align: center;
+//     font-style: normal;
+//     text-decoration: line-through;
+//     margin-left: 7.69rpx;
+// }
+// .goods-originalPrice {
+// 	padding-left: 10rpx;
+// 	font-size: 24.77rpx;
+// 	color: #999;
+// 	text-decoration: line-through;
+// 	display: inline-block;
+// }
+
+
+.recommend-goods-list-box {
+	background: #fff;
+	margin-bottom: 15.38rpx; 
+	padding-bottom: 30.77rpx;
+	.goods-box {
+		display: flex;
+		flex-wrap: nowrap;
+		padding-left: 30.77rpx;
+		.goods-item-box {
+			width: 288rpx;
+			margin-right: 16rpx;
+			.off-tag {
+				position: absolute;
+				top: 7.69rpx;
+				left: 7.69rpx;
+			}
+			.image {
+				width: 276.92rpx;
+				height: 276.92rpx;
+				margin-right: 23.08rpx;
+				border-radius: 8rpx;
+			}
+			.add-to-cart-icon {
+				width: 53.85rpx;
+				height: 53.85rpx;
+			}
+			.goods-name {
+				@extend %font_normalFont;
+				width: 276.92rpx;
+				font-weight: 500;
+				font-size: 23.08rpx;
+				color: #666666;
+				line-height: 30.77rpx;
+				text-align: left;
+				display: -webkit-box;
+				overflow: hidden;
+				-webkit-box-orient: vertical;
+				-webkit-line-clamp: 2;
+				margin-bottom: 8rpx;
+			}
+			.price-box {
+				display: flex;
+				flex: 1;
+				flex-wrap: nowrap;
+				align-items: center;
+				.price-special {
+					font-size: 31rpx;
+					color: #8A61E7;
+					line-height: 36rpx;
+					margin-right: 19.23rpx;
 				}
-				
-				.add-to-cart-icon {
-					width: 53.85rpx;
-					height: 53.85rpx;
+				.price-special-origin {
+					font-family: 'Montserrat-Regular';
+					font-weight: 400;
+					font-size: 23rpx;
+					color: #999999;
+					line-height: 23rpx;
+					text-decoration-line: line-through;
+					margin-top: 9.62rpx;
 				}
-				.goods-name {
-					width: 100%;
-					text-overflow: ellipsis;
-					white-space: nowrap;
-					overflow: hidden;
-					font-size: 28rpx;
-					color: #333;
-					margin-top: 16rpx;
-					margin-bottom: 20rpx;
+				.price-special-discount-tab {
+					width: auto;
+					height: 23rpx;
+					border-radius: 6rpx;
+					border: 2rpx solid #8A61E7;
+					height: 23rpx;
+					font-size: 19rpx;
+					color: #8A61E7;
+					line-height: 23rpx;
+					padding: 0 7.69rpx;
+					text-align: center;
 				}
-				.price-box {
+				.price-normal {
+					font-size: 31rpx;
+					color: #393939;
+					line-height: 36rpx;
+					margin-right: 19.23rpx;
 					display: flex;
-					align-items: center;
-					.price-value {
-						font-size: 32rpx;
-						color: #FF005D;
-						font-weight: bold;
-						margin-right: 10rpx;
-					}
-					.discount-off {
-						font-size: 20rpx;
-						color: #FF005D;
-						padding: 0 4rpx;
-						border: 1px solid #FF005D;
-					}
+					align-items: end;
+				}
+				.discount-off {
+					font-size: 20rpx;
+					color: #8A61E7;
+					padding: 0 4rpx;
+					border: 1px solid #8A61E7;
 				}
 			}
 		}
 	}
+}
 </style>

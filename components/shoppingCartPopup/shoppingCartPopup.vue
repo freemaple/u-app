@@ -1,14 +1,38 @@
 <template>
 	<view>
 		<!-- 购物车弹窗 -->
-		<uni-popup class="shoppingCartPopup" :class="goodsDetail.special_data && goodsDetail.special_data.is_spu_special == 1&&goodsDetail.can_sale?'isBelongSpecialActivity':''" ref="popupCart" @change="(e)=>{handleChangeCartPopup(e)}">
-			<popupContentTemplate @close="close()">
+		<uni-popup ref="popupCart" class="shoppingCartPopup" 
+			:class="goodsDetail.special_data && goodsDetail.special_data.is_spu_special == 1 && goodsDetail.can_sale ? 'isBelongSpecialActivity' : '' " 
+			@change="(e)=>{handleChangeCartPopup(e)}">
+			<popupContentTemplate @close="close()" :hidePaddingRight='true'>
 				<template v-slot:content>
-					<scroll-view :show-scrollbar="false" :scroll-into-view="scrollIntoView" :scroll-x="true" style="white-space: nowrap;">
+					<!-- 商品大图预览 -->
+					<scroll-view
+						:show-scrollbar="false"
+						:scroll-into-view="scrollIntoView"
+						:scroll-x="true"
+						@scroll="goodsPopupScroll"
+						style="white-space: nowrap">
 						<view class="thumbnail_imgs_box">
-							<image @click="openShowImgDialog(index)" :id="'img_'+index" style="width: 270rpx;height:360rpx;margin-right: 16rpx;" mode="widthFix" :src="item.url" :lazy-load="true" v-for="(item, index) in goodsDetail.thumbnail_img" :key="index"></image>
+							<image v-for="(item, index) in goodsDetail.thumbnail_img" :key="index"
+								:src="item.url"
+								:lazy-load="true"
+								mode="aspectFill"
+								:id="'img_'+index"
+								@click="openShowImgDialog(index)"
+								style="width: 250rpx;height:250rpx;margin-right: 15.39rpx;"
+							></image>
 						</view>
 					</scroll-view>
+					<scroll-bar
+						:scrollLeft="barScrollLeft"
+						:scrollWidth="barScrollWidth"
+						:dotNum="setDotNum(goodsDetail.thumbnail_img.length)"
+						:dotType="'shoppingCartPopup'"
+						:dotColor="'#fff'"
+						:distanceFromList="'11.54rpx'"
+					></scroll-bar>
+					<!-- 商品信息 (名字/价格/优惠/Details跳转到goods-detail) -->
 					<view class="info-wrapper">
 						<view class="popup-product-current-info">
 							<view class="product-title">{{goodsDetail.name}}</view>
@@ -19,9 +43,12 @@
 										{{ goodsDetail.price_info.price.symbol }}{{ goodsDetail.price_info.price.value }}
 									</view>
 									<!-- 会员商品没有特价 -->
-									<block
-										v-else-if="goodsDetail.price_info.special_price && goodsDetail.price_info.special_price.value">
-										<view class="price" :class="{'text-line-through':tierActiveIndex>0,'sp_price':goodsDetail.special_price_off}">{{ goodsDetail.price_info.special_price.symbol }}{{ goodsDetail.price_info.special_price.value }}
+									<block v-else-if="goodsDetail.price_info.special_price && goodsDetail.price_info.special_price.value">
+										<view :class="{
+											'text-line-through':tierActiveIndex>0,
+											'sp_price':goodsDetail.special_price_off
+										}" class="price">
+											{{ goodsDetail.price_info.special_price.symbol }}{{ goodsDetail.price_info.special_price.value }}
 										</view>
 										<view v-if="goodsDetail.special_price_off" class="p-discount-off">-{{goodsDetail.special_price_off}}%</view>
 										<view class="originalPrice">{{ goodsDetail.price_info.price.symbol }}{{ goodsDetail.price_info.price.value }}</view>
@@ -34,13 +61,14 @@
 										<view v-else :class="tierActiveIndex>0?'price text-line-through':'price'">{{ goodsDetail.price_info.price.symbol }}{{ goodsDetail.price_info.price.value }}</view>
 									</block>
 									
-									<view class="status">{{ (headerData.status || !isSizeSelected)?$t('goods_detail.in_stock'):$t('goods_detail.out_of_stock') }}</view>
+									<!-- <view class="status">{{ (headerData.status || !isSizeSelected)?$t('goods_detail.in_stock'):$t('goods_detail.out_of_stock') }}</view> -->
 								</view>
 								<view class="to-detail-box flex align-items-center" @click="handleToDetail">
 									<view class="to-detail">{{$t('goods_detail.details')}}</view>
-									<view class="iconfont icon-goto"></view>
+									<!-- <view class="iconfont icon-goto"></view> -->
 								</view>
 							</view>
+							
 							<!-- 用户是vip并且是会员产品 -->
 							<view v-if="goodsDetail.member_price && goodsDetail.isVip" class="user-is-vip flex align-items-center">
 								<view><text class="font-bold">-{{goodsDetail.discount_off}}</text>%</view>
@@ -60,37 +88,58 @@
 							</view>
 						</view>
 					</view>
+					
+					<!-- Color/Prescription -->
 					<view class="goods_detail_options-box" v-if="goodsDetail.options && goodsDetail.options.length">
 						<view class="popup-product-current-attr-box" v-for="(item,index) in goodsDetail.options" :key="index">
-							<view class="label font-bold info-wrapper">{{item.label}}: {{item.label == currentColorObj.key ?currentColorObj.value:''}}</view>
+							<view class="label info-wrapper">
+								{{item.label}}: {{item.label == currentColorObj.key ?currentColorObj.value:''}}
+							</view>
 							<scroll-view :show-scrollbar="false" :scroll-into-view="'color_'+id" :scroll-x="true" style="white-space: nowrap;">
 								<view class="attr-box" :class="item.label == currentColorObj.key?'':'flex info-wrapper'">
 									<template v-for="(item_child,index_child) in item.value" >
-										<view :key="index_child" class="color-item" :id="'color_'+item_child.id" :class="item_child.active == 'current'?'on':item_child.active =='noactive'?'disabled':''" @click="changeColor(item_child,index_child)" v-if="item_child.show_as_img">
-											<image :class="(!isSizeSelected && !item_child.color_variant_stock) || (!item_child.has_stock&&isSizeSelected)?'img_out_stock':''" :src="item_child.show_as_img" mode="aspectFill"></image>
-											<view class="has-discount" v-if="item_child.has_discount&&!item_child.is_hot"></view>
-											<!-- 如果未选中尺码，颜色的库存按颜色变体库存显示，如果选中尺码，颜色库存按sku显示 -->
-											<view class="out-stock" v-if="(!isSizeSelected && !item_child.color_variant_stock) || (!item_child.has_stock&&isSizeSelected)"></view>
-											<view v-if="item_child.is_hot" class="product_hot_tag flex align-items-center justify-content-center">{{$t('goods_detail.hot')}}</view>
+										<!-- Color -->
+										<view :class="item_child.show_as_img ? 'color_box' : ''">
+											<view v-if="item_child.show_as_img" :key="index_child" :id="'color_'+item_child.id" 
+												class="color-item" 
+												:class="item_child.active == 'current' ? 'color-on' :
+														item_child.active == 'noactive' ? 'color-disabled' : ''" 
+												@click="changeColor(item_child,index_child)" >
+												<!-- 图片 -->
+												<image :class="(!isSizeSelected && !item_child.color_variant_stock) || (!item_child.has_stock&&isSizeSelected)?'img_out_stock':''" :src="item_child.show_as_img" mode="aspectFill"></image>
+												<!-- 折扣标签 -->
+												<view class="has-discount" v-if="item_child.has_discount&&!item_child.is_hot"></view>
+												<!-- 如果未选中尺码，颜色的库存按颜色变体库存显示，如果选中尺码，颜色库存按sku显示 -->
+												<!-- 商品禁选 -->
+												<view v-if="(!isSizeSelected && !item_child.color_variant_stock) || (!item_child.has_stock&&isSizeSelected)"
+													class="out-stock" >
+												</view>
+												<!-- 商品热门标签 -->
+												<view v-if="item_child.is_hot" class="product_hot_tag flex align-items-center justify-content-center">{{$t('goods_detail.hot')}}</view>
+											</view>
 										</view>
-										<view :key="index_child" v-if="!item_child.show_as_img&&item_child.status==1" class="other-item" :class="judgeAttrSelect({item,item_child})" @click="changeOtherAttr(item_child,item.label)">
+										<!-- Prescription -->
+										<view v-if="!item_child.show_as_img&&item_child.status==1" :key="index_child"  
+											class="other-item" 
+											:class="judgeAttrSelect({item,item_child})" 
+											@click="changeOtherAttr(item_child,index_child,item)">
 											{{item_child.attr_val}}
 										</view>
-										
 									</template>
 								</view>
 							</scroll-view>
 						</view>
 					</view>
+					
 					<view class="info-wrapper">
 						<!-- 批发价 -->
 						<view v-if="goodsDetail.tier_price.length" class="shopping-cart-popup-tier-price-box">
 							<tier-price v-if="goodsDetail.tier_price.length" :tier_price="goodsDetail.tier_price" :activeIndex="tierActiveIndex"></tier-price>
 						</view>
-						<!-- qty -->
-						<view class="popup-product-current-attr-box popup-product-current-qty-box flex align-items-center">
-							<view class="label font-bold">{{$t("goods_detail.qty")}}:</view>
-							<view class="qty-box flex align-items-center">
+						<!-- Quantity -->
+						<view class="popup-product-current-attr-box popup-product-current-qty-box">
+							<view class="label pb0">{{$t("goods_detail.Quantity")}}</view><br/>
+							<view class="qty-box">
 								<view @click="handleNumReduce()" class="iconfont icon-reduce" :class="qtyValue>1?'':'disabled'"></view>
 								<input class="qty-input" step="1" type="number" @input="qtyValueChange" :value="qtyValue" />
 								<view @click="handleNumAdd()" class="iconfont icon-add"></view>
@@ -101,20 +150,29 @@
 								<image class="img" src="@/static/images/black_tip.png" mode="widthFix" />
 							 </view>
 							 <view class="">
-								{{ $t('goods_detail.sizefor') }}<text class="di" style="color: #FF5C00;">{{ $t('goods_detail.sale',{site_name: $store.state.site_name_upper}) }}</text>{{ $t('goods_detail.torestore') }}
+								{{ $t('goods_detail.sizefor') }}<text class="di" style="color: #8A61E7;">{{ $t('goods_detail.sale',{site_name: $store.state.site_name_upper}) }}</text>{{ $t('goods_detail.torestore') }}
 							 </view>
-							
 						</view>
 					</view>
 				</template>
+				
 				<template v-slot:footer>
 					<slot name="footer">
 						<view class="footer flex align-items-center">
-							<view v-if="btnType == 'add'" @click="handleAddToBag" class="popup-product-add-btn dui-primary-btn" :class="isAddToShoppingCart?'':'disabled'" :style="showFav?'':'width:100%'">{{product_spu_sold_out ? $t("goods_detail.sold_out") :$t("goods_detail.add_to_bag")}}</view>
-							<view v-else @click="$emit('save')" :class="isAddToShoppingCart?'':'disabled'" class="popup-product-add-btn dui-primary-btn" :style="showFav?'':'width:100%'">{{$t("goods_detail.update")}}</view>
-							<view v-if="showFav" @click="changeFav()" class="wish-box">
+							<view @click="changeFav()" class="wish-box">  <!-- v-if="showFav"  -->
 								<image v-if="goodsDetail.fav==1" src="@/static/images/p_detail_collect_sel@2x.png" mode="widthFix" />
 								<image v-else src="@/static/images/p_detail_collect@2x.png" mode="widthFix" />
+							</view>
+							
+							<view v-if="btnType == 'add'" @click="handleAddToBag" 
+								class="popup-product-add-btn dui-primary-btn" 
+								:class="isAddToShoppingCart?'':'disabled'">  	<!-- :style="showFav?'':'width:100%'" -->
+								{{	product_spu_sold_out ? $t("goods_detail.sold_out") : $t("goods_detail.add_to_bag") }}
+							</view>
+							<view v-else @click="$emit('save')" 
+								:class="isAddToShoppingCart?'':'disabled'" 
+								class="popup-product-add-btn dui-primary-btn">	<!-- :style="showFav?'':'width:100%'" -->
+								{{$t("goods_detail.update")}}
 							</view>
 						</view>
 					</slot>
@@ -134,7 +192,7 @@
 							<block v-for="(item, index) in goodsDetail.thumbnail_ori_img" :key="index">
 								<swiper-item class="flex align-items-center">
 									<movable-area style="width:100%;height:100%;">
-										<movable-view scale-min="1" scale-max="5" scale="true" class="max movable_box_class flex align-items-start" direction="all" style="width:100%;height:100%;">
+										<movable-view scale-min="1" scale-max="5" scale="true" class="max movable_box_class flex align-items-center" direction="all" style="width:100%;height:100%;">
 											<image :id="'swiper-item-image' + index" :src="item" style="height: 100%;background:#000;" class="slide-image" :lazy-load="true"
 											mode="aspectFit" />
 										</movable-view>										
@@ -164,7 +222,7 @@
 							<block v-for="(item, index) in allColorThumbnailImgs" :key="index">								
 								<swiper-item class="flex align-items-center">
 									<movable-area style="width:100%;height:100%;">
-										<movable-view scale-min="1" scale-max="5" scale="true" class="max movable_box_class flex align-items-start" direction="all" style="width:100%;height:100%;">
+										<movable-view scale-min="1" scale-max="5" scale="true" class="max movable_box_class flex align-items-center" direction="all" style="width:100%;height:100%;">
 											<image :id="'swiper-item-image' + index" :src="item.url" style="height: 100%;background:#000;" class="slide-image" :lazy-load="true"
 											mode="aspectFit" />
 										</movable-view>
@@ -234,6 +292,7 @@
 	import popupContentTemplate from '@/components/popupContentTemplate/popupContentTemplate.vue';
 	import customTooltip from '@/components/custom-tooltip/custom-tooltip.vue'
 	import sharePopup from '@/components/sharePopup/sharePopup.vue';
+	import { mapState } from 'vuex';
 	export default {
 		name:"shoppingCartPopup",
 		components: {
@@ -312,8 +371,16 @@
 				add_success_toast_show: false,
 				success_toast_flag: false,
 				isShared:false, // 是否点击了分享
-				isShowedSpecialTOriginalTip:false
+				isShowedSpecialTOriginalTip:false,
+				barScrollLeft: 0,
+				barScrollWidth: 0,
 			};
+		},
+		computed: {
+			...mapState(['appConfig']),
+			notAutoSelectSpuAttr() {
+				return this.appConfig.notAutoSelectSpuAttr?.name?.toLowerCase() || '';
+			}
 		},
 		watch:{
 			qtyValue: {
@@ -346,6 +413,15 @@
 				if(!this.isShowedSpecialTOriginalTip && this.isSizeSelected && this.qtyValue>this.goodsDetail.special_qty_left&&this.goodsDetail.special_qty_left!=0&& this.goodsDetail.special_data&& this.goodsDetail.special_data.is_spu_special == 1&&this.goodsDetail.can_sale) {
 					this.showedSpecialTOriginalTip()
 				}
+			},
+			goodsPopupScroll(e){
+				const { scrollLeft, scrollWidth } = e.detail
+				this.barScrollLeft = scrollLeft
+				this.barScrollWidth = scrollWidth - 390
+			},
+			setDotNum(listLen) {
+				const dotNum = Math.ceil(listLen / 2.5)
+				return dotNum == 1 ? 0 : dotNum
 			},
 			showedSpecialTOriginalTip() {
 				uni.showToast({
@@ -401,23 +477,15 @@
 			judgeAttrSelect(data) {
 				var className = '';
 				if(data.item_child.active== 'current') {
-					if(data.item.label.toLowerCase() == 'size'&&!this.isSizeSelected) {
-						if(!data.item_child.has_stock) {
-							className = 'isOutStock'
-						} else {
-							className = ''
-						}
+					if(data.item.label.toLowerCase() == this.notAutoSelectSpuAttr&&!this.isSizeSelected) {
+						className = !data.item_child.has_stock ? 'other-isOutStock' : ''
 					} else {
-						className = 'on';
+						className = 'other-on';
 					}
 				} else if(data.item_child.active== 'noactive') {
-					className = 'disabled'
+					className = 'other-disabled'
 				} else {
-					if(!data.item_child.has_stock) {
-						className = 'isOutStock'
-					} else {
-						className = ''
-					}
+					className = !data.item_child.has_stock ? 'other-isOutStock' : ''
 				}
 				return className
 			},
@@ -546,8 +614,12 @@
 							}
 						})
 					})
-					var sizeOptions = goodsDetail.options.filter(item=>{return item.label.toLowerCase() == 'size'});
-					if(sizeOptions.length == 0 || (sizeOptions.length>0 && sizeOptions[0].value.length <2)) {
+					var sizeOptions = goodsDetail.options.filter(item=>{return item.label.toLowerCase() == this.notAutoSelectSpuAttr});
+					var sizeValue = [];
+					if(sizeOptions.length>0&&sizeOptions[0].value) {
+						sizeValue = sizeOptions[0].value.filter(item => item.status==1)
+					}
+					if(sizeOptions.length == 0 || (sizeOptions.length>0 && sizeValue.length <2)) {
 						this.isSizeSelected = true;
 					}
 				} else {
@@ -598,33 +670,35 @@
 							attr_id:item.id
 						}
 					}
-					this.colorBlockLengthArr.push(item.thumbnail_ori_img.length);
-					const thumbnail_ori_img = item.thumbnail_ori_img.map((ite,index_child)=>{
-						allColorItemIndex++;
-						return {
-							url: ite,
-							k: k,
-							index_in_all:allColorItemIndex,
-							index_in_color_block:index_child,
-							item_color_block_imgs:item.thumbnail_ori_img,
-							_id: item._id,
-							attr_val: item.attr_val,
-							price_info: {
-								symbol: item.symbol,
-								special_price: item.special_price,
-								special_price_off: item.special_price_off,
-								member_price: item.member_price,
-								member_price_discount_off: item.member_price_discount_off,
-								price: item.price
+					if(item.thumbnail_ori_img){
+						this.colorBlockLengthArr.push(item.thumbnail_ori_img.length);
+						const thumbnail_ori_img = item.thumbnail_ori_img.map((ite,index_child)=>{
+							allColorItemIndex++;
+							return {
+								url: ite,
+								k: k,
+								index_in_all:allColorItemIndex,
+								index_in_color_block:index_child,
+								item_color_block_imgs:item.thumbnail_ori_img,
+								_id: item._id,
+								attr_val: item.attr_val,
+								price_info: {
+									symbol: item.symbol,
+									special_price: item.special_price,
+									special_price_off: item.special_price_off,
+									member_price: item.member_price,
+									member_price_discount_off: item.member_price_discount_off,
+									price: item.price
+								}
 							}
-						}
-					})
-					this.allColorThumbnailImgs = this.allColorThumbnailImgs.concat(thumbnail_ori_img)
-					this.colorBlockImgs.push({
-						url: item.show_as_img,
-						_id: item._id,
-						attr_val: item.attr_val
-					})
+						})
+						this.allColorThumbnailImgs = this.allColorThumbnailImgs.concat(thumbnail_ori_img)
+						this.colorBlockImgs.push({
+							url: item.show_as_img,
+							_id: item._id,
+							attr_val: item.attr_val
+						})
+					}
 					// 解决首次渲染bigSwiper初始化默认字段和bigSwiperCurrent一样导致不触发大图轮播的change事件
 					if(type=='show') {
 						this.bigSwiperCurrent = this.allColorThumbnailImgs.length
@@ -845,7 +919,7 @@
 					})
 				} else {
 					uni.showToast({
-					    title: this.$t('cart.choose_size_tip'),
+					    title: this.goodsDetail.selectedTips || this.$t('cart.choose_attribute_tip'),
 					    icon: 'none',
 					    duration: 3000
 					});
@@ -896,28 +970,45 @@
 					}
 				})
 			},
-			// 改变size
-			changeOtherAttr(data,label) {
-				var isSize = label.toLowerCase() == 'size';
-				// 注意不能和下面的同个if合并
-				if(isSize) {
-					this.$emit('changeSize')
-				}
+			
+			// changeOtherAttr(data, index, parentData) {
+			// 		console.log(data, index, parentData);
+			// 		var isSize = parentData.label.toLowerCase() == 'size';
+			// 		// 注意不能和下面的同个if合并
+			// 		if(isSize) {
+			// 			this.$emit('changeSize')
+			// 		}
+			// 		if (data.id !== this.id || !this.isSizeSelected) {
+			// 			this.id = data.id;
+			// 			this.getProductDetails({type:'size',isSize});
+			// 		} else {
+			// 			// 注意不能和上面面的同个if合并
+			// 			if(isSize) {
+			// 				this.isSizeSelected = true;
+			// 			}
+			// 		}
+			// },
+			// 改变Prescription
+			changeOtherAttr(data,index,parentData) {
+				var isSize = parentData.label.toLowerCase() == this.notAutoSelectSpuAttr;
 				if (data.id !== this.id || !this.isSizeSelected) {
+					this.swiperCurrent = 0
 					this.id = data.id;
-					this.getProductDetails({type:'size',isSize});
+					this.getProductDetails({type:isSize?'size':'other',isSize});
+					uni.showLoading()
 				} else {
-					// 注意不能和上面面的同个if合并
 					if(isSize) {
-						this.isSizeSelected = true;
+						this.isSizeSelected = true
 					}
 				}
 			},
 			// 改变颜色
 			changeColor(data,index) {
 				if (data.id !== this.id || !this.isSizeSelected) {
+					this.swiperCurrent = 0
 					this.id = data.id;
 					this.getProductDetails({type:'color'});
+					uni.showLoading()
 				}
 			},
 			setSwiperHeight() {
@@ -984,6 +1075,9 @@
 						case 'size':
 							that.$emit('changeOtherAttr', {...goodsDetail});
 							break;
+						case 'other':
+							that.$emit('changeOtherAttr', {...goodsDetail});
+							break;
 						case 'color':
 							that.$emit('changeColor', {...goodsDetail});
 							break;
@@ -1027,25 +1121,24 @@
 </script>
 
 <style lang="scss" scoped>
+@import '@/common/mixins.scss';
 .slod-out-tip{
 	font-size: 28rpx;
-}
-.slod-out-tip .di{
-	margin-left: 8rpx;
-	margin-right: 8rpx;
-}
-.slod-out-tip .img_box{
-	width: 40rpx;
-	height: 40rpx;
-	margin: 5rpx 5rpx 0 0;
-	float: left;
-}
-.slod-out-tip .img_box .img{
-	width: 40rpx;
-	height: 40rpx;
-}
-.slod-out-tip  {
 	color: #666666;
+	.di{
+		margin-left: 8rpx;
+		margin-right: 8rpx;
+	}
+	.img_box{
+		width: 40rpx;
+		height: 40rpx;
+		margin: 5rpx 5rpx 0 0;
+		float: left;
+		.img{
+			width: 40rpx;
+			height: 40rpx;
+		}
+	}
 }
 .no_wrap{
 	flex-wrap: nowrap;
@@ -1062,7 +1155,7 @@
 	color: #fff;
 	font-size: 31rpx;
 	padding: 19.23rpx 30.77rpx;
-	border-radius: 8rpx 8rpx 8rpx 8rpx;
+	border-radius: 8rpx;
 	transition: opacity linear 3s;
 	.text{
 		white-space: nowrap;
@@ -1082,19 +1175,15 @@
     top: 0;
     width: 38rpx;
 	height: 23rpx;
-	background: #FF004D;
-	border-radius: 12rpx 12rpx 12rpx 0rpx;
+	background: linear-gradient( 90deg, #780EFF 0%, #DA49D6 54%, #FF6EA7 100%);
+	border-radius: 12rpx 12rpx 12rpx 4rpx;
+	font-family: 'Montserrat-SemiBold';
     font-weight: 600;
     font-size: 15rpx;
 	color: #FFFFFF;
 	line-height: 18rpx;
 }
-.fly-item .img {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	transition: transform 0.8s;
-}
+
 .fly-item {
 	display: none;
 	transition-timing-function: linear;
@@ -1102,12 +1191,17 @@
 	z-index: 99;
 	position: absolute;
 	transition: transform 0.8s;
-}
-.fly-item .img {
-	/* transition-timing-function: cubic-bezier(.55,0,.85,.36); */
-	transition-timing-function: cubic-bezier(0.1, 0, 0.1, 1);
-	opacity: 1;
-	transition: opacity 0.8s;
+	.img {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		transition: transform 0.8s;
+		
+		/* transition-timing-function: cubic-bezier(.55,0,.85,.36); */
+		transition-timing-function: cubic-bezier(0.1, 0, 0.1, 1);
+		opacity: 1;
+		transition: opacity 0.8s;
+	}
 }
 .fly_item_show{
 	display: block;
@@ -1151,7 +1245,7 @@ swiper-item image {
 	display: flex;
 	justify-content: center;
 	padding: 0 18rpx;
-	color: #ffffff;
+	color: #222;
 	border-radius: 30rpx;
 	height: 40rpx;
 	line-height: 40rpx;
@@ -1188,9 +1282,9 @@ swiper-item image {
 	}
 	.p-discount-off{
 		background-color: #FFE6EE;
-		color: #FF005D;
+		color: #8A61E7;
 		font-size: 19.23rpx;
-		padding: 2px;
+		padding: 2px 7.69rpx;
 		line-height: 1;
 		display: inline-block;
 		margin-left: 4px;
@@ -1264,7 +1358,7 @@ swiper-item image {
 	width: 82rpx;
 	height: 82rpx;
 	position: absolute;
-	top: 40vh;
+	top: 45vh;
 	.img {
 		width: 100%;
 	}
@@ -1276,233 +1370,263 @@ swiper-item image {
 	right: 0;
 }
 .shoppingCartPopup {
-	.popup-content-template-box .main-content-box {
-		padding-right: 0;
-		max-height: 80vh;
-	}
-}
-.shoppingCartPopup {
 	.popup-content-template-box {
 		padding-top: 12rpx;
-}
-}
-.shoppingCartPopup {
-	.popup-content-template-box .header-box {
-		padding-bottom: 12rpx;
-}
-}
-.shoppingCartPopup .info-wrapper {
-	padding-right: 32rpx;
+		padding-bottom: 0;
+		border-radius: 23rpx 23rpx 0 0;
+		.main-content-box {
+			padding-right: 0;
+			max-height: 80vh;
+		}
+		.header-box {
+			padding-bottom: 12rpx;
+		}
+	}
+	
+	.info-wrapper {
+		padding-right: 32rpx;
+	}
+	
 }
 
 /* 购物车弹窗内容 start */
 .popup-product-current-info {
 	padding: 0 0 32rpx 0;
+	.product-title {
+		padding-top: 61.54rpx;
+		font-size: 26.92rpx;
+		font-weight: 500;
+		color: #666666;
+	}
+	.thumbnail_img_swiper_box {
+		width: calc(100% + 4px);
+		margin-left: -2px;
+	}
+	::v-deep uni-swiper uni-swiper-item image {
+		padding: 0 2px;
+	}
+	.p-discount-off {
+		color: #8A61E7;
+		border: 1px solid #8A61E7;
+		font-size: 19.23rpx;
+		border-radius: 6rpx;
+		padding: 2px 7.69rpx;
+		line-height: 1;
+		margin-right: 16rpx;
+	}
+	.price-box {
+		padding-top: 11.54rpx;
+		.price {
+			font-family: 'Montserrat-SemiBold';
+			font-size: 38.46rpx;
+			font-weight: 700;
+			color: #000;
+			padding-right: 16rpx;
+		}
+		.sp_price {
+			// color: #ff165e;
+			font-weight: 600;
+			font-size: 38rpx;
+			color: #8A61E7;
+			line-height: 45rpx;
+		}
+		.special-activity-goods-price {
+			font-size: 38.46rpx;
+			font-weight: 700;
+			color: #000;
+			padding-right: 16rpx;
+		}
+		.originalPrice {
+			display: inline-block;
+			padding-right: 16rpx;
+			font-size: 23.08rpx;
+			color: #999999;
+			/* text-decoration: line-through; */
+		}
+		.status {
+			font-size: 26.92rpx;
+			color: #999999;
+		}
+	}
 }
-.popup-product-current-info .product-title {
-	padding-top: 22rpx;
-	font-size: 26.92rpx;
-	color: #333;
-}
-.popup-product-current-info .thumbnail_img_swiper_box {
-	width: calc(100% + 4px);
-	margin-left: -2px;
-}
-.popup-product-current-info ::v-deep uni-swiper uni-swiper-item image {
-	padding: 0 2px;
-}
-.popup-product-current-info .p-discount-off {
-	color: #FF005D;
-	border: 1px solid #FF005D;
-	font-size: 19.23rpx;
-	border-radius: 6rpx;
-	padding: 2px;
-	line-height: 1;
-	margin-right: 16rpx;
-}
-.popup-product-current-info .price-box {
-	padding-top: 22rpx;
-}
-.popup-product-current-info .price-box .price {
-	font-size: 38.46rpx;
-	font-weight: 700;
-	color: #000;
-	padding-right: 16rpx;
-}
-.popup-product-current-info .price-box .price.sp_price {
-	color:#ff165e;
-}
-.popup-product-current-info .price-box .special-activity-goods-price {
-	font-size: 38.46rpx;
-	font-weight: 700;
-	color: #000;
-	padding-right: 16rpx;
-}
-.popup-product-current-info .price-box .originalPrice {
-	display: inline-block;
-	padding-right: 16rpx;
-	font-size: 23.08rpx;
-	color: #999999;
-	/* text-decoration: line-through; */
-}
-.popup-product-current-info .price-box .status {
-	font-size: 26.92rpx;
-	color: #999999;
-}
+
 .popup-product-add-btn.disabled {
 	pointer-events: none;
 	opacity: 0.4;
 }
 .popup-product-current-attr-box {
 	margin-bottom: 24rpx;
+	.label {
+		font-size: 26.92rpx;
+		padding-bottom: 20rpx;
+		color:#000;
+		font-weight: 500;
+	}
+	.attr-box::-webkit-scrollbar {
+	    display: none;
+	}
+	.attr-box {
+		padding-bottom: 30.77rpx;
+		display: flex;
+		flex-wrap: nowrap;
+		overflow: auto;
+		.color_box {
+			margin-right: 26.92rpx;
+		}
+		.color-item {
+			// margin:0 26.92rpx 0 0;
+			// border-radius: 50%;
+			// position: relative;
+			// box-sizing: border-box;
+			// display: inline-block;
+			// padding: 0;
+			width: 72rpx;
+			height: 72rpx;
+			border-radius: 50%;
+			position: relative;
+			border:1px solid #ccc;
+			.has-discount {
+				content: '';
+				position: absolute;
+				width: 10rpx;
+				height: 10rpx;
+				right: -4rpx;
+				top:  0rpx;
+				background: #FF6ED3;
+				border-radius: 50%;
+			}
+			.out-stock {
+				position: absolute;
+				top: 50%;
+				bottom: 0;
+				left: -2rpx;
+				right: 0;
+				content: '';
+				width: calc(100% + 4rpx);
+				height: 2rpx;
+				transform: rotate(-45deg);
+				background: #000;
+			}
+			.img_out_stock::before {
+				position: absolute;
+				content: '';
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				background: rgba(255, 255, 255, 0.55);
+			}
+			image {
+				width: 100%;
+				height: 100%;
+				border-radius: 50%;
+			}
+		}
+		.color-on {
+			padding: 4rpx;
+			border: 4rpx solid #393939;
+		}
+		.color-disabled {
+			pointer-events: none;
+			background: #e5e5e5;
+			opacity: 0.3;
+		}
+		.other-item {
+			display: flex;
+			align-items: center;
+			box-sizing: border-box;
+			margin-right: 23.08rpx;
+			padding: 17.31rpx 23.08rpx 15.38rpx;
+			height: 65rpx;
+			border-radius: 46rpx;
+			border: 2rpx solid #666;
+			color: #393939;
+			font-size: 26.92rpx;
+		}
+		.other-on {
+			border: 2px solid #8A61E7;
+			color: #8A61E7;
+		}
+		.other-disabled {
+			pointer-events: none;
+			background: #e5e5e5;
+			opacity: 0.3;
+		}
+		.other-isOutStock {
+			border: 1px solid #999999;
+			font-size: 27rpx;
+			color: #999999;
+			line-height: 32rpx;
+			text-decoration-line: line-through;
+			text-transform: none;
+		}
+	}
+	.size-box {
+		.size {
+			padding: 16rpx 24rpx;
+			margin: 0 16rpx 16rpx 0;
+			border: 1px solid #e5e5e5;
+			font-size: 28rpx;
+			color: #333333;
+			line-height: 1;
+			box-sizing: border-box;
+			.on {
+				background-color: #fe165e;
+				color: #ffffff;
+			}
+			.disabled{
+				pointer-events: none;
+				background: #e5e5e5;
+				opacity: 0.3;
+			}
+		}
+	}
+	.color-box {
+		.color {
+			padding: 1px;
+			margin: 0 16rpx 16rpx 0;
+			.on {
+				border: 1px solid #ff165e;
+			}
+			image {
+				width: 100rpx;
+			}
+			
+		}
+	}
+	.qty-box {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 194rpx;
+		height: 65rpx;
+		border-radius: 46rpx;
+		border: 2px solid #393939;
+		.qty-input {
+			height: 100%;
+			text-align: center;
+			font-size: 26.92rpx;
+			width: 78.85rpx;
+			color:#393939;
+		}
+		.iconfont {
+			width: 34.62rpx;
+			height: 34.62rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.icon-reduce.disabled {
+			color: #999999;
+			pointer-events: none;
+		}
+		.icon-add.disabled {
+			color: #999999;
+			pointer-events: none;
+		}
+	}
 }
-.popup-product-current-attr-box .label {
-	font-size: 30.77rpx;
-	padding-bottom: 20rpx;
-	color:#333;
-}
-.popup-product-current-attr-box .attr-box .color-item {
-	width: 72rpx;
-	height: 72rpx;
-	margin:0 28rpx 16rpx 0;
-	border-radius: 50%;
-	border: 1px solid #ccc;
-	position: relative;
-	box-sizing: border-box;
-	display: inline-block;
-}
-.popup-product-current-attr-box .attr-box .color-item .has-discount {
-	content: '';
-	position: absolute;
-	width: 10rpx;
-	height: 10rpx;
-	right: -4rpx;
-	top: 0;
-	background: #FF005D;
-	border-radius: 50%;
-}
-.popup-product-current-attr-box .attr-box .color-item .out-stock {
-	position: absolute;
-	top: 50%;
-	bottom: 0;
-	left: -2rpx;
-	right: 0;
-	content: '';
-	width: calc(100% + 4rpx);
-	height: 2rpx;
-	transform: rotate(-45deg);
-	background: #000;
-}
-.popup-product-current-attr-box .attr-box .color-item .img_out_stock::before {
-	position: absolute;
-	content: '';
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	background: rgba(255, 255, 255, 0.55);
-}
-.popup-product-current-attr-box  .attr-box .color-item.on {
-	padding: 4rpx;
-	border: 1px solid #000;
-}.popup-product-current-attr-box .attr-box .color-item.disabled {
-	pointer-events: none;
-	background: #e5e5e5;
-	opacity: 0.3;
-}
-.popup-product-current-attr-box  .attr-box .color-item image {
-	width: 100%;
-	height: 100%;
-	border-radius: 50%;
-}
-.popup-product-current-attr-box  .attr-box .color-item {
-	image div {
-		background-size: 120% !important;
-}
-}
-.popup-product-current-attr-box .attr-box .other-item {
-	padding: 0 24rpx;
-	margin: 0 32rpx 16rpx 0;
-	min-width: 120rpx;
-	height: 63.46rpx;
-	border: 1px solid #ccc;
-	font-weight: bold;
-	border-radius: 8rpx;
-	font-size: 30.77rpx;
-	color: #333333;
-	line-height: 1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	box-sizing: border-box;
-}
-.popup-product-current-attr-box .attr-box .other-item.isOutStock {
-	border: 1px dashed #CCCCCC;
-}
-.popup-product-current-attr-box .attr-box .other-item.on {
-	border-color: #000;
-}
-.popup-product-current-attr-box .attr-box .other-item.disabled {
-	pointer-events: none;
-	background: #e5e5e5;
-	opacity: 0.3;
-}
-.popup-product-current-attr-box .size-box .size {
-	padding: 16rpx 24rpx;
-	margin: 0 16rpx 16rpx 0;
-	border: 1px solid #e5e5e5;
-	font-size: 28rpx;
-	color: #333333;
-	line-height: 1;
-	box-sizing: border-box;
-}
-.popup-product-current-attr-box .size-box .size.on {
-	background-color: #fe165e;
-	color: #ffffff;
-}
-.popup-product-current-attr-box .size-box .size.disabled{
-	pointer-events: none;
-	background: #e5e5e5;
-	opacity: 0.3;
-}
-.popup-product-current-attr-box .color-box .color {
-	padding: 1px;
-	margin: 0 16rpx 16rpx 0;
-}
-.popup-product-current-attr-box .color-box .color.on {
-	border: 1px solid #ff165e;
-}
-.popup-product-current-attr-box .color-box .color image {
-	width: 100rpx;
-}
-.popup-product-current-qty-box .label {
-	padding-bottom: 0;
-}
-.popup-product-current-attr-box .qty-box {
-	margin-left: 48rpx;
-}
-.popup-product-current-attr-box .qty-box .qty-input {
-	text-align: center;
-	font-size: 30.77rpx;
-	width: 116rpx;
-	color:#333;
-}
-.popup-product-current-attr-box .qty-box .iconfont {
-	width: 48rpx;
-	height: 48rpx;
-	background: #f5f5f5;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.popup-product-current-attr-box .qty-box .icon-reduce.disabled {
-	color: #999999;
-	pointer-events: none;
-}
-.popup-product-current-attr-box .qty-box .icon-add.disabled {
-	color: #999999;
-	pointer-events: none;
-}
+
 ::v-deep {
 	.shoppingCartPopup{
 		.popup-content-template-box .main-content-box {
@@ -1512,35 +1636,34 @@ swiper-item image {
 }
 /* 购物车弹窗内容 end */
 .to-detail-box {
-	color: #999999;
+	font-family: "Montserrat-Regular";
+	font-weight: 500;
+	color: #0071E3;
 	font-size: 26.92rpx;
+	text-decoration-line: underline;
+	text-transform: none;
 }
 .goods_detail_options-box {
 	margin-bottom: 32rpx;
 }
-.shoppingCartPopup {
-	.footer-box .footer {
-		margin:48rpx 24rpx 0 24rpx;
-}
-}
-.shoppingCartPopup {
-	.footer-box .footer .popup-product-add-btn {
-		width: 588rpx;
-		font-size: 30.77rpx;
-}
-}
-.shoppingCartPopup{
-	.footer-box .footer .wish-box {
+.footer {
+	.popup-product-add-btn {
+		width: 565rpx;
+		height: 81rpx;
+		background: #222222;
+		border-radius: 40rpx;
+		@include font-SemiBold($color: #fff)
+	}
+	.wish-box {
 		display: flex;
 		align-items: center;
+		margin: 42.31rpx 38.46rpx 50rpx 32.69rpx;
+		image {
+			width: 60rpx;
+		}
+	}
 }
-}
-.shoppingCartPopup{
-	.footer-box .footer .wish-box image {
-		width: 60rpx;
-		margin-left: 36rpx;
-}
-}
+
 .shopping-cart-popup-tier-price-box {
 	margin-bottom: 32rpx;
 	border-top: 1px #EBEEF5 solid;
@@ -1550,12 +1673,13 @@ swiper-item image {
 		.popup-product-current-info{
 			.price-box {
 				.price {
-					color:#FF5C00;
+					color:#8A61E7;
 				}
 			} 
 			.p-discount-off{
-				color: #FFA80A;
-				border: 1px solid #FFA80A;
+				color: #8A61E7 ;
+				border: 1px solid #8A61E7 ;
+				padding: 2px 7.69rpx;
 			}
 		} 
 	}

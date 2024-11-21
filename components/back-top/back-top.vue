@@ -1,8 +1,8 @@
 <template>
     <view>
-        <view :class="'global-top-btn flex align-items-center justify-content-center '+ (!showBtn ? 'global-btn-none' : '')" @click="backTopBuriedPoint();backTop();">
+        <view :class="'global-top-btn flex align-items-center justify-content-center '+ (!showBtn ? 'global-btn-none' : '')" @click="backTopBuriedPoint();backTop()">
             <image class="img"
-                src="@/static/images/icon/back_top_icon@2x.png"
+                src="@/static/images/icon/icon_back_to_top@2x.png"
             />
         </view>
     </view>
@@ -28,7 +28,7 @@ export default {
                 uni.pageScrollTo({
                     scrollTop: 0,
                     duration: 100
-                })
+                }) 
             },
         }
     },

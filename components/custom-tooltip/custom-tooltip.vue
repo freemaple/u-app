@@ -1,6 +1,6 @@
 <template>
 	<view class="custom-tooltip-box" :class="show?'show':''">
-		<view class="custom-tooltip_content font-bold">
+		<view class="custom-tooltip_content">
 			<image mode="widthFix" class="icon" src="@/static/images/icon/white-success-icon.png"></image>
 			<text>{{title}}</text>
 		</view>

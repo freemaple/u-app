@@ -73,11 +73,6 @@ export function HTTP(obj, config) {
 							store.dispatch("reLogin");
 							return;
 						}
-						// 自动校验用户是否有权限拒绝访问
-						if(data && data.code && data.code == "1000014"){ // 拒绝访问 状态码
-							uni.redirectTo({ url: '/pages/error/403' });
-							return false; // 阻止跳转
-						}
 						if(config.error){
 							let error = data.errors || data.message || data.content || data.error_message || '';
 							error && uni.showToast({
@@ -87,7 +82,7 @@ export function HTTP(obj, config) {
 							});
 						}
 					}
-				} else{
+				} else {
 					uni.hideLoading(); // 此时状态码非200，应该要隐藏loading 吧？不然用户都无法点击了
 					let data = res.data;
 					//自动校验用户是否登录过期

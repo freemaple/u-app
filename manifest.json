@@ -1,9 +1,9 @@
 {
-    "name" : "Dressin",
-    "appid" : "__UNI__36DB11C",
+    "name" : "Unicoeye",
+    "appid" : "__UNI__4069A81",
     "description" : "Retail Fashion at Wholesale Prices",
-    "versionName" : "1.0.51",
-    "versionCode" : 151,
+    "versionName" : "1.0.0",
+    "versionCode" : 100,
     "transformPx" : false,
     "app-plus" : {
         "compatible" : {
@@ -23,11 +23,11 @@
         },
         "modules" : {
             "Payment" : {},
-            "Push" : {},
             "Share" : {},
             "OAuth" : {},
-            "Statistic" : {},
-            "Camera" : {}
+            "Camera" : {},
+            "Push" : {},
+            "Statistic" : {}
         },
         "distribute" : {
             "android" : {
@@ -52,18 +52,18 @@
                     "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>",
                     "<uses-permission android:name=\"android.permission.POST_NOTIFICATIONS\"/>"
                 ],
-                "packagename" : "com.dressin.mall", /*Android应用包名，如io.dcloud.HelloH5*/
-                "password" : "dressin@2023", /*Android应用打包使用密钥库中证书的密码*/
-                "aliasname" : "dressin", /*Android应用打包使用密钥库中证书的别名*/
-                "schemes" : "dressin,t9vlmb",
+                "packagename" : "com.unicoeye.mall", /*Android应用包名，如io.dcloud.HelloH5*/
+                "password" : "unicoeye@2024", /*Android应用打包使用密钥库中证书的密码*/
+                "aliasname" : "unicoeye", /*Android应用打包使用密钥库中证书的别名*/
+                "schemes" : "unicoeye,ayk7x8",
                 "abiFilters" : [ "armeabi-v7a", "arm64-v8a", "x86" ],
                 "targetSdkVersion" : 34,
                 "minSdkVersion" : 23
             },
             "ios" : {
-                "appid" : "com.dressin.mall",
+                "appid" : "com.unicoeye.mall",
                 "urlschemewhitelist" : "fb,instagram,twitter,pinterest",
-                "urltypes" : "dressin,t9vlmb",
+                "urltypes" : "unicoeye,ayk7x8",
                 "dSYMs" : false,
                 "privacyDescription" : {
                     "NSUserTrackingUsageDescription" : "Don't worry, turning this permission on will not access your private information on other websites. This permission is only used to identify the device and ensure service security and a fast browsing experience.",
@@ -73,7 +73,7 @@
                 },
                 "capabilities" : {
                     "entitlements" : {
-                        "com.apple.developer.associated-domains" : [ "applinks:t9vlmb.oplinking.com" ]
+                        "com.apple.developer.associated-domains" : [ "applinks:ayk7x8.oplinking.com" ]
                     }
                 }
             },
@@ -81,52 +81,32 @@
                 "payment" : {
                     "paypal" : {
                         "__platform__" : [ "ios", "android" ],
-                        "returnURL_ios" : "com.dressin.mall://paypalpay",
-                        "returnURL_android" : "com.dressin.mall://paypalpay"
+                        "returnURL_ios" : "com.unicoeye.mall://paypalpay",
+                        "returnURL_android" : "com.unicoeye.mall://paypalpay"
                     },
                     "appleiap" : {},
                     "stripe" : {
                         "__platform__" : [ "ios", "android" ],
-                        "returnURL_ios" : "dressin://stripe"
+                        "returnURL_ios" : "unicoeye://stripe"
                     }
                 },
                 "push" : {
-                    "unipush" : {
-                        "icons" : {
-                            "push" : {
-                                "ldpi" : "unpackage/res/icons/48_48.png",
-                                "mdpi" : "unpackage/res/icons/72_72.png",
-                                "hdpi" : "unpackage/res/icons/96_96.png",
-                                "xhdpi" : "unpackage/res/icons/144_144.png",
-                                "xxhdpi" : "unpackage/res/icons/192_192.png"
-                            },
-                            "small" : {
-                                "ldpi" : "unpackage/res/drawable-ldpi/push_small_1.png",
-                                "mdpi" : "unpackage/res/drawable-mdpi/push_small_1.png",
-                                "hdpi" : "unpackage/res/drawable-hdpi/push_small_1.png",
-                                "xhdpi" : "unpackage/res/drawable-xhdpi/push_small_1.png",
-                                "xxhdpi" : "unpackage/res/drawable-xxhdpi/push_small_1.png"
-                            }
-                        }
-                    }
+                    "unipush" : {}
                 },
                 "share" : {},
                 "ad" : {},
                 "maps" : {},
                 "oauth" : {
-                    "google" : {
-                        "clientid" : "1012412542443-a41kv1lljm0tjesqstfltjj23b6nhdoj.apps.googleusercontent.com"
-                    },
                     "apple" : {},
                     "facebook" : {
-                        "appid" : "556715096530817",
-                        "client_token" : "f9c8d48a9aca62f8d310b8d77536d326"
+                        "appid" : "1292673671772428",
+                        "client_token" : "85503455405685eb24b702be4dde458b"
                     }
                 },
                 "statics" : {
                     "google" : {
-                        "config_ios" : "E:/github/www.dressin.com/mobile_app/keystore/dressin/firebase/pro/GoogleService-Info.plist",
-                        "config_android" : "E:/github/www.dressin.com/mobile_app/keystore/dressin/firebase/pro/google-services.json"
+                        "config_ios" : "E:/gitlab/www.dressin.com/mobile_app/keystore/unicoeye/firebase/dev/GoogleService-Info.plist",
+                        "config_android" : "E:/gitlab/www.dressin.com/mobile_app/keystore/unicoeye/firebase/dev/google-services.json"
                     }
                 }
             },
@@ -171,14 +151,14 @@
         },
         "nativePlugins" : {
             "openinstall-plugin" : {
-                "APP_KEY" : "t9vlmb",
+                "APP_KEY" : "ayk7x8",
                 "__plugin_info__" : {
                     "name" : "openinstall-App全渠道统计",
-                    "description" : "方便集成使用 openinstall 功能，实现了携带参数安装，渠道统计，一键拉起全部功能。如有问题，请联系QQ：800853853",
+                    "description" : "方便集成使用 openinstall 功能，实现了携带参数安装，渠道统计，一键拉起全部功能。",
                     "platforms" : "Android,iOS",
                     "url" : "https://ext.dcloud.net.cn/plugin?id=692",
-                    "android_package_name" : "com.dressin.mall",
-                    "ios_bundle_id" : "com.dressin.mall",
+                    "android_package_name" : "com.unicoeye.mall",
+                    "ios_bundle_id" : "com.unicoeye.mall",
                     "isCloud" : true,
                     "bought" : 1,
                     "pid" : "692",
@@ -242,7 +222,7 @@
             "disableHostCheck" : true,
             "proxy" : {
                 "/apis" : {
-                    "target" : "http://dev-appserver.dressin.com",
+                    "target" : "http://dev-appserver.unicoeye.com",
                     "changeOrigin" : true,
                     "pathRewrite" : {
                         //使用代理； 告诉他你这个连接要用代理

@@ -73,7 +73,7 @@ export default {
 }
 .font-bold {
 	color: #000;
-	font-weight: bold;
+	font-family: Montserrat-SemiBold;
 }
 .order-box .order-info {
 	padding: 20rpx 20rpx;

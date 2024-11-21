@@ -5,30 +5,28 @@
 			<popupContentTemplate @close="close()" :is_show_header_border="true" :title="params.title">
 				<template v-slot:content>
 					<view class="fission-rules-box">
-						<view class="text1 font-bold">{{params.desc}}</view>
+						<view class="text1 font-MS">
+							<view v-html="params.desc"></view>
+						</view>
 						<view class="fission-rules-list">
-							<view class="break-up">
-								<view class="down-img-box">
-									<image class="down-img" style="opacity: 0" mode="widthFix" src="@/static/images/fission_sharing/down-icon.png"></image>
-								</view>
-								<view class="line"></view>
-							</view>
 							<view class="rule-list-item" v-for="(item,index) in listData" :key="index">
 								<view class="rule-content-box">
 									<view class="content-img-box">
 										<image class="content-img" mode="widthFix" :src="item.step_img"></image>
 									</view>
 									<view class="rule-content">
-										<view class="serial-num font-bold">{{item.name}}</view>
+										<view class="line"></view>
+										<view class="serial-num">{{item.name}}</view>
 										<view class="content" v-html="item.desc"></view>
+										<view class="line" v-if="index == listData.length - 1"></view>
 									</view>
 								</view>
-								<view class="break-up">
+								<!-- <view class="break-up">
 									<view class="down-img-box">
-										<image class="down-img" mode="widthFix" src="@/static/images/fission_sharing/down-icon.png"></image>
+										<image  v-if="item.img_jt" class="down-img" mode="widthFix":src="item.img_jt"></image>
 									</view>
 									<view class="line"></view>
-								</view>
+								</view> -->
 							</view>
 						</view>
 						<view v-if="showInviteButton" class="invite-now-btn font-bold" @click="$emit('handleInviteNow')">
@@ -80,25 +78,30 @@
 </script>
 
 <style lang="scss" scoped>
+@import '@/common/mixins.scss';
 .fissionRulesPopup {
 	::v-deep {
 		.popup-content-template-box {
 			.main-content-box {
 				max-height: 80vh;
+				padding: 0 61.54rpx 0 30.77rpx;
 			}
 		} 
 	}
 	.fission-rules-box {
-		padding: 32.69rpx 0;
+		padding-top: 30.77rpx;
 		.text1 {
-			font-size: 30.77rpx;
-			color: #000000;
-			margin-bottom: 23.08rpx;
+			font-size: 27rpx;
+			color: #393939;
+			line-height: 50rpx;
+			margin-bottom: 15.38rpx;
 		}
-		.fission-rules-list {				
+		.fission-rules-list {
 			.break-up {
 				display: flex;
 				align-items: center;
+				padding-top: 15.38rpx;
+				padding-bottom: 11.54rpx;
 				.down-img-box {
 					width: 92.31rpx;
 					margin-right: 46.15rpx;
@@ -116,34 +119,44 @@
 					background: #EEEEEE;
 				}
 			}
+			.break-up:first-child {
+				height: 0;
+			}
 			.rule-list-item {
-
 				.rule-content-box {
 					display: flex;
 					.content-img-box{
 						width: 92.31rpx;
-						min-height: 120rpx;
+						height: 92.31rpx;
+						margin-top: 25rpx;
 						margin-right: 46.15rpx;
 						display: flex;
-						align-items: center;
+						align-items: flex-start;
 						justify-content: center;
 						.content-img {
 							width: 100%;
+							height: 100%;
 						}
 					}
 					.rule-content {
 						flex: 1;
 						width: 0;
 						font-size: 26.92rpx;
+						.line {
+							height: 1px;
+							background: #EEEEEE;
+						}
 						.serial-num {
-							color: #333333;
+							font-size: 27rpx;
+							color: #393939;
 							line-height: 46.15rpx;
 							margin-bottom: 4rpx;
+							margin-top: 11.54rpx;
 						}
 						.content {
-							color: #666666;
 							line-height: 34.62rpx;
-							// letter-spacing: -0.73rpx;
+							margin-bottom: 15.38rpx;
+							@include font-MRegular($fs: 27rpx, $color: #666)
 						}
 					}
 				}
@@ -158,13 +171,16 @@
 		}
 		.invite-now-btn {
 			height: 92rpx;
-			background: linear-gradient( 90deg, #FD4992 0%, #FE7370 49%, #FF9A49 100%), #000000;
-			font-size: 30.77rpx;
-			color: #ffffff;
+			background: linear-gradient( 90deg, #780EFF 0%, #DA49D6 54%, #FF6EA7 100%);
+			border-radius: 42rpx;
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			margin-top: 32.69rpx;
+			font-weight: 600;
+			font-family: 'Montserrat-SemiBold';
+			font-size: 28rpx;
+			color: #ffffff;
 			.arrow-right-icon {
 				width: 46.15rpx;
 				margin-left: 7.69rpx;

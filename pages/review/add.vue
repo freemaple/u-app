@@ -27,7 +27,7 @@
 						<text>{{'&nbsp;'}}{{(20-formData.review_content.length) > 0?20-formData.review_content.length:0}}{{'&nbsp;'}}</text>
 						{{$t('review_add.review_content_tip2')}}
 					</view>
-					<view class="measurements-box">
+					<!-- <view class="measurements-box">
 						<uni-collapse>
 							<uni-collapse-item :show-animation="true" :title="$t('review_add.My Measurements')" :open="false">
 								<view class="body-size-box">
@@ -61,9 +61,9 @@
 								</view>
 							</uni-collapse-item>
 						</uni-collapse>
-					</view>
+					</view> -->
 				</uni-forms-item>
-				<uni-forms-item label="">
+				<!-- <uni-forms-item label="">
 					<view class="body-size-footer">
 						<view class="desc" v-if="pointConfig.size_review">{{$t('review_add.Fill in all sizes to get points reward')}}<text class="add-point-show-box">+ {{pointConfig.size_review}} {{$t('review_add.points')}}</text></view>
 						<view class="select-box flex align-items-center">
@@ -71,7 +71,7 @@
 							<view class="overall-fit" @click="$refs.overallFit.open('bottom')">{{$t(overallFitData[currentFitIndex].language)}}<i class="iconfont icon-goto"></i></view>
 						</view>
 					</view>
-				</uni-forms-item>
+				</uni-forms-item> -->
 				<uni-forms-item>
 					<view class="review-star-info-wrap flex align-items-center">
 						<view class="rating">{{$t('review_add.Rating')}}:</view>
@@ -106,9 +106,9 @@
     disabled: isSubmit
    }" @click="submit">{{$t('review_add.Add Review')}}</view>
 		</view>
-		<singleSelect ref="overallFit" refName="popupOverallFit" :currentIndex="currentFitIndex" :options="overallFitData"
+<!-- 		<singleSelect ref="overallFit" refName="popupOverallFit" :currentIndex="currentFitIndex" :options="overallFitData"
 			@change="handleChangeFit">
-		</singleSelect>
+		</singleSelect> -->
 	</view>
 </template>
 
@@ -127,7 +127,7 @@
 					rate_star: 5,
 					logistics_star: 5,
 				},
-				overallFitData:[{
+				/* overallFitData:[{
 					label: 'True to Size',
 					language: 'review_add.options.True to Size',
 					value: 'True to Size'
@@ -142,7 +142,7 @@
 					language: 'review_add.options.Large',
 					value: 'Large'
 				}],
-				currentFitIndex:0,
+				currentFitIndex:0, */
 				rules: {
 					review_content: {
 						rules: [{
@@ -161,11 +161,11 @@
 			}
 		},
 		methods: {
-			handleChangeFit(index,data) {
+	/* 		handleChangeFit(index,data) {
 				this.currentFitIndex = index;
 				this.formData.size_fit = this.overallFitData[index].value;
 				this.$refs.overallFit.close();
-			},
+			}, */
 			handleDelImg(index) {
 				this.imagesArr.splice(index,1)
 			},
@@ -430,7 +430,7 @@
 		.review-word-box {
 			image {
 				width: 148.5rpx;
-				height: 198rpx;
+				height: 148.5rpx;
 				margin-right: 4rpx;
 			}
 			.textarea-box {
@@ -446,7 +446,7 @@
 			}
 			textarea {
 				width: 100%;
-				height: 162rpx;
+				height: 115rpx;
 				padding: 8rpx;
 			}
 			.point-tip {

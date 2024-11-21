@@ -16,14 +16,21 @@
 			<view class="date">
 				{{reviewData.new_review_date}}
 			</view>
-			<view class="attr-box">
+			<!-- <view class="attr-box">
 				<block v-for="(item,index) in reviewData.product_option">
 					<text>{{item.key}}: {{item.value}}</text> <text class="option-split" v-if="index+1 != reviewData.product_option.length">/</text>
 				</block>
-			</view>
+			</view> -->
 		</view>
 		<view class="contents-box">
-			<view class="contents" :class="viewMore?'open':''"><text v-if="!viewMore" @click="viewMore = !viewMore;showSizeMore=true;" class="view-more-btn">{{$t('review_list.see_more')}}</text>{{reviewData.review_content}}</view>
+			<view class="contents" :class="viewMore?'open':''">
+				<text v-if="!viewMore" 
+					@click="viewMore = !viewMore;showSizeMore=true;" 
+					class="view-more-btn">
+					{{$t('review_list.see_more')}}
+				</text>
+				{{reviewData.review_content}}
+			</view>
 		</view>
 		<view class="images" v-if="reviewData.review_images && reviewData.review_images.length">
 			<view class="img-box" v-for="(img,index) in reviewData.review_images" :key="index">
@@ -32,7 +39,14 @@
 			</view>
 		</view>
 		<view class="points-program-helpful-box flex justify-content-between align-items-baseline">
-			<view class="body-size-box">
+			<view class="attr-box">
+				<block v-for="(item,index) in reviewData.product_option">
+					<text>{{item.key}}: {{item.value}}</text> 
+					<text v-if="index+1 != reviewData.product_option.length" class="option-split" >/</text>
+				</block>
+			</view>
+			
+			<!-- <view class="body-size-box">
 				<view v-if="sizeArr.firstLineArr&&sizeArr.firstLineArr.length" class="flex align-items-center">
 					<block v-for="(item,index) in sizeArr.firstLineArr">
 						<text :key="index">
@@ -42,15 +56,15 @@
 						<text v-if="index+1!=sizeArr.firstLineArr.length" class="split-icon">,</text>
 					</block>						
 					<image v-if="sizeArr.secondLineArr&&sizeArr.secondLineArr.length" @click="showSizeMore=!showSizeMore" class="arrow-img" :class="showSizeMore?'bottom':'right'" src="@/static/images/p_detail_arrow_right@2x.png" mode="widthFix"></image>
-
 				</view>
+				
 				<view class="size-box" v-if="sizeArr.secondLineArr&&sizeArr.secondLineArr.length&&showSizeMore">
 					<view class="size-item" v-for="(item,index) in sizeArr.secondLineArr" :key="index">
 						<text v-if="item.label">{{item.label}}: {{item.value}}</text>
 						<text v-else>{{item.value}}</text>
 					</view>
 				</view>
-			</view>
+			</view> -->
 			<view class="review-item-tools-box flex align-items-center">
 				<view @click="handleHelpful(reviewData)" class="helpful-item-js flex align-items-center" :class="reviewData.is_helpful?'on':''">
 					<view class="helpful-img"></view>
@@ -175,7 +189,7 @@
 
 .review-list-item {
 	border-bottom: 1px solid #f5f5f5;
-	padding: 24rpx 0;
+	padding: 46.15rpx 0;
 }
 .review-list-item .top .top-left {
 	flex: 1;
@@ -193,14 +207,12 @@
 	overflow: hidden;
 }
 .review-list-item .contents {
-	font-size: 32rpx;
-	// display: -webkit-box;
- //    -webkit-line-clamp: 3;
- //    -webkit-box-orient: vertical;
+	font-size: 26.92rpx;
 	word-break: break-word;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	// text-align: justify;
+	white-space: break-spaces;
 	position: relative;
 	line-height: 1.5;
 	max-height: 4.5em;
@@ -229,21 +241,23 @@
   visibility: hidden;
 }
 .review-list-item .contents .view-more-btn {
+	display: flex;
 	position: relative;
 	float: right;
 	clear: both;
-	margin-left: 40rpx;
-	font-size: 28rpx;
+	font-size: 23.08rpx;
+	margin-left: 30rpx;
 	padding: 0 16rpx;
 	color: #0071E3;
 	line-height: 48rpx;
-}
-.review-list-item .contents .view-more-btn::before{
-  content: '...';
-  position: absolute;
-  left: -10rpx;
-  color: #333;
-  transform: translateX(-100%)
+	::before{
+	  content: '...';
+	  position: absolute;
+	  left: -4rpx;
+	  color: #333;
+	  font-size: 33.08rpx;
+	  transform: translateX(-100%)
+	}
 }
 .review-list-item .images {
 	display: flex;
@@ -262,9 +276,15 @@
 // 	margin-right: 0;
 // }
 .review-list-item .date-attr-box {
-	font-size: 24rpx;
+	font-size: 23.08rpx;
+	font-family: "Montserrat-Regular";
+	font-weight: 400;
 	color: #999999;
 	margin-top: 16rpx;
+}
+.attr-box {
+	font-family: "Montserrat-Regular";
+	color: #999;
 }
 .review-list-item .date {
 	margin-right: 32rpx;
@@ -312,11 +332,10 @@
 }
 .points-program{
     background: #F5F5F5;
-    color: #999999;
-    line-height: 48rpx;
-    height: 48rpx;
-    padding: 0 16rpx;
-	font-size: 24rpx;
+    color: #999;
+    padding: 7.69rpx 15.38rpx;
+	font-size: 19.23rpx;
+	border-radius: 38rpx;
 }
 .review-item-tools-box .helpful-item-js .helpful-img {
     width: 36rpx;
@@ -326,7 +345,7 @@
     margin-right: 10rpx;
 }
 .review-item-tools-box .helpful-item-js.on .helpful-img {
-    background-image: url('@/static/images/p_detail_support_icon_sel@2x.png');
+    background-image: url('@/static/images/p_detail_support_icon_sel_pink@2x.png');
 }
 .review-item-tools-box .more-js {
     margin-left: 10rpx;
