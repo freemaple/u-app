@@ -82,19 +82,13 @@
                                     </view>
                                 </view>
                                 <view class="error-tip" v-show="item.checked&&item.need_image == 1&&item.imageshtml&&!item.imageshtml.length">{{ $t('orderAftersales.no_img_tip') }}</view>
-                                <view class="other_reason_box" v-show="item.need_text=='1'">
-                                    <view class="upload_title"><span v-show="item.need_text == 1" style="color: red;">*{{'&nbsp;'}}</span><span>{{ $t('orderAftersales.input_reason') }}</span></view>
-                                    <textarea class="other_reason_text" v-model="item.reason" name="other_reason" maxlength="800" id="other_reason" cols="30" rows="1" :placeholder="$t('orderAftersales.input_reason_placeholder')"></textarea>
-                                    <view class="error-tip" v-show="item.need_text=='1' && !item.reason">{{ $t('orderAftersales.input_reason_error') }}</view>
-                                </view>
+
                             </view>
                         </view>
                     </view>
                 </view>
             </view>
-            <view v-if="product_lists.length" class="flex policy_wrapper justify-content-center">{{ $t('orderAftersales.have_question') }}
-			<view>{{ $t('orderAftersales.or') }}</view>
-			<view class="link" @tap="handleToService">{{ $t('orderAftersales.contact_customer_service') }}</view></view>
+            <view v-if="product_lists.length" class="flex policy_wrapper justify-content-center">{{ $t('orderAftersales.have_question') }}<view class="link" @tap="handleToPolicy">{{ $t('orderAftersales.return_policy') }}</view><view>{{ $t('orderAftersales.or') }}</view><view class="link" @tap="handleToService">{{ $t('orderAftersales.contact_customer_service') }}</view></view>
 
         </view>
         <view v-show="showNextStep" class="step_box2">
@@ -105,7 +99,7 @@
                     <view :class="'fake_input ' + (returnMethod ? '' : 'fakeInputPlaceholder ')">{{ returnMethod ? returnMethod : $t('orderAftersales.please_select_return')}}</view>
                     <i class="iconfont"></i>
                 </view>
-                <!-- <view class="ups_label_desc" v-show="returnMethodTag=='1'">{{ $t('orderAftersales.ups_label_desc') }}<view style="color:red;display: inline;margin:0 .1rem;">{{ orderInfo.currency_symbol }}{{ tag_money }}</view>{{ $t('orderAftersales.ups_label_end') }}<view style="display: inline;">（</view><view style="display: inline;" @tap.stop="handleGoUps" class="find_store">{{ $t('orderAftersales.find_a_store') }}</view><view style="display: inline;">）</view></view> -->
+                <view class="ups_label_desc" v-show="returnMethodTag=='1'">{{ $t('orderAftersales.ups_label_desc') }}<view style="color:red;display: inline;margin:0 .1rem;">{{ orderInfo.currency_symbol }}{{ tag_money }}</view>{{ $t('orderAftersales.ups_label_end') }}<view style="display: inline;">（</view><view style="display: inline;" @tap.stop="handleGoUps" class="find_store">{{ $t('orderAftersales.find_a_store') }}</view><view style="display: inline;">）</view></view>
             </view>
             <view class="return_method">
                 <view class="title font-bold">{{ $t('orderAftersales.refund_items') }}</view>
@@ -113,7 +107,7 @@
                 <scroll-view scroll-x="true" id="list_products">
                     <view class="refund_items flex">
                         <view class="product_item" v-for="item in checkedProducts" :key="item.product_id">
-                            <view style="padding-bottom:calc(3 / 3 *100%);width:100%;">
+                            <view style="padding-bottom:calc(4 / 3 *100%);width:100%;">
                                 <image class="porduct_img" :src="item.image" alt=""/>
                                 <view class="count flex">x{{ item.after_qty }}</view>
                             </view> 
@@ -182,7 +176,7 @@
                             <view class="header_title flex">{{ $t('orderAftersales.return_method') }}</view>
                             <i class="iconfont" @tap="closePopup('bottom_method_popup')"></i>
                         </view>
-                        <!-- <view class="method_type">
+                        <view class="method_type">
                             <view class="title font-bold">{{ $t('orderAftersales.ups_store') }}</view>
                              <view style="flex-wrap: nowrap;" :class="'content flex ' + (can_ups =='1' ? '' : 'disabled ') + (returnMethodObj.checkedTag == '1' ? 'checked' : '')" @tap="handleSelectMethod('1',$t('orderAftersales.ups_store'))">
                                 <i class="iconfont"></i>
@@ -194,7 +188,7 @@
 								</text>
                              </view>  
                              <view class="ups_dis_text" v-show="can_ups !='1'">{{$t('orderAftersales.can_not_ups_des')}}</view> 
-                        </view> -->
+                        </view>
                         <view class="method_type ">
                             <view class="title font-bold">{{ $t('orderAftersales.self_sending') }}</view>
                              <view style="flex-wrap: nowrap;" :class="'content flex ' + (returnMethodObj.checkedTag == '2' ? 'checked' : '')" @tap="handleSelectMethod('2', $t('orderAftersales.self_sending'))">
@@ -224,7 +218,7 @@
                             <scroll-view scroll-x="true" id="pop_products">
                                 <view   class="refund_items flex">
                                     <view class="product_item" v-for="item in checkedProducts" :key="item.product_id">
-                                        <view style="padding-bottom:calc(3 / 3 *100%);width:100%;">
+                                        <view style="padding-bottom:calc(4 / 3 *100%);width:100%;">
                                             <image class="porduct_img" :src="item.image" alt=""/>
                                             <view class="count flex">x{{ item.after_qty }}</view>
                                         </view>
@@ -296,7 +290,8 @@ export default {
             tag_money: '',
             symbol: '',
 			after_qty: '',
-            imageList: [],
+            imageList: []
+
             
         }
     },
@@ -337,6 +332,7 @@ export default {
         },
         handleToService(){
             uni.navigateTo({ url: '/pages/contact/contact' })
+
         },
         getReasonText(id) {   
             let title = ''         
@@ -486,7 +482,7 @@ export default {
         handleChooseReason(index) {
             const that = this
             const item = that.reason[index]
-            const {need_image, checked, need_text} = item
+            const {need_image, checked} = item
             if(item.checked) {
                 item.checked = false
             }else {
@@ -496,7 +492,6 @@ export default {
                 item.checked = true
                 that.product_lists[that.nowPopupIndex].reason_id = item.id
                 that.product_lists[that.nowPopupIndex].need_image = need_image
-                that.product_lists[that.nowPopupIndex].need_text = need_text
                 that.closePopup('bottom_reason_popup')
             }
         },
@@ -508,8 +503,8 @@ export default {
             const result = that.product_lists.find(item => {
                 if(!item.checked){
                     allChecked = false
-                }                
-                return item.checked && (!item.reason_id || item.need_image=='1' && !item.imageshtml.length || (item.need_text=='1'&&!item.reason))
+                }
+                return item.checked && (!item.reason_id || item.need_image=='1' && !item.imageshtml.length)
             })
             if(result) return
             if(!allChecked) {
@@ -533,22 +528,18 @@ export default {
             })
             that.checkedProducts = checkedProducts
             const item_list = that.checkedProducts.map(item=>{
-                const { after_qty, item_id, reason_id, imageshtml, reason, need_text} = item
+                const { after_qty, item_id, reason_id, imageshtml} = item
                 let arr = []
                 imageshtml.forEach(ite=>{
                     arr.push(ite.relativeImgUrl)
                 })
                 const image = arr.join(',')
-                const itemObj = {
+                return {
                     qty: after_qty,
                     item_id,
                     image,
                     reason_id
                 }
-                if(need_text == '1') {
-                    Object.assign(itemObj, {reason})
-                }
-                return itemObj
             })
             const sale_no = that.sale_no 
             const params = {
@@ -590,22 +581,18 @@ export default {
             const that = this
             if(!that.returnMethod || !that.returnAccount)return
             const item_list = that.checkedProducts.map(item=>{
-                const { after_qty, item_id, reason_id, imageshtml, need_text, reason} = item
+                const { after_qty, item_id, reason_id, imageshtml} = item
                 let arr = []
                 imageshtml.forEach(ite=>{
                     arr.push(ite.relativeImgUrl)
                 })
                 const image = arr.join(',')
-                const itemObj = {
+                return {
                     qty: after_qty,
                     item_id,
                     image,
                     reason_id
                 }
-                if(need_text == '1') {
-                    Object.assign(itemObj, {reason})
-                }
-                return itemObj
             })
             const params = {
                 order_id: that.order_id,
@@ -690,7 +677,7 @@ export default {
         },
         handleOpenDel(imageshtml, index){
             imageshtml.splice(index,1)
-            this.imageList.splice(index, 1)
+            this.imageList.splice(index,1)
         },
         handleClickUpload(imageshtml) {
             if(imageshtml.length >= 3)return
@@ -713,7 +700,7 @@ export default {
                         if(res.code == '200') {
                             res.data.images.forEach(ite => {
                                 imageshtml.push(ite)
-                                that.imageList.push(ite.imgUrl)
+                                this.imageList.push(ite.imgUrl)
                             })                                                     
                         }
 
@@ -726,7 +713,6 @@ export default {
         },
         handlePreview(index) {
             uni.previewImage({
-                loop: true,//循环
                 current: index, // 当前显示图片的索引
                 urls: this.imageList // 需要预览的图片http链接列表
             });
@@ -744,17 +730,6 @@ export default {
 .error-without-reason{
     font-size: 24rpx;
     color: red;
-}
-.other_reason_box{
-    margin-top: 20rpx;
-}
-.other_reason_text{
-    height: 160rpx;
-    border: 1rpx solid #333;
-    font-size: 24rpx;
-    padding: 6rpx;
-    margin-bottom: 6rpx;
-    margin-top: 6rpx;
 }
 .ups_dis_text{
     color: red;
@@ -918,8 +893,8 @@ export default {
             overflow: hidden;
             .img_box{
                 width: 180rpx;
-                min-height: 180rpx;
-                height: 180rpx;
+                min-height: 240rpx;
+                height: 240rpx;
                 margin-right: 40rpx;
                 .prod_img{
                     width: 100%;
@@ -1050,7 +1025,7 @@ export default {
     width: 100%;
 	background-color: #fff;
 	overflow-y: auto;
-    min-height: 450rpx;
+    min-height: 600rpx;
     background: #fff;
     .pop_header{
         padding: 10rpx 30rpx;
@@ -1080,7 +1055,7 @@ export default {
         .track_item{
             position: relative;
             width: 100%;
-            min-height: 80rpx;
+            height: 80rpx;
             justify-content: start;
             align-items: center;
             .item_left{
@@ -1105,6 +1080,9 @@ export default {
 				font-size: 28rpx;
                 .status{
                     width: 100%;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
                 }
             }
            
@@ -1472,6 +1450,5 @@ export default {
 }
 .policy_wrapper {
 	font-size: 28rpx;
-	padding:0 20rpx;
 }
 </style>

@@ -7,13 +7,7 @@
 					<view class="coupon-item-title flex-1">
 						<view class="coupon-item-title-percent-sign" v-if="couponClassType == 'index-coupon-item'">
 							<view class="coupon-title-left">
-								<view v-if="couponItemData.discount_type == 999">
-									<view class="virtual-free-shipping-name">{{couponItemData.name}}</view>
-									<view class="sub-name">{{couponItemData.subname}}</view>
-								</view>
-								<view v-else>
-									{{couponItemData.discount_cost ? filterCost(couponItemData.discount_cost) : getCouponItemName(couponItemData.discount_cost, 0)}}	
-								</view>
+								{{couponItemData.discount_cost ? filterCost(couponItemData.discount_cost) : getCouponItemName(couponItemData.discount_cost, 0)}}
 							</view>
 							<view class="coupon-title-right" v-if="couponItemData.coupon_discount_type == 1">
 								<view class="percent-sign">%</view>
@@ -59,35 +53,18 @@
 				</view>
 	        </view>
 	    </view>
-	    <view class="coupon-new-middle flex align-items-center" :class="couponItemData.discount_type == 999?'round-line-bg':''">
+	    <view class="coupon-new-middle flex align-items-center">
 	        <view class="middle-edge" v-if="showCircleEdge">
 	            <view class="edge-circle"></view>
 	        </view>
-			<view v-if="couponItemData.discount_type == 999" class="round-items-box">
-				<view class="round"></view>
-				<view class="round"></view>
-				<view class="round"></view>
-				<view class="round"></view>
-				<view class="round"></view>
-				<view class="round"></view>
-			</view>
-	        <view v-else :style="{'opacity': opacity, 'margin': '0 28rpx'  }" class="middle-center flex align-items-center">
+	        <view :style="opacity?'opacity:'+opacity:''" class="middle-center flex align-items-center">
 	            <view></view>
 	        </view>
 	        <view class="middle-edge" v-if="showCircleEdge">
 	            <view class="edge-circle"></view>
 	        </view>
 	    </view>    
-		<view v-if="couponItemData.discount_type == 999" class="body is-virtual-free-shipping-body">
-			<view class="virtual-body-content flex">
-				<view class="content flex-1">
-					<view class="content-1">{{couponItemData.free_shipping_cap}}</view>
-					<view class="content-2">{{couponItemData.allData.maxmin_text}}</view>
-				</view>
-				<image class="barcode-img" mode="widthFix" src="@/static/images/coupon/barcode-img.png" />
-			</view>
-		</view>
-	    <view v-else :style="opacity?'opacity:'+opacity:''" class="body">
+	    <view :style="opacity?'opacity:'+opacity:''" class="body">
 			<!-- <view class="body-item flex align-items-center" v-if="couponItemData.minimum_charge && couponItemData.max_discount_cost">
 				{{$t('coupon_list.minimum_charge',{num:couponItemData.symbol+couponItemData.minimum_charge})}}, {{$t('coupon_list.max_discount_cost',{num:couponItemData.symbol+couponItemData.max_discount_cost})}}
 			</view>
@@ -191,7 +168,6 @@
 			getClass() {
 				var class1 = '';
 				var class2 = '';
-				var class3 = '';
 				if((this.couponItemData.type == 1 || !this.couponItemData.type) && this.couponItemData.showGray != 'true') {
 					class1 = ''
 				} else {
@@ -200,10 +176,7 @@
 				if(this.isOld) {
 					class2 = 'isOld';
 				}
-				if(this.couponItemData.discount_type == 999) {
-					class3 = 'is-virtual-free-shipping'
-				}
-				return class1+' '+class2 + ' '+ class3
+				return class1+' '+class2
 			},
 			judgeDiffDays(data) {
 				let differ = uitls.timeDiffer(data.assign_end_at * 1000)
@@ -250,12 +223,11 @@
 /* 优惠券样式 */
 .unavailable-reason-box {
 	display: flex;
-	padding: 0rpx 24rpx;
-	// background: #FFF0F0;
-	color: #FF512B;
-	font-size: 23rpx;
+	padding: 12rpx 24rpx;
+	background: #FFF0F0;
+	color: #FF0000;
+	font-size: 28rpx;
 	line-height: 34rpx;
-	margin-bottom: 30rpx;
 	.icon {
 		width: 36rpx;
 		margin-right: 8rpx;
@@ -267,14 +239,13 @@
 .coupon-item {
     width: 100%;
     min-height: 240rpx;
-    background-color: #F6F2FF;
+    background-color: #FCF2F4;
     background-repeat: no-repeat;
     background-position: right center; 
     margin-bottom: 20rpx;
     position: relative;
 	font-size: 30rpx;
 	overflow: hidden;
-	border-radius: 8rpx;
 }
 .coupon-item.isOld {
 	.body {
@@ -299,7 +270,7 @@
     right: -2rpx;
     top: 0;
     display: block;
-    background: #814EFF;
+    background-color: #FF004D;
     height: 8rpx;
 }
 .gray-coupon.coupon-item:after {
@@ -330,9 +301,9 @@
     pointer-events: none;
 }
 .coupon-item .head {
-    padding: 32rpx 25rpx 25rpx 28rpx;
-    color: #814EFF;
-	border: 1px solid #F6F2FF;
+    padding: 32rpx 44rpx 20rpx 68rpx;
+    color: #FF004D;
+	border: 1px solid #FFD9E4;
 	border-top: 0;
 	border-bottom: 0;
 }
@@ -350,25 +321,27 @@
 	padding-right: 24rpx;
 	color: #333333;
 	font-size: 28rpx;
+	// margin-bottom: 12rpx;
 }
 .coupon-item .head .head-left .coupon-code {
 	padding-right: 24rpx;
 	color: #333333;
-	font-size: 27rpx;
+	font-size: 28rpx;
 }
 .coupon-item .head .head-left .show-discount-cost {
 	color: #333333;
-	font-size: 27rpx;
+	font-size: 28rpx;
+	padding-right: 24rpx;
 	margin-top: 12rpx;
 }
 .coupon-item .body {
-    padding: 17rpx 25rpx 25rpx 28rpx;    
-    font-size: 23rpx;
+    padding: 20rpx 68rpx 20rpx 68rpx;    
+    font-size: 24rpx;
     color: #666666;
 	box-sizing: border-box;
 	line-height: 28rpx;
 	width: 100%;
-	border: 1px solid #F6F2FF;
+	border: 1px solid #FFD9E4;
 	border-top: 0;
 }
 .coupon-item .body .body-item {
@@ -390,7 +363,7 @@
     border-radius: 50%;
     height: 12rpx;
     width: 12rpx;
-    top: 13.2rpx;
+    top: 38%;
     transform: scale(.5) translateY(-50%);
 }
 .coupon-item .coupon-new-middle .middle-edge {
@@ -418,15 +391,12 @@
     // height: 32rpx;
     flex: 1;
 }
-.coupon-item.index-coupon-item .coupon-new-middle .middle-center {
-	margin: 0 !important;
-}
 .coupon-item .coupon-new-middle .middle-center view {
     width: 100%;
     height: 1px;
     background-size: 48rpx 1px;
     background-repeat: repeat-x;
-    background-image: linear-gradient(90deg,#E4D8FF 0,#E4D8FF 50%,transparent 0);
+    background-image: linear-gradient(90deg,#FFD9E4 0,#FFD9E4 50%,transparent 0);
 }
 .x-text {
 	padding: 0 8rpx;
@@ -446,28 +416,18 @@
 // 首页弹窗样式
 .coupon-item.index-coupon-item {
 	flex-direction: row;
-	background: unset;
 }
 .coupon-item.index-coupon-item .head{
-	width: 190rpx;
-	padding: 0 0 0 28rpx;
+	width: 170rpx;
+	padding: 0 0 0 32rpx;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	border: 1px solid #E1D9F5;
-	border-right: 0;
-	border-left: 0;
-	background: #F6F2FF;
-	border-radius: 8rpx 0 0 8rpx;
 }
 .coupon-item.index-coupon-item .coupon-new-middle {
     width: 32rpx;
 	flex-direction: column;
 	justify-content: space-between;
-	margin-left: -1px;
-	margin-right: -1px;
-	
-	background: #F6F2FF;
 }
 .coupon-item.index-coupon-item .coupon-new-middle .middle-center {
     flex: none;
@@ -479,19 +439,14 @@
 	width: 1px;
 	background-size: 1px 48rpx;
 	background-repeat: repeat-y;
-	background-image: linear-gradient(0deg, #E4D8FF 0, #E4D8FF 50%, transparent 0);
+	background-image: linear-gradient(0deg, #FFD9E4 0, #FFD9E4 50%, transparent 0);
 	position: absolute;
 	left: 50%;
 	height: calc(100% + 64rpx);
 }
 .coupon-item.index-coupon-item .body {
-	width: calc(100% - 190rpx - 32rpx);
+	width: calc(100% - 170rpx - 32rpx);
 	padding: 22rpx 6rpx 14rpx 6rpx;
-	font-family: 'Montserrat-Regular';
-	border: 1px solid #E1D9F5;
-	border-left: 0;
-	border-radius: 0 8rpx 8rpx 0;
-	background: #F6F2FF;
 }
 .coupon-item.index-coupon-item .body .body-item {
 	margin-bottom: 8rpx;
@@ -507,9 +462,6 @@
 	bottom: 0;
 	width: 8rpx;
 	height: auto;
-	border: 1px solid #E1D9F5;
-	border-right: 0;
-	border-radius: 8rpx 0 0 8rpx;
 }
 .coupon-item.index-coupon-item .coupon-new-middle .middle-edge{
 	width: 32rpx;
@@ -522,7 +474,6 @@
 	bottom: auto;
 	right: auto;
 	left: 0;
-	border: 1px solid #E1D9F5;
 }
 .coupon-item.index-coupon-item .coupon-new-middle .middle-edge:last-child .edge-circle {
 	left: 0;
@@ -531,7 +482,7 @@
 	top: auto;
 }
 .coupon-item.index-coupon-item .coupon-code {
-	color: #8A61E7;
+	color: #FF004D;
 	line-height: 32rpx;
 }
 .coupon-item.index-coupon-item {
@@ -545,98 +496,16 @@
 	font-size: 20rpx;
 }
 .index-coupon-item .coupon-title-off {
-	font-size: 28rpx;
-	letter-spacing: 1px;
+	font-size: 28rpx
 }
 .index-coupon-item .coupon-title-left {
-	font-size: 54rpx;
-	line-height: 63rpx;
-	letter-spacing: 1px;
+	font-size: 56rpx
 }
 .index-coupon-item .body-item:last-child {
-	color: #7E48FF;
+	color: #AD6D81;
 	font-size: 16rpx !important;
 }
 .index-coupon-item .body-item:last-child::before {
 	display: none;
-}
-.index-coupon-item .coupon-title-left .virtual-free-shipping-name {
-	font-size: 38.46rpx;
-}
-.index-coupon-item .coupon-title-left .sub-name {
-	font-size: 19.23rpx;
-	font-weight: normal;
-}
-
-.is-virtual-free-shipping.coupon-item:after {
-	background: #956AFF;
-}
-.coupon-item.index-coupon-item.is-virtual-free-shipping .head{
-	background: #956AFF;
-	padding: 0;
-}
-.coupon-item.index-coupon-item.is-virtual-free-shipping .head .head-left {
-	color: #fff;
-	// border: 1px solid #fff;
-	padding: 11.54rpx 5.77rpx 15.38rpx 5.77rpx;
-}
-.coupon-item.is-virtual-free-shipping .head .head-left .coupon-item-title {
-	margin-bottom:0;
-}
-.is-virtual-free-shipping-body {
-	background: #F6F2FF;
-}
-.is-virtual-free-shipping-body .barcode-img {
-	width:40.38rpx;
-	margin-left: 8rpx;
-}
-.coupon-item.index-coupon-item .body.is-virtual-free-shipping-body {
-	padding: 21.15rpx 17.31rpx 21.15rpx 6rpx;
-}
-.body.is-virtual-free-shipping-body .virtual-body-content .content {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	font-size: 20rpx;
-}
-.body.is-virtual-free-shipping-body .virtual-body-content .content .content-1 {
-	color: #8A61E7;
-	margin-bottom: 7.69rpx;
-    position: relative;
-    padding-left: 20rpx;
-}
-.body.is-virtual-free-shipping-body .virtual-body-content .content .content-2 {
-	color: #393939;
-    position: relative;
-    padding-left: 20rpx;
-}
-.body.is-virtual-free-shipping-body .virtual-body-content .content .content-1::before,
-.body.is-virtual-free-shipping-body .virtual-body-content .content .content-2::before{
-    content: "";
-    position: absolute;
-    display: block;
-    background-color: #666666;
-    left: 0;
-    border-radius: 50%;
-    height: 12rpx;
-    width: 12rpx;
-    top: 13rpx;
-    transform: scale(.5) translateY(-50%);
-}
-.round-line-bg {
-	background: linear-gradient(to right, #956AFF 50%, #F6F2FF 50%) !important;
-}
-.round-line-bg .round-items-box {
-	flex: 1;
-	width:11.54rpx;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-around;
-}
-.round-line-bg .round-items-box .round {
-	width:11.54rpx;
-	height:11.54rpx;
-	background:#fff;
-	border-radius:50%;
 }
 </style>

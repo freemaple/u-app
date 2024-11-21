@@ -193,14 +193,13 @@ export default {
     }
     .products_wrapper{
         width: 100%;
-        height: 150rpx;
+        height: 200rpx;
         overflow-x: auto;
         .products{
             height: 100%;
             flex-wrap: nowrap;
             .product_item{
                 width: 150rpx;
-				height: 150rpx;
                 margin-right: 20rpx;
                 flex-shrink: 0;
                 position: relative;

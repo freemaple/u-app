@@ -30,7 +30,7 @@
 						</view>
 						<view @click="handleHelpful(itemDetailData,'dialogHelpful')" class="helpful-item-js flex align-items-center" :class="itemDetailData.is_helpful?'on':''">
 							<view class="helpful-img"></view>
-							<view class="font-MR">{{ $t('review_list.helpful')}}<text class="helpful-nums-js">{{Number(itemDetailData.helpful_nums)?' ('+itemDetailData.helpful_nums+')':''}}</text></view>
+							<view>{{ $t('review_list.helpful')}}<text class="helpful-nums-js">{{Number(itemDetailData.helpful_nums)?' ('+itemDetailData.helpful_nums+')':''}}</text></view>
 						</view>
 					</view>
 					<view class="attr">
@@ -211,11 +211,7 @@
 				display: flex;
 				align-items: center;
 				.name {
-					font-weight: 500;
-					font-size: 27rpx;
-					color: #FFFFFF;
-					line-height: 32rpx;
-					margin-right: 19.23rpx;
+					font-size: 28rpx;
 				}
 			}
 			.helpful-item-js {
@@ -230,17 +226,17 @@
 				margin-right: 10rpx;
 			}
 			.helpful-item-js.on .helpful-img {
-				background-image: url('@/static/images/p_detail_support_icon_sel_pink@2x.png');
+				background-image: url('@/static/images/p_detail_support_icon_sel@2x.png');
 			}
 		}
 		.attr {
-			font-size: 23.08rpx;
-			color: #999;
+			font-size: 28rpx;
+			color: #aaaaaa;
 			margin-top: 12rpx;
 		}
 		.review-content {
-			margin-top: 34.62rpx;
-			font-size: 26.92rpx;
+			margin-top: 26rpx;
+			font-size: 32rpx;
 		}
 	}
 }

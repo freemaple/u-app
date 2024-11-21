@@ -197,9 +197,8 @@ import { setTimeout } from "timers";
 		display: none;
 	}
 	.empty-box {
-		color: #666;
 		text-align: center;
-		/* font-weight: bold; */
+		font-weight: bold;
 	}
 	.empty-box image {
 		width: 80%;

@@ -21,9 +21,9 @@
 		<view class="share-bar-box">
 			
 			<block v-for="(item,index) in shareAppList">
-				<view v-if="item.show" class="share-item flex flex-column align-items-center justify-content-center" @click="item.name === 'CopyURL'?handleCopy():handleShare(item)">
+				<view class="share-item flex flex-column align-items-center justify-content-center" @click="item.name === 'CopyURL'?handleCopy():handleShare(item)">
 					<image mode="widthFix" :src="item.image"></image>
-					<text class="name">{{item.label}}</text>
+					<text class="name">{{item.name}}</text>
 				</view>
 			</block>
 		</view>		
@@ -59,57 +59,37 @@
 		},
 		data() {
 			return {
-				
 				shareAppList: [
 					{
-						name:'Facebook', // label用于前端文案显示
-						label:'Facebook',// name：用于逻辑判断使用【不能轻易改动】
-						show:true,
+						name:'Facebook',
 						image:require('@/static/images/share-bar-icon/icon_facebook.png'),
 					},
 					{
 						name:'Pinterest',
-						label:'Pinterest',
-						show:true,
 						image:require('@/static/images/share-bar-icon/icon_pinterest.png')
 					},
 					{
-						name:'Instagram',
-						label:'Instagram',
-						show:true,
-						image:require('@/static/images/share-bar-icon/icon_instagram_new.png'),
+						name:'Twitter',
+						image:require('@/static/images/share-bar-icon/icon_twitter.png'),
 					},
 					{
-						name:'Twitter',
-						label:'X',
-						show:true,
-						image:require('@/static/images/share-bar-icon/icon_x@2x.png'),
+						name:'Instagram',
+						image:require('@/static/images/share-bar-icon/icon_instagram.png'),
 					},
 					{
 						name:'Email',
-						label:'Email',
-						show:true,
 						image:require('@/static/images/share-bar-icon/icon_email.png')
 					},
 					{
 						name:'CopyURL',
-						label:'CopyURL',
-						show:true,
 						image:require('@/static/images/share-bar-icon/icon_copyUrl.png')
 					},
 					{
 						name:'More',
-						label:'More',
-						show:true,
 						image:require('@/static/images/share-bar-icon/icon_more.png')
 					}
 				]
 			};
-		},
-		mounted() {
-			this.shareAppList = this.shareAppList.filter(item => 
-			    !((item.name === 'Twitter' && !this.$store.state.appConfig.showTwShares) || (item.name === 'Pinterest' && !this.$store.state.appConfig.showPinShares))
-			);
 		},
 		methods: {
 			formUrl(url_has_qm,type) {

@@ -13,11 +13,18 @@
                     <view class="order_now_and">{{toastData.order_now_and}}</view>
                     <view class="get_cash_count">{{toastData.get}}<text class="text">{{toastData.rewards}}</text></view>
                     <view class="instantly">{{toastData.instantly}}</view>
-                    <view class="cash_count">{{toastData.rewards_money}}</view>
-                    <view class="rewards_discount">{{toastData.rewards_discount}}</view>
+                    <view class="bg_box">
+                        <view class="bg_img">
+                            <image
+                                class="img"
+                                src="@/static/images/new-cashgrab-rewards/reward_cash_popup_top@2x.png"
+                                mode="scaleToFill"
+                            />
+                        </view>
+                    </view>
                 </view>
                 <view class="bottom_box">
-                    <view class="register_now flex align-items-center justify-content-center" @tap="handleToRegister">{{toastData.register_now}}</view>
+                    <view class="register_now font-bold flex align-items-center justify-content-center" @tap="handleToRegister">{{toastData.register_now}}</view>
                     <view class="flex align-items-center justify-content-center flex-column">
                         <view class="coin_img">
                             <image
@@ -143,13 +150,12 @@ export default {
     }
     .top_box{
         padding-top: 84.62rpx;
-        height: 384.6154rpx;
+        height: 382.69rpx;
         width: 100%;
+        background-color: #FF8B4A;
         position: relative;
         font-size: 38rpx;
         font-weight: 400;
-		background: url('@/static/images/new-cashgrab-rewards/reward_cash_popup_bg@2x.png') no-repeat top center;
-		background-size: 100% auto;
         .order_now_and{
             color: #000000;
             line-height: 45rpx;
@@ -161,25 +167,9 @@ export default {
             margin: 15.38rpx 0;
             .text{
                 color: #fff;
-                -webkit-text-stroke: 2px #000000;
+                -webkit-text-stroke: 3px #000000;
                 margin-left: 30.77rpx;
             }
-        }
-        .cash_count{
-            position: absolute;
-            color: #fff;
-            font-size: 26.9231rpx;
-            left: 30.7693rpx;
-            bottom: 78.8462rpx;
-            transform: scale(0.6) rotate(-12deg);
-        }
-        .rewards_discount{
-            position: absolute;
-            color: #fff;
-            font-size: 26.9231rpx;
-            left: 132.6924rpx;
-            bottom: 53.8462rpx;
-            transform: scale(0.3) rotate(5deg);
         }
         .bg_box{
             position: absolute;
@@ -210,7 +200,6 @@ export default {
             line-height: 36rpx;
             text-align: center;
             margin-bottom: 50rpx;
-			border-radius: 46.1539rpx;
         }
         .coin_img{
             width: 63.46rpx;
@@ -221,14 +210,13 @@ export default {
             }
         }
         .register_to_get{
-			position: relative;
-			line-height: 69rpx;
-			height: 69rpx;
-			margin-bottom: 15.38rpx;
-			font-family: 'Montserrat-Regular';
             font-weight: 400;
-            font-size: 23rpx;
+            font-size: 27rpx;
             color: #333333;
+            line-height: 69rpx;
+            height: 69rpx;
+            margin-bottom: 15.38rpx;
+            position: relative;
             &:before{
                 content: '';
                 position: absolute;
@@ -251,7 +239,6 @@ export default {
             }
         }
         .register_lists{
-			font-family: 'Montserrat-Regular';
             .list_item{
                 font-size: 27rpx;
                 color: #333333;

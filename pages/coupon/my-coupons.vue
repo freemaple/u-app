@@ -183,7 +183,7 @@ export default {
 	color: #333333b3;
 }
 .my-coupons-box .tabs-box .tab-item.on {
-	color: #8A61E7;
+	color: #f85184;
 }
 .my-coupons-box .coupons-list-box {
 	padding: 0 24rpx;

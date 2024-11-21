@@ -1,16 +1,18 @@
 <template>
-    <view class="custom_tabbar_container page-max-width flex"
-		:style="{'box-shadow': currentTab == 'Cart' && cartCount > 0 ? 'none' : '0px -2px 16px 0px rgba(0,0,0,0.1)'}">
+    <view class="custom_tabbar_container page-max-width flex">
         <view :class="'tabbar_item flex ' + (item.type =='Cart' ? 'add_to_cart_animation_icon' : '')" v-for="(item, index) in initData" :key="index" @tap="handleSwitch(item)">
             <view class="img_box flex justify-content-center">
-                <uni-badge absolute="rightTop" :offset="[2,2]" type="error" size="small" :max-num=999 :text="item.type =='Cart' ? cartCount : ''">
+                <uni-badge absolute="rightTop" type="error" size="small" :max-num=999 :text="item.type =='Cart' ? cartCount : ''">
+                    
                         <image
                             :src="currentTab == item.type ? item.pathActive : item.path"
                             mode="scaleToFill"
                             class="img"
                         />
+                    
                 </uni-badge>
             </view>
+            
             <view :class="'text ' + (currentTab == item.type ? 'active' : '')">{{ item.text }}</view>
         </view>        
     </view>
@@ -22,39 +24,39 @@
             return {
                 initData: [
                     {
-                        path: "/static/images/nav/home-off.png",
-                        pathActive: "/static/images/nav/home-on.png",
+                        path: "/static/images/tabbar/home_icon@2x.png",
+                        pathActive: "/static/images/tabbar/home_icon_active@2x.png",
                         type: "Home",
                         text: this.$t('custom_tabbar.home'),
                         url: "/pages/index/index",
 
                     },
                     {
-                        path: "/static/images/nav/menu-off.png",
-                        pathActive: "/static/images/nav/menu-on.png ",
+                        path: "/static/images/tabbar/category_icon@2x.png",
+                        pathActive: "/static/images/tabbar/category_icon_active@2x.png",
                         type: "Category",
                         text: this.$t('custom_tabbar.category'),
                         url: "/pages/cate/index",
 
                     },
                     {
-                        path: "/static/images/nav/wishlist-off.png",
-                        pathActive: "/static/images/nav/wishlist-on.png",
+                        path: "/static/images/tabbar/wishlist_icon@2x.png",
+                        pathActive: "/static/images/tabbar/wishlist_icon_active@2x.png",
                         type: "Wishlist",
                         text: this.$t('custom_tabbar.wishlist'),
                         url: "/pages/fav-list/fav-list",
                     },
                     {
-                        path: "/static/images/nav/cart-off.png",
-                        pathActive: "/static/images/nav/cart-on.png",
+                        path: "/static/images/tabbar/cart_icon@2x.png",
+                        pathActive: "/static/images/tabbar/cart_icon_active@2x.png",
                         type: "Cart",
                         text: this.$t('custom_tabbar.cart'),
                         url: "/pages/cart/cart",
 
                     },
                     {
-                        path: "/static/images/nav/my-off.png",
-                        pathActive: "/static/images/nav/my-on.png",
+                        path: "/static/images/tabbar/account_icon@2x.png",
+                        pathActive: "/static/images/tabbar/account_icon_active@2x.png",
                         type: "Account",
                         text: this.$t('custom_tabbar.account'),
                         url: "/pages/my/my",
@@ -106,29 +108,25 @@
         left: 0;
 		right: 0;
         width: 100%;
-        height: 50px;
+        height: 115.38rpx;
         background: #fff;        
-        z-index: 7;
+        z-index: 98;
 		flex-wrap: nowrap;
-		box-shadow: 0px -2px 16px 0px rgba(0,0,0,0.1);
         .tabbar_item{
-            flex: 1;
-            height: 50px;
-            padding-top: 8px;
+            width: 150rpx;
+            height: 115.38rpx;
+            padding-top: 21.15rpx;
             .img_box{
                 width: 100%;
-                height: 24px;
+                height: 42.31rpx;
                 .img{
-                    width: 24px;
-                    height: 24px;
-                }   
-				.uni-badge--x{
-					font-size: 14px;
-				}
+                    width: 42.31rpx;
+                    height: 42.31rpx;
+                }                
             }
             .text{
-                    font-size: 10px;
-                    line-height: 14px;
+                    font-size: 23rpx;
+                    line-height: 27rpx;
                     color: #999999;
                     width: 100%;
                     text-align: center;

@@ -1,8 +1,8 @@
 <template>
     <view>
         <view class="top_search_header flex justify-content-between align-items-center">
-            <view class="fake_input flex justify-content-between align-items-center" @tap="handleToSearch">
-                <view class="search_placeholder">{{ $t('category.search_by_di', {site_name: $store.state.site_name}) }}</view>
+            <view class="fake_input flex justify-content-between align-items-center ma-search-input" @tap="handleToSearch">
+                <view class="search_placeholder">{{ $t('category.search_by_di', {site_name: $store.state.site_name_upper}) }}</view>
                 <view class="search_icon">
                     <image
                         class="img"
@@ -11,45 +11,42 @@
                     />
                 </view>
             </view>
-            <view class="sign_in_icon" @tap="handleCheckIn">
+            <view class="sign_in_icon" @tap="navBuriedPoint">
                 <image
                     class="img"
-                    :src="getImgPathFunc('/static/images/category_sign_in2')"
+                    :src="getImgPathFunc('/static/images/category_sign_in')"
                     mode="aspectFill"
                 />
             </view>
         </view>
         <view class="container">
             <view class="type-container-boxx flex">
-                <view v-if="categories.length > 1" class="flex top_wrapper">
-                    <scroll-view scroll-x="true" class="first_type_container" show-scrollbar="false">
+                <view class="flex top_wrapper">
+                    <scroll-view scroll-x="true" @scroll="handleScrollStartObserver()" class="first_type_container" show-scrollbar="false">
                         <view class="flex">
                             <view class="flex first_type_wrapper">
-                                <view @tap="handleClickFirst(item)" :class="'first_type_item flex align-items-center justify-content-center font-bold ' + (activeCategoryId==item.id ? 'checked' : '')" v-for="item in categories" :key="item.id">{{ item.name }}</view>
+                                <view @tap="handleClickFirst(item)" :id="'maCategoryItem'+item.custom_id" :class="'first_type_item flex align-items-center justify-content-center font-bold ' + (categories.length == 2 ? ' first_type_item_double ' : '') + (activeCategoryId==item.id ? 'checked ' : '')" v-for="item in categories" :key="item.id">{{ item.name }}</view>
                             </view>
                         </view>
                     </scroll-view>  
                 </view>              
-                <view class="flex flex-1" :class="categories.length > 1 ? 'bottom_wrapper': 'n_bottom_wrapper'">
-                    <scroll-view scroll-y="true" class="second_type_container" show-scrollbar="false"> 
+                <view class="flex bottom_wrapper">
+                    <scroll-view scroll-y="true" @scroll="handleScrollStartObserver()" class="second_type_container" show-scrollbar="false"> 
                         <view class="flex">
                             <view class="flex second_type_wrapper">
-                                <view @tap="handleClickSecond(item)" :class="'second_type_item flex  align-items-center ' + (activeCategoryIdSecond==item.id ? 'checked ' : '')" v-for="item in nowCategorySecond" :key="item.id">
+                                <view @tap="handleClickSecond(item)" :id="'maCategoryItem'+item.custom_id" :class="'second_type_item flex  align-items-center ' + (activeCategoryIdSecond==item.id ? 'checked font-bold ' : '')" v-for="item in nowCategorySecond" :key="item.id">
                                     <view class="text">{{ item.name }}</view>
                                 </view>
                             </view>
                         </view>
                     </scroll-view>
-                    <scroll-view scroll-y="true" class="third_type_container" show-scrollbar="false"> 
+                    <scroll-view scroll-y="true" @scroll="handleScrollStartObserver('thirdFourthCategories')" class="third_type_container" show-scrollbar="false"> 
                         <view class="flex">
                             <view class="flex third_type_wrapper">
                                 <view class="third_type_item flex align-items-center justify-content-center" v-for="item in nowCategoryThird" :key="item.id">
-                                    <view v-if="item.is_show" class="third_tittle" @tap="handleClickThird(item)">
-                                        <span>{{ item.name }}</span>
-                                        <image class="icon_enter" :src="getImgPathFunc('/static/images/icon-enter')" mode="aspectFill"/>
-                                    </view>
-                                    <view class="fourth_type_container flex" :style="{'padding-top':item.is_show?'0':'46.16rpx'}">
-                                        <view @tap="handleClickFourth(ite,item)" class="fourth_type_item flex align-items-center justify-content-start" v-for="ite in item.fourthArr" :key="ite.name">
+                                    <view class="third_tittle font-bold" :id="'maCategoryItem'+item.custom_id" @tap="handleClickThird(item)">{{ item.name }}</view>
+                                    <view class="fourth_type_container flex">
+                                        <view @tap="handleClickFourth(ite)" :id="'maCategoryItem'+ite.custom_id" class="fourth_type_item flex align-items-center justify-content-start" v-for="ite in item.fourthArr" :key="ite.name">
                                             <view class="img_wrapper">
                                                 <image
                                                     class="img"
@@ -124,6 +121,8 @@ export default {
             categorieslist: [],
             categoriesThreelist: [],
             categories: [],
+			firstSecondCategories:[],//一级二级分类集合
+			thirdFourthCategories:[],//三级四级分类集合
             iphone: '',
             iponesc: '',
             searchs: '',
@@ -131,11 +130,28 @@ export default {
             banners: '',
 			menuObj: {},
             isNetworkOk: false,
+			isSearchBoxImpression:false,
         };
     },
+	onTabItemTap(item) {
+		this.$maEvent.custom_event({
+			event_category: 'tabBar',
+			event_action: 'tabBar_button',
+			event_name: 'tabBar_button',
+			module: 'tabBar',
+			event_data: {
+				event_value: 'category'
+			},
+		});
+	},
     onPullDownRefresh() {
         this.initCategory();
     },
+	mounted() {
+		this.$nextTick(()=>{
+			this.startSearchBoxObserver();
+		})
+	},
     onLoad: function () {
         var that = this; // 语言
         uni.$off('languageChange').$on('languageChange',that.initCategory)
@@ -152,16 +168,11 @@ export default {
         });
 		this.$maEvent.cateIndexView();
     },
-	onTabItemTap(item) {
-		this.$maEvent.custom_event({
-			event_category: 'tabBar',
-			event_action: 'tabBar_button',
-			event_name: 'tabBar_button',
-			module: 'tabBar',
-			event_data: {
-				event_value: 'category'
-			},
-		});
+	destroyed(){
+		if(this.observer){
+			this.observer.disconnect();
+			this.observer = null;
+		}
 	},
     onShow: function () {		
         var that = this;
@@ -196,6 +207,83 @@ export default {
         // }
     },
     methods: {   
+		startSearchBoxObserver() {
+			if(!this.searchObserver){
+				this.searchObserver = this.$public.createIntersectionObserver();
+			}
+			let elementSelector = ".ma-search-input";
+			this.$public.observeVisibility(this.searchObserver, elementSelector, () => {
+				if(this.isSearchBoxImpression){
+					return false;
+				}
+				this.isSearchBoxImpression = true;
+				this.$maEvent.impression_event({
+					event_category: 'search',
+					event_action: 'search_box_page',
+					event_name: 'category',
+					module: 'search_box',
+					event_data: {
+						page_in: 'category'
+					}
+				})
+			});
+		},
+		handleScrollStartObserver(type) {
+			this.$debounce(() => {
+				this.startObserver(type);
+			}, 200)
+		},
+		// 开始观察产品曝光
+		startObserver(type) {
+			if(!this.observer){
+				this.observer = this.$public.createIntersectionObserver();
+			}
+			if(this.observer){
+				let impressionList = this.firstSecondCategories;
+				// let nowCategoryThirdArr = [];
+				if(type) {
+					impressionList = this.thirdFourthCategories;
+					// this.nowCategoryThird.map(item=>{
+					// 	nowCategoryThirdArr.push(item);
+					// 	if(item.fourthArr) {
+					// 		item.fourthArr.map(citem=>{
+					// 			nowCategoryThirdArr.push(citem);
+					// 		})
+					// 	}
+					// })
+				}
+				impressionList.forEach((item, index) => {
+					if(!item.observer){
+						const elementSelector = "#maCategoryItem" + item.custom_id;
+						this.$public.observeVisibility(this.observer, elementSelector, () => {
+							this.handleVisibilityChange(item, index,type);
+						});
+					}
+				});
+			}
+		},
+		handleVisibilityChange(item, index,type) {
+			if(item.observer){
+				return false;
+			}
+			if(type) {
+				this.thirdFourthCategories[index].observer = true;
+			} else {
+				this.firstSecondCategories[index].observer = true;
+			}
+			item.observer = true;
+			this.$maEvent.impression_event({
+				event_category: 'category',
+				event_action: 'category_index_button',
+				event_name: item.name,
+				module: 'category_index',
+				event_data: {
+					event_value: item.name,
+					level: item.level
+				}
+			});
+		  // 记录曝光数据或进行其他操作
+		},
         getImgPathFunc(path){
             const pixelRatio = uni.getSystemInfoSync().pixelRatio
             const imageName = pixelRatio >= 2 ? '@2x.png' : '.png'; 
@@ -209,14 +297,42 @@ export default {
 			// 这个变量主要用于此功能：用户首页点击 women，进入列表也展示的也是women。这里同步设置一下
 			// 防止出现,用户首页点击 women进入列表，点击men,进入详情,返回,展示了women的情况
 			// this.$store.commit('SET_CATEGORYSHOWID', item.id);
+			this.maCategoryClick(item.name,item.level);
         },    
+		maCategoryClick(name,level) {
+			this.$maEvent.custom_event({
+				event_category: 'category',
+				event_action: 'category_index_button',
+				event_name: name,
+				module: 'category_index',
+				event_data: {
+					event_value: name,
+					level: level
+				}
+			});
+		},
         handleClickSecond(item){
             this.activeCategoryIdSecond = item.id
             this.nowCategoryThird = this.secondTypeObj[item.id]
+			this.maCategoryClick(item.name,item.level);
+			this.$nextTick(()=>{
+				if(this.nowCategoryThird.length) {
+					this.startObserver('thirdFourthCategories')
+				}
+			})
         },
         handleClickThird(item){
-            const {cate_id, type, id, jump_to, name} = item
+			this.maCategoryClick(item.name,item.level);
+            const {id, jump_to, name} = item
             if(!jump_to)return
+            uni.navigateTo({
+                url: `/pages/cate/list?id=${id}&type=${name}`
+            })
+        },
+       
+        handleClickFourth(item){
+			this.maCategoryClick(item.name,item.level);
+            const {cate_id, type, id, name} = item
             if(cate_id && type) {
                 // 特殊分类
                 uni.navigateTo({
@@ -228,26 +344,20 @@ export default {
                 })
             }
         },
-       
-        handleClickFourth(item, pitem){
-            const {cate_id, type, id, name} = item
-            if(cate_id && type) {
-                // 特殊分类
-                uni.navigateTo({
-                    url: "/pages/search/search?specialcate=" + encodeURIComponent(JSON.stringify({type,cate_id}))
-                })
-            }else{
-                uni.navigateTo({
-                    url: `/pages/cate/list?id=${id}&type=${name}${item.id === pitem.id && pitem.is_all == 1?'&is_all=1':''}`
-                    //is_all参数用于告诉后端是不是点击all跳转的
-                })
-            }
-        },
 
         handleToSearch(){
             uni.navigateTo({
                 url: '/pages/search/search'
             })
+			this.$maEvent.custom_event({
+				event_category: 'search',
+				event_action: 'search_box_button',
+				event_name: 'category',
+				module: 'search_box',
+				event_data: {
+					page_in: 'category'
+				}
+			})
         },
         initCategory: function () {
             const that = this;
@@ -256,7 +366,11 @@ export default {
                 uni.hideLoading()
                 if(res.code == 200) {
                     that.isNetworkOk = true
-                    const {categoriesThreelist, categorieslist, banners, categories,categoriesFourlist} = res.data
+                    let {categoriesThreelist, categorieslist, banners, categories,categoriesFourlist} = res.data
+					categories = this.formatCustomId(categories,'level1');
+					categorieslist = this.formatCustomId(categorieslist,'level2');
+					categoriesThreelist = this.formatCustomId(categoriesThreelist,'level3');
+					categoriesFourlist = this.formatCustomId(categoriesFourlist,'level4');
                     that.formatTypes(categories, categorieslist, categoriesThreelist, categoriesFourlist)
                     that.activeCategoryId = categories[0] && categories[0].id
                     that.nowCategorySecond = that.firstTypeObj[that.activeCategoryId]
@@ -271,8 +385,13 @@ export default {
                         categoriesThreelist,
                         // activeCategoryId: 0
                     }); 
-                    
 					that.setCateGoryShow();
+					that.$nextTick(() => {
+						that.startObserver();
+						if(that.nowCategoryThird.length) {
+							that.startObserver('thirdFourthCategories')
+						}
+					})
                 }
             }).catch(err =>{
                 uni.hideLoading()
@@ -305,8 +424,19 @@ export default {
                     that.$set(that.secondTypeObj, item.id, arr)
                 })
             })
+			that.firstSecondCategories = first.concat(second);
+			that.thirdFourthCategories = third.concat(fourth);
         },
-		
+		formatCustomId(list,prefix) {
+			// custom_id用于埋点
+			let num = 1;
+			let newList = list.map(item=>{
+				item['custom_id'] = 'Custom_'+prefix+'_'+num;
+				num++;
+				return item;
+			})
+			return newList
+		},
         getGoodsList: function (categoryId) {
             var that = this;
             var categorieslist = [];
@@ -363,19 +493,20 @@ export default {
 				this.$store.commit('SET_CATEGORYSHOWID', -1); // 点击了一次后就不再触发，防止分类页面出现BUG
 			}
 		},
-		handleCheckIn() {
+		// 顶部签到 按钮埋点
+		navBuriedPoint() {
 			this.$maEvent.custom_event({
 				event_category: 'menu_box',
 				event_action: 'menu_box_button',
 				event_name: 'menu_box_button',
 				module: 'menu_box',
 				event_data: {
-					checkin_type: 'category',
-					event_value: 'check_in'
+					event_value: 'check_in',
+					checkin_type: 'category'
 				}
 			});
 			this.$public.handleNavTo('/pages/my/checkin');
-		}
+		},
     }
 };
 </script>
@@ -435,13 +566,16 @@ export default {
     @include onepxBorder(#eee);
 }
 .first_type_item{
-    width: calc(100vw / 2);
+    width: calc(100vw / 3);
     font-size: 30.77rpx;
     position: relative;
     color: #999999;
     height: 92rpx;
     white-space: nowrap;
     overflow: hidden;
+    &.first_type_item_double{
+        width: 50vw;
+    }
     
 }
 .first_type_item.checked{
@@ -450,7 +584,7 @@ export default {
     content: '';
     position: absolute;
     z-index: 1;
-    bottom: 2px;
+    bottom: 0;
     transform: translateX(-50%);
     left: 50%;
     width: 50rpx;
@@ -459,16 +593,8 @@ export default {
 }
 }
 .bottom_wrapper{
-    height: calc(100vh - 184.6154rpx);
-	// #ifdef H5
-	height: calc(100vh - 184.6154rpx -50px);
-	// #endif
-}
-.n_bottom_wrapper{
-	height: calc(100vh - 90.3846rpx);
-	// #ifdef H5
-	height: calc(100vh - 90.3846rpx - 50px);
-	// #endif
+    flex: 1;
+    height: calc(100vh - 184rpx);
 }
 .second_type_container{
     width: 208rpx;
@@ -501,7 +627,7 @@ export default {
     font-size: 26.92rpx;
         .second_type_item{
             width: 100%;            
-            padding: 42.31rpx 23.08rpx;           
+            padding: 42.31rpx 31rpx;           
             .text{
                 line-height: 1.2083;
                 -webkit-line-clamp: 3;
@@ -510,7 +636,7 @@ export default {
                 text-overflow: ellipsis;
                 word-break: break-word;
                 display: -webkit-box;
-                color: #222;
+                color: #333333;
             }
             &.checked{
                 position: relative;
@@ -522,8 +648,8 @@ export default {
                     top: 50%;
                     transform: translateY(-50%);
                     width: 8rpx;
-                    height: 46.16rpx;
-                    background: #814EFF;
+                    height: 31rpx;
+                    background: #E30057;
                 }
             }
         }
@@ -535,18 +661,13 @@ export default {
     
     .third_type_item{
         width: 100%;
+        margin-bottom: 43rpx;
         .third_tittle{
+            text-align: left;
             font-size: 26.92rpx;
-            color: #393939;
+            color: #000000;
             width: 100%;
-            padding: 38.47rpx 30.77rpx;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            .icon_enter{
-                width: 34.62rpx;
-                height: 34.62rpx;
-            }
+            padding: 32rpx;
         }
         .fourth_type_container{
             width: 100%;    
@@ -559,16 +680,16 @@ export default {
                 flex-direction: column;
             }
             .img_wrapper{                
-                width: 123.08rpx;
-                height: 123.08rpx;
+                width: 131rpx;
+                height: 131rpx;
                 margin-bottom: 15.38rpx;
                 background:#EEEEEE;
                 border-radius: 50%;
                 overflow: hidden;
             }
             .img{
-                width: 123.08rpx;
-                height: 123.08rpx;
+                width: 131rpx;
+                height: 131rpx;
                 border-radius: 50%;
             }
             .name{
@@ -576,7 +697,7 @@ export default {
                 min-height: 38rpx;
                 font-size: 26.92rpx;
                 text-align: center;
-                color: #666;
+                color: #333333;
             }
         }
     }
@@ -626,6 +747,7 @@ page {
 .container {
     height: 100%;
     display: block;
+    font-family:  SF UI Text,Roboto,Helvetica,Arial,sans-serif;
 }
 
 .iphoneTop {

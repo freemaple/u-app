@@ -13,12 +13,12 @@ export default {
       }
   },
   computed: {
-        ...mapState({
-              serviceWebviewSrc: state => state?.appConfig?.webviewSrc
-          }),
-    },
-    mounted() {
-        this.isShowWebview = true
+	...mapState({
+		  serviceWebviewSrc: state => state?.appConfig?.webviewSrc
+	  }),
+	},
+	mounted() {
+		this.isShowWebview = true
 	},
 	onShow() {
 		this.$maEvent.visit_event({

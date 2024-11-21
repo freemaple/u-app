@@ -45,13 +45,13 @@
 			</view>
 		</uni-popup>
 		<!-- 提现申请提交之后，进入该页面的提示弹窗 -->
-		<uni-popup ref="popupWithdrawTip">
-			<view class="popup-content" style="width:calc(100vw - 110px);border-radius: 23rpx; background-color:#fff;">
+		<uni-popup ref="popupWithdrawTip" background-color="#fff">
+			<view class="popup-content" style="width:calc(100vw - 110px)">
 				<view class="withdraw-tip-content">
 					<view class="withdraw-tip-content-title font-bold">
-						{{$t("distribute.cash.status_guide", {site_name: $store.state.site_name_upper})}}
+						{{$t("distribute.cash.withdraw_success_tip", {site_name: $store.state.site_name_upper})}}
 					</view>
-					<image @click="$refs.popupWithdrawTip.close()" mode="widthFix" src="@/static/images/login/close_icon@2x.png" class="close"></image>
+					<image @click="$refs.popupWithdrawTip.close()" mode="widthFix" src="@/static/images/close_update_popup.png" class="close"></image>
 					<view v-for="(item,index) in withdrawText" class="withdraw-tip-item" :key="index">
 						<text v-for="(it,ind) in item" v-html="it.val" :style="it.style" :key="ind">
 						</text>
@@ -205,9 +205,6 @@
 </script>
 
 <style lang="scss" scoped>
-.popup-content{
-	border-radius: 23rpx 23rpx 23rpx 23rpx;
-}
 .wallet-cash-box {
 	font-size: 30rpx;
 	.cash-box {
@@ -264,26 +261,23 @@
 }
 .withdraw-tip-content {
 	position: relative;
-	padding: 61.54rpx 42.31rpx 46.15rpx;
-	border-radius: 23rpx;
+	padding: 36rpx 40rpx 40rpx;
 	text-align: center;
 	.close {
-		width: 34.62rpx;
+		width: 36rpx;
 		position: absolute;
-		right: 15.38rpx;
-		top: 15.38rpx;
+		right: -56rpx;
+		top: 0;
 	}
 	.withdraw-tip-content-title {
 		font-size: 32rpx;
 		color: #000;
-		margin-bottom: 46.15rpx;
+		margin-bottom: 16rpx;
 	}
 	.withdraw-tip-item {
 		margin-bottom: 8rpx;
-		line-height: 42rpx;
-		font-size: 27rpx;
-		color: #393939;
-		font-weight: 400;
+		lien-height: 44rpx;
+		font-size: 28rpx;
 	}
 	.close-btn {
 		background: #000;
@@ -291,8 +285,6 @@
 		font-size: 32rpx;
 		padding: 24rpx 0;
 		margin-top: 48rpx;
-		height: 81rpx;
-		border-radius: 40rpx 40rpx 40rpx 40rpx;
 	}
 }
 </style>

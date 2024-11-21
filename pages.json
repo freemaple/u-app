@@ -131,43 +131,13 @@
 			"style": {
 				
 			}
-		},
-		{
+		},{
 			"path": "pages/goods-detail/sizeguide",
 			"style": {
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false
 			}
-		}, 
-		{
-			"path": "pages/goods-detail/fqa",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
-			}
-		}, 
-		{
-			"path": "pages/goods-detail/unicoeye-size-guide",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
-			}
-		}, 
-		{
-			"path": "pages/goods-detail/assistant",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
-			}
-		}, 
-		{
-			"path": "pages/goods-detail/deliver-shipping",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
-			}
-		}, 
-		{
+		}, {
 			"path": "pages/goods-detail/reviews-list",
 			"style": {
 				"navigationBarTitleText": "",
@@ -261,7 +231,8 @@
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": false,
+				"disableScroll": true
 		    }
 		    
 		},
@@ -663,14 +634,6 @@
         		"enablePullDownRefresh" : false
         	}
         },
-		{
-        	"path" : "pages/choose-rewards/choose-rewards",
-        	"style" : 
-        	{
-        		"navigationBarTitleText" : "",
-        		"enablePullDownRefresh" : false
-        	}
-        },
         {
         	"path" : "pages/distribute/detail-rules",
         	"style" :
@@ -695,11 +658,18 @@
 				"animationDuration": 200
 				}
 			}
-        }
+        },
+		{
+			"path": "pages/error/403",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		}
     ],
 	"tabBar": {
 		"color": "#999999",
-		"selectedColor": "#222",
+		"selectedColor": "#000000",
 		"borderStyle": "white",
 		"backgroundColor": "#fff",
 		"list": [{

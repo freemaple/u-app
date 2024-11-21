@@ -2,13 +2,12 @@
 	<view class="popup-content-template-box">
 		<view class="header-box flex justify-content-between" :class="is_show_header_border?'border-bottom':''">
 			<slot name="title">
-				<view class="title font-MS">{{title}}</view>
+				<view class="title" style="font-weight: bold;">{{title}}</view>
 			</slot>
 			<view class="iconfont icon-close" @click="handleClose"></view>
 		</view>
 		<slot name="extend"></slot>
-		<view class="main-content-box" 
-			:style="{'padding': hidePaddingRight ? '0 0 0 32rpx' : '0 32rpx'}">
+		<view class="main-content-box">
 			<slot name="content"></slot>
 		</view>
 		<view class="footer-box">
@@ -27,11 +26,7 @@
 			},
 			is_show_header_border: {
 				type: Boolean,
-				default:false
-			},
-			hidePaddingRight: {
-				type: Boolean,
-				default:false
+				default:false,
 			}
 		},
 		methods: {
@@ -45,9 +40,9 @@
 <style lang="scss" scoped>
 @import "@/common/mixins.scss";
 	.popup-content-template-box {
-		padding: 30.77rpx 0;
+		padding: 28rpx 0;
 		background: #fff;
-		border-radius: 16rpx 16rpx 0 0;
+		border-radius: 0rpx 0rpx 0px 0px;
 	}
 
 	.popup-content-template-box .header-box {
@@ -77,6 +72,7 @@
 	.popup-content-template-box .main-content-box {
 		max-height: 520rpx;
 		overflow-y: scroll;
+		padding: 0 32rpx;
 		color: rgba(0,0,0,0.9);
 	}
 </style>

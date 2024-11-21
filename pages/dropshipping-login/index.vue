@@ -29,7 +29,7 @@
 						<uni-easyinput type="password" v-model="loginData.password"
 							:placeholder="'* ' + $t('login.password')" />
 					</uni-forms-item>
-					<view class="uni-btn-v">
+					<view class="uni-btn-v font-bold">
 						<button type="primary" @tap="bindLogin" :loading="submitBtnDis">{{ $t('login.submit') }}</button>
 					</view>
 					<view class="forget-wrapper flex justify-content-end">
@@ -90,7 +90,7 @@
 						</checkbox-group>
 
 					</uni-forms-item>
-					<view class="uni-btn-v">
+					<view class="uni-btn-v font-bold">
 						<button :loading="registerBtnDis" @click="regSubmit" form-type="submit" type="primary">{{ $t('register.submit')
 							}}</button>
 					</view>
@@ -188,10 +188,10 @@ export default {
 				email: {
 					rules: [{
 						required: true,
-						errorMessage: 'The email you entered is invalid, Please check your email and try again.',
+						errorMessage: 'Please enter a valid email address.',
 					}, {
 						format: 'email',
-						errorMessage: 'The email you entered is invalid, Please check your email and try again.',
+						errorMessage: 'Please enter a valid email address.',
 					}]
 				},
 				// 对password字段进行必填验证

@@ -45,7 +45,6 @@
 	.empty-box {
 		text-align: center;
 		padding-top: 48rpx;
-		margin-bottom: 48rpx;
 		.empty-text {
 			color: #666;
 			font-size: 30rpx;
@@ -60,11 +59,10 @@
 			line-height: 84rpx;
 			font-size: 32rpx;
 			color: #fff;
-			border-radius: 40rpx;
+			border-radius: 4rpx;
 			border: 1px solid #000;
-			font-family: 'Montserrat-SemiBold';
+			// font-weight: bold;
 			margin: auto;
-			margin-top: 48rpx;
 		}
 	}
 </style>

@@ -70,6 +70,7 @@ const store = new Vuex.Store({
 		isHomeCoupon: false,
 		isViewFissionPage:isViewFissionPage, // 是否浏览过裂变活动页或者个人中心裂变页
 		isShowedDetailFloatTip:isShowedDetailFloatTip, // 是否显示过商详页的裂变的浮层提示
+		pushData: ''
 	},
 	getters: {
 		// 用户是否登录
@@ -214,6 +215,9 @@ const store = new Vuex.Store({
 		SET_ISSHOWEDDETAILFLOATTIP(state,isShowedDetailFloatTip) {
 			state.isShowedDetailFloatTip = isShowedDetailFloatTip;
 			uni.setStorageSync("isShowedDetailFloatTip", isShowedDetailFloatTip);
+		},
+		SET_PUSHDATA(state,pushData) {
+			state.pushData = pushData;
 		}
 	},
 	actions: {
